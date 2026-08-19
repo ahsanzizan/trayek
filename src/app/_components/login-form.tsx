@@ -3,79 +3,103 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 
 import { Button } from "~/components/ui/button";
-import { loginSchema } from "~/lib/login-schema";
+import { Input } from "~/components/ui/input";
+import { Spinner } from "~/components/ui/spinner";
+import { Field, FieldError, FieldLabel } from "~/components/ui/field";
+import { loginSchema, type LoginInput } from "~/lib/login-schema";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-    const result = loginSchema.safeParse({ email, password });
-    if (!result.success) {
-      setError(result.error.issues[0]?.message ?? "Invalid input");
-      return;
-    }
+  const onSubmit = handleSubmit(async (data) => {
+    clearErrors("root");
 
-    setIsPending(true);
     const res = await signIn("credentials", {
-      email: result.data.email,
-      password: result.data.password,
+      email: data.email,
+      password: data.password,
       redirect: false,
       callbackUrl,
     });
-    setIsPending(false);
 
     if (res?.error) {
-      setError("Invalid email or password");
+      setError("root", { message: "Invalid email or password" });
       return;
     }
 
+    setIsRedirecting(true);
     router.push(res?.url ?? callbackUrl);
     router.refresh();
-  };
+  });
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex w-full max-w-xs flex-col gap-3"
-    >
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full rounded-full bg-white/10 px-4 py-2 text-white placeholder:text-white/50"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full rounded-full bg-white/10 px-4 py-2 text-white placeholder:text-white/50"
-      />
-      {error && <p className="text-center text-sm text-red-400">{error}</p>}
-      <Button
-        type="submit"
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20"
-        disabled={isPending}
-      >
-        {isPending ? "Signing in…" : "Sign in"}
+    <form onSubmit={onSubmit} noValidate className="flex w-full flex-col gap-4">
+      <Field>
+        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <Input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          aria-invalid={!!errors.email}
+          {...register("email", { onChange: () => clearErrors("root") })}
+        />
+        <FieldError errors={[{ message: errors.email?.message }]} />
+      </Field>
+
+      <Field>
+        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <Input
+          id="password"
+          type="password"
+          placeholder="Password"
+          autoComplete="current-password"
+          aria-invalid={!!errors.password}
+          {...register("password", { onChange: () => clearErrors("root") })}
+        />
+        <FieldError errors={[{ message: errors.password?.message }]} />
+      </Field>
+
+      {errors.root?.message && (
+        <FieldError errors={[{ message: errors.root.message }]} />
+      )}
+
+      <Button type="submit" disabled={isSubmitting || isRedirecting}>
+        {isSubmitting ? (
+          <>
+            <Spinner />
+            <span className="ml-2">Signing in…</span>
+          </>
+        ) : (
+          "Sign in"
+        )}
       </Button>
-      <p className="text-center text-sm text-white/60">
+
+      <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="underline hover:text-white">
+        <Link
+          href="/register"
+          className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
           Register
         </Link>
       </p>
