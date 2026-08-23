@@ -15,6 +15,27 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+enum OrganizationType {
+    FORWARDER
+    SHIPPER
+}
+
+enum MembershipRole {
+    OWNER
+    ADMIN
+    FINANCE
+    VIEWER
+}
+
+model Organization {
+    id           String           @id @default(cuid())
+    name         String
+    type         OrganizationType
+    createdAt    DateTime         @default(now())
+    updatedAt    DateTime         @updatedAt
+    memberships  Membership[]
+}
+
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
@@ -65,6 +86,21 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    memberships   Membership[]
+}
+
+model Membership {
+    id             String         @id @default(cuid())
+    userId         String
+    organizationId String
+    role           MembershipRole
+    createdAt      DateTime       @default(now())
+
+    user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, organizationId])
+    @@index([organizationId])
 }
 
 model VerificationToken {
