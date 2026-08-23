@@ -1,6 +1,8 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import tseslint from "typescript-eslint";
 
+import { noDomainInfrastructureImports } from "./eslint-rules/no-domain-infrastructure-imports.js";
+
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
 });
@@ -43,6 +45,19 @@ export default tseslint.config(
       parserOptions: {
         projectService: true,
       },
+    },
+  },
+  {
+    files: ["src/server/domain/**/*.{ts,tsx}"],
+    plugins: {
+      local: {
+        rules: {
+          "no-domain-infrastructure-imports": noDomainInfrastructureImports,
+        },
+      },
+    },
+    rules: {
+      "local/no-domain-infrastructure-imports": "error",
     },
   },
 );
