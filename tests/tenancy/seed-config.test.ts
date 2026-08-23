@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
 
-describe("TRK-002 seed command", () => {
+describe("seed command", () => {
   it("exposes a reproducible Prisma seed command", async () => {
     const packageJson = await readFile("package.json", "utf8");
 

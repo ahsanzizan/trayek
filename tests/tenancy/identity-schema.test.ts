@@ -13,7 +13,7 @@ async function readSchema() {
   return readFile(path.join(repositoryRoot, "prisma/schema.prisma"), "utf8");
 }
 
-describe("TRK-002 identity schema", () => {
+describe("identity schema", () => {
   it("defines the organization and membership enums exactly", async () => {
     const schema = await readSchema();
 

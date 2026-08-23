@@ -48,93 +48,93 @@ export type SeedWriter = {
   };
 };
 
-export const trk002SeedFixtures = {
+export const seedFixturesData = {
   organizations: [
     {
-      id: "trk-002-org-forwarder-a",
+      id: "org-forwarder-a",
       name: "PT Truk Jaya",
       type: "FORWARDER",
     },
     {
-      id: "trk-002-org-forwarder-b",
+      id: "org-forwarder-b",
       name: "CV Logistik Sejahtera",
       type: "FORWARDER",
     },
     {
-      id: "trk-002-org-shipper-c",
+      id: "org-shipper-c",
       name: "PT FMCG Indonesia",
       type: "SHIPPER",
     },
   ],
   users: [
     {
-      id: "trk-002-user-forwarder-a-owner",
+      id: "user-forwarder-a-owner",
       name: "Pak Anton",
-      email: "trk-002.forwarder-a.owner@example.test",
+      email: "forwarder-a.owner@example.test",
     },
     {
-      id: "trk-002-user-forwarder-a-admin",
+      id: "user-forwarder-a-admin",
       name: "Mbak Rina",
-      email: "trk-002.forwarder-a.admin@example.test",
+      email: "forwarder-a.admin@example.test",
     },
     {
-      id: "trk-002-user-forwarder-a-finance",
+      id: "user-forwarder-a-finance",
       name: "Bendahara Truk Jaya",
-      email: "trk-002.forwarder-a.finance@example.test",
+      email: "forwarder-a.finance@example.test",
     },
     {
-      id: "trk-002-user-forwarder-b-owner",
+      id: "user-forwarder-b-owner",
       name: "Pak Budi",
-      email: "trk-002.forwarder-b.owner@example.test",
+      email: "forwarder-b.owner@example.test",
     },
     {
-      id: "trk-002-user-shipper-c-owner",
+      id: "user-shipper-c-owner",
       name: "Ibu Sri",
-      email: "trk-002.shipper-c.owner@example.test",
+      email: "shipper-c.owner@example.test",
     },
   ],
   memberships: [
     {
-      id: "trk-002-membership-forwarder-a-owner",
-      userId: "trk-002-user-forwarder-a-owner",
-      organizationId: "trk-002-org-forwarder-a",
+      id: "membership-forwarder-a-owner",
+      userId: "user-forwarder-a-owner",
+      organizationId: "org-forwarder-a",
       role: "OWNER",
     },
     {
-      id: "trk-002-membership-forwarder-b-viewer",
-      userId: "trk-002-user-forwarder-a-owner",
-      organizationId: "trk-002-org-forwarder-b",
+      id: "membership-forwarder-b-viewer",
+      userId: "user-forwarder-a-owner",
+      organizationId: "org-forwarder-b",
       role: "VIEWER",
     },
     {
-      id: "trk-002-membership-forwarder-a-admin",
-      userId: "trk-002-user-forwarder-a-admin",
-      organizationId: "trk-002-org-forwarder-a",
+      id: "membership-forwarder-a-admin",
+      userId: "user-forwarder-a-admin",
+      organizationId: "org-forwarder-a",
       role: "ADMIN",
     },
     {
-      id: "trk-002-membership-forwarder-a-finance",
-      userId: "trk-002-user-forwarder-a-finance",
-      organizationId: "trk-002-org-forwarder-a",
+      id: "membership-forwarder-a-finance",
+      userId: "user-forwarder-a-finance",
+      organizationId: "org-forwarder-a",
       role: "FINANCE",
     },
     {
-      id: "trk-002-membership-forwarder-b-owner",
-      userId: "trk-002-user-forwarder-b-owner",
-      organizationId: "trk-002-org-forwarder-b",
+      id: "membership-forwarder-b-owner",
+      userId: "user-forwarder-b-owner",
+      organizationId: "org-forwarder-b",
       role: "OWNER",
     },
     {
-      id: "trk-002-membership-shipper-c-owner",
-      userId: "trk-002-user-shipper-c-owner",
-      organizationId: "trk-002-org-shipper-c",
+      id: "membership-shipper-c-owner",
+      userId: "user-shipper-c-owner",
+      organizationId: "org-shipper-c",
       role: "OWNER",
     },
   ],
 } as const;
 
 export async function seedFixtures(writer: SeedWriter): Promise<void> {
-  for (const organization of trk002SeedFixtures.organizations) {
+  for (const organization of seedFixturesData.organizations) {
     await writer.organization.upsert({
       where: { id: organization.id },
       create: organization,
@@ -142,7 +142,7 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
     });
   }
 
-  for (const user of trk002SeedFixtures.users) {
+  for (const user of seedFixturesData.users) {
     await writer.user.upsert({
       where: { id: user.id },
       create: user,
@@ -150,7 +150,7 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
     });
   }
 
-  for (const membership of trk002SeedFixtures.memberships) {
+  for (const membership of seedFixturesData.memberships) {
     await writer.membership.upsert({
       where: {
         userId_organizationId: {

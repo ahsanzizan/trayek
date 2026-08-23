@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { runSeed, type SeedDatabase, type SeedWriter } from "../../prisma/seed";
 
-describe("TRK-002 seed runner", () => {
+describe("seed runner", () => {
   it("runs the fixture writer atomically without closing an injected database", async () => {
     const operations: string[] = [];
     const writer: SeedWriter = {
