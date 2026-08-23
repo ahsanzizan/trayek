@@ -12,8 +12,23 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: trayek
+          POSTGRES_PASSWORD: trayek
+          POSTGRES_DB: trayek_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U trayek -d trayek_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     env:
       SKIP_ENV_VALIDATION: "1"
+      DATABASE_URL: postgresql://trayek:trayek@localhost:5432/trayek_test?schema=public
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,6 +46,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        run: pnpm db:migrate
+
+      - name: Seed invariant fixtures
+        run: pnpm db:seed
 
       - name: Run repository checks
         run: pnpm check
