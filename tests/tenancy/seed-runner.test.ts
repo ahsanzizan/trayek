@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  runSeed,
-  type SeedDatabase,
-  type SeedWriter,
-} from "../../prisma/seed";
+import { runSeed, type SeedDatabase, type SeedWriter } from "../../prisma/seed";
 
 describe("TRK-002 seed runner", () => {
   it("runs the fixture writer atomically without closing an injected database", async () => {
@@ -51,6 +47,7 @@ describe("TRK-002 seed runner", () => {
       "user",
       "user",
       "user",
+      "membership",
       "membership",
       "membership",
       "membership",

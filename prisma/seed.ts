@@ -101,6 +101,12 @@ export const trk002SeedFixtures = {
       role: "OWNER",
     },
     {
+      id: "trk-002-membership-forwarder-b-viewer",
+      userId: "trk-002-user-forwarder-a-owner",
+      organizationId: "trk-002-org-forwarder-b",
+      role: "VIEWER",
+    },
+    {
       id: "trk-002-membership-forwarder-a-admin",
       userId: "trk-002-user-forwarder-a-admin",
       organizationId: "trk-002-org-forwarder-a",
@@ -159,7 +165,9 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
 }
 
 export type SeedDatabase = SeedWriter & {
-  $transaction<T>(callback: (transaction: SeedWriter) => Promise<T>): Promise<T>;
+  $transaction<T>(
+    callback: (transaction: SeedWriter) => Promise<T>,
+  ): Promise<T>;
   $disconnect(): Promise<void>;
 };
 

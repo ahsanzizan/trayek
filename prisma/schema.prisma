@@ -28,12 +28,14 @@ enum MembershipRole {
 }
 
 model Organization {
-    id           String           @id @default(cuid())
-    name         String
-    type         OrganizationType
-    createdAt    DateTime         @default(now())
-    updatedAt    DateTime         @updatedAt
-    memberships  Membership[]
+    id                      String           @id @default(cuid())
+    name                    String
+    type                    OrganizationType
+    sessionMaxAgeSeconds    Int?
+    sessionIdleTimeoutSeconds Int?
+    createdAt               DateTime         @default(now())
+    updatedAt               DateTime         @updatedAt
+    memberships             Membership[]
 }
 
 model Post {
@@ -82,7 +84,6 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    password      String?
     accounts      Account[]
     sessions      Session[]
     posts         Post[]

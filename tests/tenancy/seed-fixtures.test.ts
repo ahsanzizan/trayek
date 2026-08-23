@@ -38,6 +38,27 @@ describe("TRK-002 seed fixtures", () => {
     }
   });
 
+  it("gives the owner fixture a second organization for switcher coverage", () => {
+    const ownerId = "trk-002-user-forwarder-a-owner";
+
+    expect(
+      trk002SeedFixtures.memberships.filter(
+        (membership) => membership.userId === ownerId,
+      ),
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          organizationId: "trk-002-org-forwarder-a",
+          role: "OWNER",
+        }),
+        expect.objectContaining({
+          organizationId: "trk-002-org-forwarder-b",
+          role: "VIEWER",
+        }),
+      ]),
+    );
+  });
+
   it("writes every fixture through the organization, user, and membership ports", async () => {
     const operations: string[] = [];
     const writer: SeedWriter = {
