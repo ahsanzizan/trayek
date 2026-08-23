@@ -1,77 +1,64 @@
 import Link from "next/link";
 
-import { LatestPost } from "~/app/_components/post";
+import { NoOrganization } from "~/app/_components/no-organization";
+import { SignOutForm } from "~/app/_components/sign-out-form";
+import { buttonVariants } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 import { auth } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
+import { api } from "~/trpc/server";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
+  if (!session?.user) {
+    return (
+      <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-4 py-12">
+        <section className="border-border-subtle bg-surface flex w-full max-w-md flex-col gap-4 rounded-[var(--radius-card)] border p-6">
+          <div className="flex flex-col gap-2">
+            <p className="text-muted-foreground text-sm">Console operasional</p>
+            <h1 className="text-title-lg font-semibold">Trayek</h1>
+            <p className="text-muted-foreground text-sm leading-6">
+              Masuk untuk mengelola operasi transportasi Anda.
+            </p>
+          </div>
+          <Link
+            href="/login"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "w-fit rounded-[var(--radius-control)]",
+            )}
+          >
+            Masuk
+          </Link>
+        </section>
+      </main>
+    );
   }
 
+  if (!session.user.activeOrganizationId) {
+    return <NoOrganization />;
+  }
+
+  const memberships = await api.organization.listMemberships();
+  const activeMembership = memberships.find(
+    (membership) =>
+      membership.organizationId === session.user.activeOrganizationId,
+  );
+  const organizationName =
+    activeMembership?.organization.name ?? "Organisasi aktif";
+
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/login"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
-              {!session && (
-                <Link
-                  href="/register"
-                  className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-                >
-                  Register
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {session?.user && <LatestPost />}
+    <main className="bg-background text-foreground flex min-h-[calc(100svh-3.5rem)] items-center justify-center px-4 py-12">
+      <section className="border-border-subtle bg-surface flex w-full max-w-md flex-col gap-5 rounded-[var(--radius-card)] border p-6">
+        <div className="flex flex-col gap-2">
+          <p className="text-muted-foreground text-sm">Organisasi aktif</p>
+          <h1 className="text-title-lg font-semibold">{organizationName}</h1>
+          <p className="text-muted-foreground text-sm leading-6">
+            Ruang kerja Anda siap digunakan.
+          </p>
         </div>
-      </main>
-    </HydrateClient>
+        <SignOutForm className="w-fit rounded-[var(--radius-control)]" />
+      </section>
+    </main>
   );
 }

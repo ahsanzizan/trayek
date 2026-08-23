@@ -12,7 +12,28 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { auth } from "~/server/auth";
+import {
+  resolveMembership,
+  type MembershipRole,
+  type MembershipSummary,
+} from "~/server/auth/membership";
 import { db } from "~/server/db";
+import { createTenantScopedDb } from "~/server/api/tenant-extension";
+
+type AuthSession = {
+  user: {
+    id: string;
+    activeOrganizationId: string | null;
+  };
+  memberships: MembershipSummary[];
+  expires: string;
+};
+
+type TRPCContextOptions = {
+  headers: Headers;
+  session?: AuthSession | null;
+  db?: typeof db;
+};
 
 /**
  * 1. CONTEXT
@@ -26,13 +47,18 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await auth();
+export const createTRPCContext = async ({
+  headers,
+  session: providedSession,
+  db: providedDb,
+}: TRPCContextOptions) => {
+  const session =
+    providedSession === undefined ? await auth() : providedSession;
 
   return {
-    db,
+    db: providedDb ?? db,
     session,
-    ...opts,
+    headers,
   };
 };
 
@@ -131,3 +157,41 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+/**
+ * Authenticated procedure with a live membership check and fail-closed tenant
+ * scoped database client.
+ */
+export const orgProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const organizationId = ctx.session.user.activeOrganizationId;
+  if (!organizationId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const membership = await resolveMembership(
+    ctx.db,
+    ctx.session.user.id,
+    organizationId,
+  );
+  if (!membership) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      db: createTenantScopedDb(ctx.db, organizationId),
+      membership,
+      organizationId,
+    },
+  });
+});
+
+export function roleProcedure(role: MembershipRole) {
+  return orgProcedure.use(({ ctx, next }) => {
+    if (ctx.membership.role !== role && ctx.membership.role !== "OWNER") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+
+    return next();
+  });
+}

@@ -39,4 +39,13 @@ describe("TRK-002 identity schema", () => {
     );
     expect(schema).not.toMatch(/users\s+User\[\]\s+@relation\("UserOrg"\)/);
   });
+
+  it("does not retain password auth and stores nullable org session settings", async () => {
+    const schema = await readSchema();
+
+    expect(schema).not.toMatch(/password\s+String\?/);
+    expect(schema).toMatch(
+      /model Organization\s*\{[\s\S]*?sessionMaxAgeSeconds\s+Int\?[\s\S]*?sessionIdleTimeoutSeconds\s+Int\?/,
+    );
+  });
 });
