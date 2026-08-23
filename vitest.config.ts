@@ -14,5 +14,10 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.{ts,tsx}"],
     testTimeout: 15_000,
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
   },
 });

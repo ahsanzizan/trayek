@@ -1,12 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { extractRouterConfig } from "uploadthing/server";
 
+import { auth } from "~/server/auth";
 import {
+  authorizeInvoiceUpload,
   invoiceUploadInput,
   uploadRouter,
   podUploadInput,
   validatePodFileSizes,
 } from "~/server/storage/router";
+
+vi.mock("~/server/auth", () => ({
+  auth: vi.fn(),
+}));
 
 describe("UploadThing file route input validation", () => {
   it("accepts the tenant metadata required for a POD upload", () => {
@@ -78,6 +84,47 @@ describe("UploadThing file route input validation", () => {
     expect(invoiceRoute.config.pdf).toMatchObject({
       maxFileCount: 5,
       acl: "private",
+    });
+  });
+
+  it("rejects invoice upload middleware when unauthenticated", async () => {
+    vi.mocked(auth as unknown as () => Promise<unknown>).mockResolvedValueOnce(
+      null,
+    );
+
+    await expect(
+      authorizeInvoiceUpload({ input: { organizationId: "org_123" } }),
+    ).rejects.toThrow("You must be signed in to upload invoices");
+  });
+
+  it("rejects invoice upload middleware when user has no membership in organization", async () => {
+    vi.mocked(auth as unknown as () => Promise<unknown>).mockResolvedValueOnce({
+      user: { id: "user_1", activeOrganizationId: "org_other" },
+      memberships: [{ id: "m1", organizationId: "org_other", role: "OWNER" }],
+      expires: "2099-01-01T00:00:00.000Z",
+    });
+
+    await expect(
+      authorizeInvoiceUpload({ input: { organizationId: "org_123" } }),
+    ).rejects.toThrow(
+      "You do not have access to upload documents for this organization",
+    );
+  });
+
+  it("authorizes invoice upload middleware when user belongs to target organization", async () => {
+    vi.mocked(auth as unknown as () => Promise<unknown>).mockResolvedValueOnce({
+      user: { id: "user_1", activeOrganizationId: "org_123" },
+      memberships: [{ id: "m1", organizationId: "org_123", role: "FINANCE" }],
+      expires: "2099-01-01T00:00:00.000Z",
+    });
+
+    const result = await authorizeInvoiceUpload({
+      input: { organizationId: "org_123" },
+    });
+
+    expect(result).toEqual({
+      organizationId: "org_123",
+      uploadedBy: "user_1",
     });
   });
 });

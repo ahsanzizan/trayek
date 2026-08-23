@@ -2,6 +2,8 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { z } from "zod";
 
+import { auth } from "~/server/auth";
+
 const f = createUploadthing();
 
 export const podUploadInput = z.object({
@@ -52,6 +54,33 @@ function logUploadError(fileKey: string | undefined, error: Error) {
   });
 }
 
+export async function authorizeInvoiceUpload({
+  input,
+}: {
+  input: z.infer<typeof invoiceUploadInput>;
+}): Promise<{ organizationId: string; uploadedBy: string }> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return rejectUploadThingError("You must be signed in to upload invoices");
+  }
+
+  const isMember =
+    session.user.activeOrganizationId === input.organizationId ||
+    session.memberships.some((m) => m.organizationId === input.organizationId);
+
+  if (!isMember) {
+    return rejectUploadThingError(
+      "You do not have access to upload documents for this organization",
+    );
+  }
+
+  return {
+    organizationId: input.organizationId,
+    uploadedBy: session.user.id,
+  };
+}
+
 export const uploadRouter = {
   podUploader: f({
     image: {
@@ -97,10 +126,7 @@ export const uploadRouter = {
     },
   })
     .input(invoiceUploadInput)
-    .middleware(async ({ input }) => ({
-      organizationId: input.organizationId,
-      uploadedBy: "operations" as const,
-    }))
+    .middleware(async ({ input }) => authorizeInvoiceUpload({ input }))
     .onUploadError(({ error, fileKey }) => {
       logUploadError(fileKey, error);
     })
