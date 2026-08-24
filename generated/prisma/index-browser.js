@@ -217,12 +217,50 @@ exports.Prisma.HumanFallbackEventScalarFieldEnum = {
   acknowledgedAt: 'acknowledgedAt'
 };
 
+exports.Prisma.LlmCallLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  loadId: 'loadId',
+  model: 'model',
+  promptVersion: 'promptVersion',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  imageCount: 'imageCount',
+  latencyMs: 'latencyMs',
+  estimatedCost: 'estimatedCost',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  actorType: 'actorType',
+  actorId: 'actorId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  before: 'before',
+  after: 'after',
+  ip: 'ip',
+  userAgent: 'userAgent',
+  agentModel: 'agentModel',
+  agentPromptVersion: 'agentPromptVersion',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -253,6 +291,12 @@ exports.MembershipRole = exports.$Enums.MembershipRole = {
   VIEWER: 'VIEWER'
 };
 
+exports.AuditActorType = exports.$Enums.AuditActorType = {
+  USER: 'USER',
+  AGENT: 'AGENT',
+  SYSTEM: 'SYSTEM'
+};
+
 exports.Prisma.ModelName = {
   Organization: 'Organization',
   Post: 'Post',
@@ -263,7 +307,9 @@ exports.Prisma.ModelName = {
   VerificationToken: 'VerificationToken',
   JobExecution: 'JobExecution',
   DeadLetterJob: 'DeadLetterJob',
-  HumanFallbackEvent: 'HumanFallbackEvent'
+  HumanFallbackEvent: 'HumanFallbackEvent',
+  LlmCallLog: 'LlmCallLog',
+  AuditLog: 'AuditLog'
 };
 
 /**

@@ -220,6 +220,14 @@ Route-specific components live in `src/app/<route>/_components/`, mirroring `src
 - No hand-rolled JWT decoding or cookie reading anywhere.
 - Never expose `AUTH_SECRET`, provider secrets, or `DATABASE_URL` to the client or to a `NEXT_PUBLIC_*` var.
 
+### Audit log
+
+- Every mutation of a domain entity goes through `withAudit()` (`src/server/audit/with-audit.ts`), which writes the mutation and its `AuditLog` row in one transaction. Two separate writes are not equivalent: an audit row for a mutation that rolled back is a lie, and a mutation whose audit row failed to write is the silent gap INV-1 and INV-7 exist to close.
+- The mutation receives the transaction and must use it. Writing through the outer client escapes the transaction and reintroduces that gap.
+- `AuditLog` is append-only, enforced by a Postgres trigger — `UPDATE`, `DELETE`, and `TRUNCATE` all raise. Grants alone would not do it: Prisma connects as the table owner in some environments, and an owner bypasses its own `REVOKE`. Never add a code path that edits or deletes an entry; corrections are new entries.
+- Actors are a discriminated union (`src/server/domain/audit/entry.ts`). An `AGENT` actor must carry its model and prompt version, so an agent action that omits them does not compile.
+- `tests/audit/mutation-coverage.test.ts` enumerates every tRPC mutation and fails when one is neither audited nor explicitly exempt. Adding a mutation means making that call.
+
 ### Storage
 
 - Go through `StoragePort` (`src/server/domain/ports/storage.ts`). The implementation in `src/server/storage/` is UploadThing today, and nothing outside that directory names the vendor.
