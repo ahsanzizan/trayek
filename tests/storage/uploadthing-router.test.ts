@@ -2,9 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import { extractRouterConfig } from "uploadthing/server";
 
 import { auth } from "~/server/auth";
+import { reporter } from "~/server/observability/reporter";
 import {
   authorizeInvoiceUpload,
   invoiceUploadInput,
+  logUploadError,
   uploadRouter,
   podUploadInput,
   validatePodFileSizes,
@@ -12,6 +14,10 @@ import {
 
 vi.mock("~/server/auth", () => ({
   auth: vi.fn(),
+}));
+
+vi.mock("~/server/observability/reporter", () => ({
+  reporter: { reportError: vi.fn() },
 }));
 
 describe("UploadThing file route input validation", () => {
@@ -126,5 +132,21 @@ describe("UploadThing file route input validation", () => {
       organizationId: "org_123",
       uploadedBy: "user_1",
     });
+  });
+
+  it("reports upload callback failures without inventing a tenant", () => {
+    logUploadError(
+      "file-key",
+      new Error("upload failed for +6281234567890"),
+      new Request("https://example.test/upload", {
+        headers: { "x-request-id": "upload-1" },
+      }),
+    );
+
+    expect(reporter.reportError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "upload failed for +6281234567890" }),
+      "UploadThing upload failed",
+      { fileKey: "file-key" },
+    );
   });
 });

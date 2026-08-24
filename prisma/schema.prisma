@@ -39,6 +39,7 @@ model Organization {
     jobExecutions           JobExecution[]
     deadLetterJobs          DeadLetterJob[]
     humanFallbackEvents     HumanFallbackEvent[]
+    llmCallLogs             LlmCallLog[]
 }
 
 model Post {
@@ -167,4 +168,26 @@ model HumanFallbackEvent {
 
     @@unique([organizationId, source, dedupeKey])
     @@index([organizationId, acknowledgedAt])
+}
+
+model LlmCallLog {
+    id             String       @id @default(cuid())
+    organizationId String
+    loadId         String
+    model          String
+    promptVersion  String
+    inputTokens    Int
+    outputTokens   Int
+    imageCount     Int
+    latencyMs      Int
+    estimatedCost  BigInt
+    success        Boolean
+    errorMessage   String?
+    createdAt      DateTime     @default(now())
+
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId, createdAt])
+    @@index([organizationId, loadId])
+    @@map("llm_call_logs")
 }

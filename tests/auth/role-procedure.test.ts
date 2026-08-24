@@ -31,6 +31,7 @@ function createCaller(role: "OWNER" | "ADMIN" | "FINANCE" | "VIEWER") {
   return createCallerFactory(router)(async () => ({
     db: database,
     headers: new Headers(),
+    requestId: "test-request",
     session: {
       user: { id: "user-a", activeOrganizationId: "org-a" },
       memberships: [],

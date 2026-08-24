@@ -3,6 +3,13 @@ import { UploadThingError } from "uploadthing/server";
 import { z } from "zod";
 
 import { auth } from "~/server/auth";
+import {
+  createObservabilityContext,
+  getObservabilityContext,
+  requestIdFromHeaders,
+  runWithObservabilityContext,
+} from "~/server/observability/context";
+import { reporter } from "~/server/observability/reporter";
 
 const f = createUploadthing();
 
@@ -47,11 +54,22 @@ export async function validatePodFileSizes(
   }
 }
 
-function logUploadError(fileKey: string | undefined, error: Error) {
-  console.error("UploadThing upload failed", {
-    fileKey,
-    message: error.message,
-  });
+export function logUploadError(
+  fileKey: string | undefined,
+  error: Error,
+  request?: Request,
+): void {
+  const currentContext = getObservabilityContext();
+  const requestId =
+    currentContext.requestId !== "unscoped"
+      ? currentContext.requestId
+      : request
+        ? requestIdFromHeaders(request.headers)
+        : currentContext.requestId;
+
+  runWithObservabilityContext(createObservabilityContext(requestId), () =>
+    reporter.reportError(error, "UploadThing upload failed", { fileKey }),
+  );
 }
 
 export async function authorizeInvoiceUpload({
@@ -105,8 +123,8 @@ export const uploadRouter = {
         uploadedBy: input.driverToken ? "driver" : "operations",
       };
     })
-    .onUploadError(({ error, fileKey }) => {
-      logUploadError(fileKey, error);
+    .onUploadError(({ error, fileKey, req }) => {
+      logUploadError(fileKey, error, req);
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       fileKey: file.key,
@@ -127,8 +145,8 @@ export const uploadRouter = {
   })
     .input(invoiceUploadInput)
     .middleware(async ({ input }) => authorizeInvoiceUpload({ input }))
-    .onUploadError(({ error, fileKey }) => {
-      logUploadError(fileKey, error);
+    .onUploadError(({ error, fileKey, req }) => {
+      logUploadError(fileKey, error, req);
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       fileKey: file.key,
