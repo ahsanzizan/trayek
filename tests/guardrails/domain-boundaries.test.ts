@@ -116,6 +116,24 @@ describe("domain import guardrails", () => {
     expect(hasErrorContaining(messages, "../../../channels/email")).toBe(true);
   });
 
+  it("rejects the queue vendor from the domain layer", async () => {
+    const messages = await lintFixture(
+      "src/server/domain/jobs/queue-fixture.ts",
+      'import { PgBoss } from "pg-boss";\nvoid PgBoss;',
+    );
+
+    expect(hasErrorContaining(messages, "pg-boss")).toBe(true);
+  });
+
+  it("rejects the queue implementation from the domain layer", async () => {
+    const messages = await lintFixture(
+      "src/server/domain/jobs/queue-fixture.ts",
+      'import { jobQueue } from "~/server/jobs";\nvoid jobQueue;',
+    );
+
+    expect(hasErrorContaining(messages, "~/server/jobs")).toBe(true);
+  });
+
   it("allows pure domain imports in the domain layer", async () => {
     const messages = await lintFixture(
       "src/server/domain/invoice.ts",

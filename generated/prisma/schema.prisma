@@ -15,6 +15,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrganizationType {
+  FORWARDER
+  SHIPPER
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  FINANCE
+  VIEWER
+}
+
+model Organization {
+  id                        String               @id @default(cuid())
+  name                      String
+  type                      OrganizationType
+  sessionMaxAgeSeconds      Int?
+  sessionIdleTimeoutSeconds Int?
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @updatedAt
+  memberships               Membership[]
+  jobExecutions             JobExecution[]
+  deadLetterJobs            DeadLetterJob[]
+  humanFallbackEvents       HumanFallbackEvent[]
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   name      String
@@ -56,14 +82,29 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  memberships   Membership[]
+}
+
+model Membership {
+  id             String         @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MembershipRole
+  createdAt      DateTime       @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
 }
 
 model VerificationToken {
@@ -72,4 +113,58 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+/// Completion ledger backing job idempotency. A key that appears here has
+/// already run to success, so replaying it is a no-op (TRK-005).
+model JobExecution {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  idempotencyKey String
+  attempts       Int      @default(1)
+  completedAt    DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, name])
+}
+
+/// Jobs that exhausted their retries, with the payload and error a person
+/// needs to work them by hand. Every row has a matching HumanFallbackEvent.
+model DeadLetterJob {
+  id             String    @id @default(cuid())
+  organizationId String
+  name           String
+  idempotencyKey String
+  payload        Json
+  error          String
+  attempts       Int
+  createdAt      DateTime  @default(now())
+  resolvedAt     DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, createdAt])
+}
+
+/// INV-6. One row per agent failure a person now has to resolve. `instruction`
+/// is plain Bahasa Indonesia describing the manual work, not an error message.
+model HumanFallbackEvent {
+  id             String    @id @default(cuid())
+  organizationId String
+  source         String
+  dedupeKey      String
+  entityType     String
+  entityId       String?
+  instruction    String
+  createdAt      DateTime  @default(now())
+  acknowledgedAt DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, source, dedupeKey])
+  @@index([organizationId, acknowledgedAt])
 }
