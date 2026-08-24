@@ -27,6 +27,12 @@ enum MembershipRole {
   VIEWER
 }
 
+enum AuditActorType {
+  USER
+  AGENT
+  SYSTEM
+}
+
 model Organization {
   id                        String               @id @default(cuid())
   name                      String
@@ -39,6 +45,7 @@ model Organization {
   jobExecutions             JobExecution[]
   deadLetterJobs            DeadLetterJob[]
   humanFallbackEvents       HumanFallbackEvent[]
+  auditLogs                 AuditLog[]
 }
 
 model Post {
@@ -167,4 +174,32 @@ model HumanFallbackEvent {
 
   @@unique([organizationId, source, dedupeKey])
   @@index([organizationId, acknowledgedAt])
+}
+
+/// Append-only record of every domain mutation. INV-1 and INV-7 are only
+/// meaningful if the approval that satisfied them cannot be edited afterwards,
+/// so UPDATE and DELETE are blocked by a database trigger, not by convention.
+model AuditLog {
+  id                 String         @id @default(cuid())
+  organizationId     String
+  actorType          AuditActorType
+  /// Null only for SYSTEM actors, which have no identity to record.
+  actorId            String?
+  action             String
+  entityType         String
+  entityId           String
+  before             Json?
+  after              Json?
+  ip                 String?
+  userAgent          String?
+  /// Set when actorType is AGENT so an agent action can be reproduced.
+  /// Populated once the LLM provider lands (TRK-040, TRK-045).
+  agentModel         String?
+  agentPromptVersion String?
+  createdAt          DateTime       @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, entityType, entityId])
+  @@index([organizationId, createdAt])
 }
