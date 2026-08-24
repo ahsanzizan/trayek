@@ -36,6 +36,7 @@ function createCaller(role: Role, rows: unknown[] = []) {
         memberships: [],
         expires: "2099-01-01T00:00:00.000Z",
       },
+      requestId: "test-request",
     }),
   );
 
