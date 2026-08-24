@@ -71,7 +71,10 @@ describe("magic-link login surface", () => {
     expect(homeSource).toContain(
       'const containerClasses = "mx-auto w-full max-w-[1100px] px-6"',
     );
-    expect(homeSource).toContain("${containerClasses} grid flex-1 gap-4");
+    expect(homeSource).toContain(
+      "${containerClasses} grid flex-none gap-4 pb-16",
+    );
+    expect(homeSource).not.toContain("${containerClasses} grid flex-1");
     expect(homeSource).not.toContain("max-w-[900px]");
     expect(homeSource).toContain("font-mono");
     expect(homeSource).not.toMatch(/#[0-9a-f]{3,8}/i);

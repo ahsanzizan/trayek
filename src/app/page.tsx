@@ -65,7 +65,7 @@ export default function Home() {
       </section>
 
       <section
-        className={`${containerClasses} grid flex-1 gap-4 pb-16 md:grid-cols-3`}
+        className={`${containerClasses} grid flex-none gap-4 pb-16 md:grid-cols-3`}
       >
         {features.map((feature) => (
           <article
