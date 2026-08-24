@@ -45,6 +45,7 @@ model Organization {
     jobExecutions           JobExecution[]
     deadLetterJobs          DeadLetterJob[]
     humanFallbackEvents     HumanFallbackEvent[]
+    llmCallLogs             LlmCallLog[]
     auditLogs               AuditLog[]
 }
 
@@ -176,6 +177,28 @@ model HumanFallbackEvent {
     @@index([organizationId, acknowledgedAt])
 }
 
+model LlmCallLog {
+    id             String       @id @default(cuid())
+    organizationId String
+    loadId         String
+    model          String
+    promptVersion  String
+    inputTokens    Int
+    outputTokens   Int
+    imageCount     Int
+    latencyMs      Int
+    estimatedCost  BigInt
+    success        Boolean
+    errorMessage   String?
+    createdAt      DateTime     @default(now())
+
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    @@index([organizationId, createdAt])
+    @@index([organizationId, loadId])
+    @@map("llm_call_logs")
+}
+
 /// Append-only record of every domain mutation. INV-1 and INV-7 are only
 /// meaningful if the approval that satisfied them cannot be edited afterwards,
 /// so UPDATE and DELETE are blocked by a database trigger, not by convention.
@@ -203,3 +226,5 @@ model AuditLog {
     @@index([organizationId, entityType, entityId])
     @@index([organizationId, createdAt])
 }
+
+

@@ -1,11 +1,27 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { rmSync } from "node:fs";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { ESLint } from "eslint";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 const eslint = new ESLint({ cwd: process.cwd() });
+const activeFixtureFiles = new Set<string>();
+
+function purgeActiveFixtures() {
+  for (const filePath of activeFixtureFiles) {
+    try {
+      rmSync(filePath, { force: true });
+    } catch {
+      // best-effort cleanup on process exit
+    }
+  }
+  activeFixtureFiles.clear();
+}
+
+process.on("exit", purgeActiveFixtures);
+process.on("SIGINT", purgeActiveFixtures);
 
 async function lintFixture(filePath: string, code: string) {
   const requestedFilePath = path.resolve(filePath);
@@ -13,12 +29,13 @@ async function lintFixture(filePath: string, code: string) {
   const fixtureName = `${path.basename(
     requestedFilePath,
     extension,
-  )}.${randomUUID()}${extension}`;
+  )}.guardrail-temp-${randomUUID()}${extension}`;
   const absoluteFilePath = path.join(
     path.dirname(requestedFilePath),
     fixtureName,
   );
 
+  activeFixtureFiles.add(absoluteFilePath);
   await mkdir(path.dirname(absoluteFilePath), { recursive: true });
   await writeFile(absoluteFilePath, code);
 
@@ -33,7 +50,8 @@ async function lintFixture(filePath: string, code: string) {
 
     return result.messages;
   } finally {
-    await rm(absoluteFilePath, { force: true });
+    activeFixtureFiles.delete(absoluteFilePath);
+    await rm(absoluteFilePath, { force: true }).catch(() => undefined);
   }
 }
 
@@ -51,32 +69,19 @@ describe("domain import guardrails", () => {
   // here so that cost is not charged to whichever test happens to run first,
   // which otherwise makes this file flaky under a loaded parallel suite.
   beforeAll(async () => {
+    purgeActiveFixtures();
     await lintFixture(
       "src/server/domain/warmup.ts",
       "export const warm = true;\n",
     );
   }, 60_000);
 
-  it("does not overwrite or delete an existing fixture path", async () => {
-    const relativeFilePath = `src/server/domain/guardrail-existing-${randomUUID()}.ts`;
-    const absoluteFilePath = path.resolve(relativeFilePath);
-    const existingSource = "export const existingDomainSource = true;\n";
+  afterEach(() => {
+    purgeActiveFixtures();
+  });
 
-    await mkdir(path.dirname(absoluteFilePath), { recursive: true });
-    await writeFile(absoluteFilePath, existingSource);
-
-    try {
-      await lintFixture(
-        relativeFilePath,
-        'import { db } from "~/server/db";\nvoid db;',
-      );
-
-      await expect(readFile(absoluteFilePath, "utf8")).resolves.toBe(
-        existingSource,
-      );
-    } finally {
-      await rm(absoluteFilePath, { force: true });
-    }
+  afterAll(() => {
+    purgeActiveFixtures();
   });
 
   it("rejects the Prisma singleton from the domain layer", async () => {

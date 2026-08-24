@@ -9,6 +9,9 @@
 /coverage
 /test-results
 /playwright-report
+*.guardrail-temp-*
+*queue-fixture.*
+/src/server/domain/guardrail-fixtures
 
 # database
 /prisma/db.sqlite

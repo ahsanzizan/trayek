@@ -67,6 +67,11 @@ export type DeadLetterJob = $Result.DefaultSelection<Prisma.$DeadLetterJobPayloa
  */
 export type HumanFallbackEvent = $Result.DefaultSelection<Prisma.$HumanFallbackEventPayload>
 /**
+ * Model LlmCallLog
+ * 
+ */
+export type LlmCallLog = $Result.DefaultSelection<Prisma.$LlmCallLogPayload>
+/**
  * Model AuditLog
  * Append-only record of every domain mutation. INV-1 and INV-7 are only
  * meaningful if the approval that satisfied them cannot be edited afterwards,
@@ -335,6 +340,16 @@ export class PrismaClient<
     * ```
     */
   get humanFallbackEvent(): Prisma.HumanFallbackEventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.llmCallLog`: Exposes CRUD operations for the **LlmCallLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LlmCallLogs
+    * const llmCallLogs = await prisma.llmCallLog.findMany()
+    * ```
+    */
+  get llmCallLog(): Prisma.LlmCallLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -796,6 +811,7 @@ export namespace Prisma {
     JobExecution: 'JobExecution',
     DeadLetterJob: 'DeadLetterJob',
     HumanFallbackEvent: 'HumanFallbackEvent',
+    LlmCallLog: 'LlmCallLog',
     AuditLog: 'AuditLog'
   };
 
@@ -815,7 +831,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "auditLog"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1559,6 +1575,80 @@ export namespace Prisma {
           }
         }
       }
+      LlmCallLog: {
+        payload: Prisma.$LlmCallLogPayload<ExtArgs>
+        fields: Prisma.LlmCallLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LlmCallLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LlmCallLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          findFirst: {
+            args: Prisma.LlmCallLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LlmCallLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          findMany: {
+            args: Prisma.LlmCallLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>[]
+          }
+          create: {
+            args: Prisma.LlmCallLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          createMany: {
+            args: Prisma.LlmCallLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LlmCallLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>[]
+          }
+          delete: {
+            args: Prisma.LlmCallLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          update: {
+            args: Prisma.LlmCallLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.LlmCallLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LlmCallLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LlmCallLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.LlmCallLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LlmCallLogPayload>
+          }
+          aggregate: {
+            args: Prisma.LlmCallLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLlmCallLog>
+          }
+          groupBy: {
+            args: Prisma.LlmCallLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LlmCallLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LlmCallLogCountArgs<ExtArgs>
+            result: $Utils.Optional<LlmCallLogCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -1739,6 +1829,7 @@ export namespace Prisma {
     jobExecution?: JobExecutionOmit
     deadLetterJob?: DeadLetterJobOmit
     humanFallbackEvent?: HumanFallbackEventOmit
+    llmCallLog?: LlmCallLogOmit
     auditLog?: AuditLogOmit
   }
 
@@ -1824,6 +1915,7 @@ export namespace Prisma {
     jobExecutions: number
     deadLetterJobs: number
     humanFallbackEvents: number
+    llmCallLogs: number
     auditLogs: number
   }
 
@@ -1832,6 +1924,7 @@ export namespace Prisma {
     jobExecutions?: boolean | OrganizationCountOutputTypeCountJobExecutionsArgs
     deadLetterJobs?: boolean | OrganizationCountOutputTypeCountDeadLetterJobsArgs
     humanFallbackEvents?: boolean | OrganizationCountOutputTypeCountHumanFallbackEventsArgs
+    llmCallLogs?: boolean | OrganizationCountOutputTypeCountLlmCallLogsArgs
     auditLogs?: boolean | OrganizationCountOutputTypeCountAuditLogsArgs
   }
 
@@ -1872,6 +1965,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountHumanFallbackEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: HumanFallbackEventWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountLlmCallLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LlmCallLogWhereInput
   }
 
   /**
@@ -2166,6 +2266,7 @@ export namespace Prisma {
     jobExecutions?: boolean | Organization$jobExecutionsArgs<ExtArgs>
     deadLetterJobs?: boolean | Organization$deadLetterJobsArgs<ExtArgs>
     humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
+    llmCallLogs?: boolean | Organization$llmCallLogsArgs<ExtArgs>
     auditLogs?: boolean | Organization$auditLogsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
@@ -2206,6 +2307,7 @@ export namespace Prisma {
     jobExecutions?: boolean | Organization$jobExecutionsArgs<ExtArgs>
     deadLetterJobs?: boolean | Organization$deadLetterJobsArgs<ExtArgs>
     humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
+    llmCallLogs?: boolean | Organization$llmCallLogsArgs<ExtArgs>
     auditLogs?: boolean | Organization$auditLogsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2219,6 +2321,7 @@ export namespace Prisma {
       jobExecutions: Prisma.$JobExecutionPayload<ExtArgs>[]
       deadLetterJobs: Prisma.$DeadLetterJobPayload<ExtArgs>[]
       humanFallbackEvents: Prisma.$HumanFallbackEventPayload<ExtArgs>[]
+      llmCallLogs: Prisma.$LlmCallLogPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2627,6 +2730,7 @@ export namespace Prisma {
     jobExecutions<T extends Organization$jobExecutionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$jobExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     deadLetterJobs<T extends Organization$deadLetterJobsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$deadLetterJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     humanFallbackEvents<T extends Organization$humanFallbackEventsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$humanFallbackEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    llmCallLogs<T extends Organization$llmCallLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$llmCallLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends Organization$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3145,6 +3249,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: HumanFallbackEventScalarFieldEnum | HumanFallbackEventScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.llmCallLogs
+   */
+  export type Organization$llmCallLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    where?: LlmCallLogWhereInput
+    orderBy?: LlmCallLogOrderByWithRelationInput | LlmCallLogOrderByWithRelationInput[]
+    cursor?: LlmCallLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LlmCallLogScalarFieldEnum | LlmCallLogScalarFieldEnum[]
   }
 
   /**
@@ -13072,6 +13200,1218 @@ export namespace Prisma {
 
 
   /**
+   * Model LlmCallLog
+   */
+
+  export type AggregateLlmCallLog = {
+    _count: LlmCallLogCountAggregateOutputType | null
+    _avg: LlmCallLogAvgAggregateOutputType | null
+    _sum: LlmCallLogSumAggregateOutputType | null
+    _min: LlmCallLogMinAggregateOutputType | null
+    _max: LlmCallLogMaxAggregateOutputType | null
+  }
+
+  export type LlmCallLogAvgAggregateOutputType = {
+    inputTokens: number | null
+    outputTokens: number | null
+    imageCount: number | null
+    latencyMs: number | null
+    estimatedCost: number | null
+  }
+
+  export type LlmCallLogSumAggregateOutputType = {
+    inputTokens: number | null
+    outputTokens: number | null
+    imageCount: number | null
+    latencyMs: number | null
+    estimatedCost: bigint | null
+  }
+
+  export type LlmCallLogMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    loadId: string | null
+    model: string | null
+    promptVersion: string | null
+    inputTokens: number | null
+    outputTokens: number | null
+    imageCount: number | null
+    latencyMs: number | null
+    estimatedCost: bigint | null
+    success: boolean | null
+    errorMessage: string | null
+    createdAt: Date | null
+  }
+
+  export type LlmCallLogMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    loadId: string | null
+    model: string | null
+    promptVersion: string | null
+    inputTokens: number | null
+    outputTokens: number | null
+    imageCount: number | null
+    latencyMs: number | null
+    estimatedCost: bigint | null
+    success: boolean | null
+    errorMessage: string | null
+    createdAt: Date | null
+  }
+
+  export type LlmCallLogCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    loadId: number
+    model: number
+    promptVersion: number
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: number
+    success: number
+    errorMessage: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type LlmCallLogAvgAggregateInputType = {
+    inputTokens?: true
+    outputTokens?: true
+    imageCount?: true
+    latencyMs?: true
+    estimatedCost?: true
+  }
+
+  export type LlmCallLogSumAggregateInputType = {
+    inputTokens?: true
+    outputTokens?: true
+    imageCount?: true
+    latencyMs?: true
+    estimatedCost?: true
+  }
+
+  export type LlmCallLogMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    loadId?: true
+    model?: true
+    promptVersion?: true
+    inputTokens?: true
+    outputTokens?: true
+    imageCount?: true
+    latencyMs?: true
+    estimatedCost?: true
+    success?: true
+    errorMessage?: true
+    createdAt?: true
+  }
+
+  export type LlmCallLogMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    loadId?: true
+    model?: true
+    promptVersion?: true
+    inputTokens?: true
+    outputTokens?: true
+    imageCount?: true
+    latencyMs?: true
+    estimatedCost?: true
+    success?: true
+    errorMessage?: true
+    createdAt?: true
+  }
+
+  export type LlmCallLogCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    loadId?: true
+    model?: true
+    promptVersion?: true
+    inputTokens?: true
+    outputTokens?: true
+    imageCount?: true
+    latencyMs?: true
+    estimatedCost?: true
+    success?: true
+    errorMessage?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type LlmCallLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LlmCallLog to aggregate.
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LlmCallLogs to fetch.
+     */
+    orderBy?: LlmCallLogOrderByWithRelationInput | LlmCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LlmCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LlmCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LlmCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LlmCallLogs
+    **/
+    _count?: true | LlmCallLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LlmCallLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LlmCallLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LlmCallLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LlmCallLogMaxAggregateInputType
+  }
+
+  export type GetLlmCallLogAggregateType<T extends LlmCallLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateLlmCallLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLlmCallLog[P]>
+      : GetScalarType<T[P], AggregateLlmCallLog[P]>
+  }
+
+
+
+
+  export type LlmCallLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LlmCallLogWhereInput
+    orderBy?: LlmCallLogOrderByWithAggregationInput | LlmCallLogOrderByWithAggregationInput[]
+    by: LlmCallLogScalarFieldEnum[] | LlmCallLogScalarFieldEnum
+    having?: LlmCallLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LlmCallLogCountAggregateInputType | true
+    _avg?: LlmCallLogAvgAggregateInputType
+    _sum?: LlmCallLogSumAggregateInputType
+    _min?: LlmCallLogMinAggregateInputType
+    _max?: LlmCallLogMaxAggregateInputType
+  }
+
+  export type LlmCallLogGroupByOutputType = {
+    id: string
+    organizationId: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint
+    success: boolean
+    errorMessage: string | null
+    createdAt: Date
+    _count: LlmCallLogCountAggregateOutputType | null
+    _avg: LlmCallLogAvgAggregateOutputType | null
+    _sum: LlmCallLogSumAggregateOutputType | null
+    _min: LlmCallLogMinAggregateOutputType | null
+    _max: LlmCallLogMaxAggregateOutputType | null
+  }
+
+  type GetLlmCallLogGroupByPayload<T extends LlmCallLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LlmCallLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LlmCallLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LlmCallLogGroupByOutputType[P]>
+            : GetScalarType<T[P], LlmCallLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LlmCallLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    loadId?: boolean
+    model?: boolean
+    promptVersion?: boolean
+    inputTokens?: boolean
+    outputTokens?: boolean
+    imageCount?: boolean
+    latencyMs?: boolean
+    estimatedCost?: boolean
+    success?: boolean
+    errorMessage?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["llmCallLog"]>
+
+  export type LlmCallLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    loadId?: boolean
+    model?: boolean
+    promptVersion?: boolean
+    inputTokens?: boolean
+    outputTokens?: boolean
+    imageCount?: boolean
+    latencyMs?: boolean
+    estimatedCost?: boolean
+    success?: boolean
+    errorMessage?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["llmCallLog"]>
+
+  export type LlmCallLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    loadId?: boolean
+    model?: boolean
+    promptVersion?: boolean
+    inputTokens?: boolean
+    outputTokens?: boolean
+    imageCount?: boolean
+    latencyMs?: boolean
+    estimatedCost?: boolean
+    success?: boolean
+    errorMessage?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["llmCallLog"]>
+
+  export type LlmCallLogSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    loadId?: boolean
+    model?: boolean
+    promptVersion?: boolean
+    inputTokens?: boolean
+    outputTokens?: boolean
+    imageCount?: boolean
+    latencyMs?: boolean
+    estimatedCost?: boolean
+    success?: boolean
+    errorMessage?: boolean
+    createdAt?: boolean
+  }
+
+  export type LlmCallLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "loadId" | "model" | "promptVersion" | "inputTokens" | "outputTokens" | "imageCount" | "latencyMs" | "estimatedCost" | "success" | "errorMessage" | "createdAt", ExtArgs["result"]["llmCallLog"]>
+  export type LlmCallLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type LlmCallLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type LlmCallLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $LlmCallLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LlmCallLog"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      loadId: string
+      model: string
+      promptVersion: string
+      inputTokens: number
+      outputTokens: number
+      imageCount: number
+      latencyMs: number
+      estimatedCost: bigint
+      success: boolean
+      errorMessage: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["llmCallLog"]>
+    composites: {}
+  }
+
+  type LlmCallLogGetPayload<S extends boolean | null | undefined | LlmCallLogDefaultArgs> = $Result.GetResult<Prisma.$LlmCallLogPayload, S>
+
+  type LlmCallLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LlmCallLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LlmCallLogCountAggregateInputType | true
+    }
+
+  export interface LlmCallLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LlmCallLog'], meta: { name: 'LlmCallLog' } }
+    /**
+     * Find zero or one LlmCallLog that matches the filter.
+     * @param {LlmCallLogFindUniqueArgs} args - Arguments to find a LlmCallLog
+     * @example
+     * // Get one LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LlmCallLogFindUniqueArgs>(args: SelectSubset<T, LlmCallLogFindUniqueArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LlmCallLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LlmCallLogFindUniqueOrThrowArgs} args - Arguments to find a LlmCallLog
+     * @example
+     * // Get one LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LlmCallLogFindUniqueOrThrowArgs>(args: SelectSubset<T, LlmCallLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LlmCallLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogFindFirstArgs} args - Arguments to find a LlmCallLog
+     * @example
+     * // Get one LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LlmCallLogFindFirstArgs>(args?: SelectSubset<T, LlmCallLogFindFirstArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LlmCallLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogFindFirstOrThrowArgs} args - Arguments to find a LlmCallLog
+     * @example
+     * // Get one LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LlmCallLogFindFirstOrThrowArgs>(args?: SelectSubset<T, LlmCallLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LlmCallLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LlmCallLogs
+     * const llmCallLogs = await prisma.llmCallLog.findMany()
+     * 
+     * // Get first 10 LlmCallLogs
+     * const llmCallLogs = await prisma.llmCallLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const llmCallLogWithIdOnly = await prisma.llmCallLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LlmCallLogFindManyArgs>(args?: SelectSubset<T, LlmCallLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LlmCallLog.
+     * @param {LlmCallLogCreateArgs} args - Arguments to create a LlmCallLog.
+     * @example
+     * // Create one LlmCallLog
+     * const LlmCallLog = await prisma.llmCallLog.create({
+     *   data: {
+     *     // ... data to create a LlmCallLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends LlmCallLogCreateArgs>(args: SelectSubset<T, LlmCallLogCreateArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LlmCallLogs.
+     * @param {LlmCallLogCreateManyArgs} args - Arguments to create many LlmCallLogs.
+     * @example
+     * // Create many LlmCallLogs
+     * const llmCallLog = await prisma.llmCallLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LlmCallLogCreateManyArgs>(args?: SelectSubset<T, LlmCallLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LlmCallLogs and returns the data saved in the database.
+     * @param {LlmCallLogCreateManyAndReturnArgs} args - Arguments to create many LlmCallLogs.
+     * @example
+     * // Create many LlmCallLogs
+     * const llmCallLog = await prisma.llmCallLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LlmCallLogs and only return the `id`
+     * const llmCallLogWithIdOnly = await prisma.llmCallLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LlmCallLogCreateManyAndReturnArgs>(args?: SelectSubset<T, LlmCallLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LlmCallLog.
+     * @param {LlmCallLogDeleteArgs} args - Arguments to delete one LlmCallLog.
+     * @example
+     * // Delete one LlmCallLog
+     * const LlmCallLog = await prisma.llmCallLog.delete({
+     *   where: {
+     *     // ... filter to delete one LlmCallLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LlmCallLogDeleteArgs>(args: SelectSubset<T, LlmCallLogDeleteArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LlmCallLog.
+     * @param {LlmCallLogUpdateArgs} args - Arguments to update one LlmCallLog.
+     * @example
+     * // Update one LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LlmCallLogUpdateArgs>(args: SelectSubset<T, LlmCallLogUpdateArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LlmCallLogs.
+     * @param {LlmCallLogDeleteManyArgs} args - Arguments to filter LlmCallLogs to delete.
+     * @example
+     * // Delete a few LlmCallLogs
+     * const { count } = await prisma.llmCallLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LlmCallLogDeleteManyArgs>(args?: SelectSubset<T, LlmCallLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LlmCallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LlmCallLogs
+     * const llmCallLog = await prisma.llmCallLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LlmCallLogUpdateManyArgs>(args: SelectSubset<T, LlmCallLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LlmCallLogs and returns the data updated in the database.
+     * @param {LlmCallLogUpdateManyAndReturnArgs} args - Arguments to update many LlmCallLogs.
+     * @example
+     * // Update many LlmCallLogs
+     * const llmCallLog = await prisma.llmCallLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LlmCallLogs and only return the `id`
+     * const llmCallLogWithIdOnly = await prisma.llmCallLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LlmCallLogUpdateManyAndReturnArgs>(args: SelectSubset<T, LlmCallLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LlmCallLog.
+     * @param {LlmCallLogUpsertArgs} args - Arguments to update or create a LlmCallLog.
+     * @example
+     * // Update or create a LlmCallLog
+     * const llmCallLog = await prisma.llmCallLog.upsert({
+     *   create: {
+     *     // ... data to create a LlmCallLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LlmCallLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LlmCallLogUpsertArgs>(args: SelectSubset<T, LlmCallLogUpsertArgs<ExtArgs>>): Prisma__LlmCallLogClient<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LlmCallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogCountArgs} args - Arguments to filter LlmCallLogs to count.
+     * @example
+     * // Count the number of LlmCallLogs
+     * const count = await prisma.llmCallLog.count({
+     *   where: {
+     *     // ... the filter for the LlmCallLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends LlmCallLogCountArgs>(
+      args?: Subset<T, LlmCallLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LlmCallLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LlmCallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LlmCallLogAggregateArgs>(args: Subset<T, LlmCallLogAggregateArgs>): Prisma.PrismaPromise<GetLlmCallLogAggregateType<T>>
+
+    /**
+     * Group by LlmCallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LlmCallLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LlmCallLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LlmCallLogGroupByArgs['orderBy'] }
+        : { orderBy?: LlmCallLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LlmCallLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLlmCallLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LlmCallLog model
+   */
+  readonly fields: LlmCallLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LlmCallLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LlmCallLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LlmCallLog model
+   */
+  interface LlmCallLogFieldRefs {
+    readonly id: FieldRef<"LlmCallLog", 'String'>
+    readonly organizationId: FieldRef<"LlmCallLog", 'String'>
+    readonly loadId: FieldRef<"LlmCallLog", 'String'>
+    readonly model: FieldRef<"LlmCallLog", 'String'>
+    readonly promptVersion: FieldRef<"LlmCallLog", 'String'>
+    readonly inputTokens: FieldRef<"LlmCallLog", 'Int'>
+    readonly outputTokens: FieldRef<"LlmCallLog", 'Int'>
+    readonly imageCount: FieldRef<"LlmCallLog", 'Int'>
+    readonly latencyMs: FieldRef<"LlmCallLog", 'Int'>
+    readonly estimatedCost: FieldRef<"LlmCallLog", 'BigInt'>
+    readonly success: FieldRef<"LlmCallLog", 'Boolean'>
+    readonly errorMessage: FieldRef<"LlmCallLog", 'String'>
+    readonly createdAt: FieldRef<"LlmCallLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LlmCallLog findUnique
+   */
+  export type LlmCallLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LlmCallLog to fetch.
+     */
+    where: LlmCallLogWhereUniqueInput
+  }
+
+  /**
+   * LlmCallLog findUniqueOrThrow
+   */
+  export type LlmCallLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LlmCallLog to fetch.
+     */
+    where: LlmCallLogWhereUniqueInput
+  }
+
+  /**
+   * LlmCallLog findFirst
+   */
+  export type LlmCallLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LlmCallLog to fetch.
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LlmCallLogs to fetch.
+     */
+    orderBy?: LlmCallLogOrderByWithRelationInput | LlmCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LlmCallLogs.
+     */
+    cursor?: LlmCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LlmCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LlmCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LlmCallLogs.
+     */
+    distinct?: LlmCallLogScalarFieldEnum | LlmCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * LlmCallLog findFirstOrThrow
+   */
+  export type LlmCallLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LlmCallLog to fetch.
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LlmCallLogs to fetch.
+     */
+    orderBy?: LlmCallLogOrderByWithRelationInput | LlmCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LlmCallLogs.
+     */
+    cursor?: LlmCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LlmCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LlmCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LlmCallLogs.
+     */
+    distinct?: LlmCallLogScalarFieldEnum | LlmCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * LlmCallLog findMany
+   */
+  export type LlmCallLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LlmCallLogs to fetch.
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LlmCallLogs to fetch.
+     */
+    orderBy?: LlmCallLogOrderByWithRelationInput | LlmCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LlmCallLogs.
+     */
+    cursor?: LlmCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LlmCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LlmCallLogs.
+     */
+    skip?: number
+    distinct?: LlmCallLogScalarFieldEnum | LlmCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * LlmCallLog create
+   */
+  export type LlmCallLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LlmCallLog.
+     */
+    data: XOR<LlmCallLogCreateInput, LlmCallLogUncheckedCreateInput>
+  }
+
+  /**
+   * LlmCallLog createMany
+   */
+  export type LlmCallLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LlmCallLogs.
+     */
+    data: LlmCallLogCreateManyInput | LlmCallLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LlmCallLog createManyAndReturn
+   */
+  export type LlmCallLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many LlmCallLogs.
+     */
+    data: LlmCallLogCreateManyInput | LlmCallLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LlmCallLog update
+   */
+  export type LlmCallLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LlmCallLog.
+     */
+    data: XOR<LlmCallLogUpdateInput, LlmCallLogUncheckedUpdateInput>
+    /**
+     * Choose, which LlmCallLog to update.
+     */
+    where: LlmCallLogWhereUniqueInput
+  }
+
+  /**
+   * LlmCallLog updateMany
+   */
+  export type LlmCallLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LlmCallLogs.
+     */
+    data: XOR<LlmCallLogUpdateManyMutationInput, LlmCallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which LlmCallLogs to update
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * Limit how many LlmCallLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LlmCallLog updateManyAndReturn
+   */
+  export type LlmCallLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * The data used to update LlmCallLogs.
+     */
+    data: XOR<LlmCallLogUpdateManyMutationInput, LlmCallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which LlmCallLogs to update
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * Limit how many LlmCallLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LlmCallLog upsert
+   */
+  export type LlmCallLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LlmCallLog to update in case it exists.
+     */
+    where: LlmCallLogWhereUniqueInput
+    /**
+     * In case the LlmCallLog found by the `where` argument doesn't exist, create a new LlmCallLog with this data.
+     */
+    create: XOR<LlmCallLogCreateInput, LlmCallLogUncheckedCreateInput>
+    /**
+     * In case the LlmCallLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LlmCallLogUpdateInput, LlmCallLogUncheckedUpdateInput>
+  }
+
+  /**
+   * LlmCallLog delete
+   */
+  export type LlmCallLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+    /**
+     * Filter which LlmCallLog to delete.
+     */
+    where: LlmCallLogWhereUniqueInput
+  }
+
+  /**
+   * LlmCallLog deleteMany
+   */
+  export type LlmCallLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LlmCallLogs to delete
+     */
+    where?: LlmCallLogWhereInput
+    /**
+     * Limit how many LlmCallLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LlmCallLog without action
+   */
+  export type LlmCallLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LlmCallLog
+     */
+    select?: LlmCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LlmCallLog
+     */
+    omit?: LlmCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LlmCallLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AuditLog
    */
 
@@ -14385,6 +15725,25 @@ export namespace Prisma {
   export type HumanFallbackEventScalarFieldEnum = (typeof HumanFallbackEventScalarFieldEnum)[keyof typeof HumanFallbackEventScalarFieldEnum]
 
 
+  export const LlmCallLogScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    loadId: 'loadId',
+    model: 'model',
+    promptVersion: 'promptVersion',
+    inputTokens: 'inputTokens',
+    outputTokens: 'outputTokens',
+    imageCount: 'imageCount',
+    latencyMs: 'latencyMs',
+    estimatedCost: 'estimatedCost',
+    success: 'success',
+    errorMessage: 'errorMessage',
+    createdAt: 'createdAt'
+  };
+
+  export type LlmCallLogScalarFieldEnum = (typeof LlmCallLogScalarFieldEnum)[keyof typeof LlmCallLogScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     organizationId: 'organizationId',
@@ -14543,6 +15902,27 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'AuditActorType'
    */
   export type EnumAuditActorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditActorType'>
@@ -14588,6 +15968,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionListRelationFilter
     deadLetterJobs?: DeadLetterJobListRelationFilter
     humanFallbackEvents?: HumanFallbackEventListRelationFilter
+    llmCallLogs?: LlmCallLogListRelationFilter
     auditLogs?: AuditLogListRelationFilter
   }
 
@@ -14603,6 +15984,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionOrderByRelationAggregateInput
     deadLetterJobs?: DeadLetterJobOrderByRelationAggregateInput
     humanFallbackEvents?: HumanFallbackEventOrderByRelationAggregateInput
+    llmCallLogs?: LlmCallLogOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
   }
 
@@ -14621,6 +16003,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionListRelationFilter
     deadLetterJobs?: DeadLetterJobListRelationFilter
     humanFallbackEvents?: HumanFallbackEventListRelationFilter
+    llmCallLogs?: LlmCallLogListRelationFilter
     auditLogs?: AuditLogListRelationFilter
   }, "id">
 
@@ -15240,6 +16623,103 @@ export namespace Prisma {
     acknowledgedAt?: DateTimeNullableWithAggregatesFilter<"HumanFallbackEvent"> | Date | string | null
   }
 
+  export type LlmCallLogWhereInput = {
+    AND?: LlmCallLogWhereInput | LlmCallLogWhereInput[]
+    OR?: LlmCallLogWhereInput[]
+    NOT?: LlmCallLogWhereInput | LlmCallLogWhereInput[]
+    id?: StringFilter<"LlmCallLog"> | string
+    organizationId?: StringFilter<"LlmCallLog"> | string
+    loadId?: StringFilter<"LlmCallLog"> | string
+    model?: StringFilter<"LlmCallLog"> | string
+    promptVersion?: StringFilter<"LlmCallLog"> | string
+    inputTokens?: IntFilter<"LlmCallLog"> | number
+    outputTokens?: IntFilter<"LlmCallLog"> | number
+    imageCount?: IntFilter<"LlmCallLog"> | number
+    latencyMs?: IntFilter<"LlmCallLog"> | number
+    estimatedCost?: BigIntFilter<"LlmCallLog"> | bigint | number
+    success?: BoolFilter<"LlmCallLog"> | boolean
+    errorMessage?: StringNullableFilter<"LlmCallLog"> | string | null
+    createdAt?: DateTimeFilter<"LlmCallLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type LlmCallLogOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    loadId?: SortOrder
+    model?: SortOrder
+    promptVersion?: SortOrder
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+    success?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type LlmCallLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LlmCallLogWhereInput | LlmCallLogWhereInput[]
+    OR?: LlmCallLogWhereInput[]
+    NOT?: LlmCallLogWhereInput | LlmCallLogWhereInput[]
+    organizationId?: StringFilter<"LlmCallLog"> | string
+    loadId?: StringFilter<"LlmCallLog"> | string
+    model?: StringFilter<"LlmCallLog"> | string
+    promptVersion?: StringFilter<"LlmCallLog"> | string
+    inputTokens?: IntFilter<"LlmCallLog"> | number
+    outputTokens?: IntFilter<"LlmCallLog"> | number
+    imageCount?: IntFilter<"LlmCallLog"> | number
+    latencyMs?: IntFilter<"LlmCallLog"> | number
+    estimatedCost?: BigIntFilter<"LlmCallLog"> | bigint | number
+    success?: BoolFilter<"LlmCallLog"> | boolean
+    errorMessage?: StringNullableFilter<"LlmCallLog"> | string | null
+    createdAt?: DateTimeFilter<"LlmCallLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id">
+
+  export type LlmCallLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    loadId?: SortOrder
+    model?: SortOrder
+    promptVersion?: SortOrder
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+    success?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: LlmCallLogCountOrderByAggregateInput
+    _avg?: LlmCallLogAvgOrderByAggregateInput
+    _max?: LlmCallLogMaxOrderByAggregateInput
+    _min?: LlmCallLogMinOrderByAggregateInput
+    _sum?: LlmCallLogSumOrderByAggregateInput
+  }
+
+  export type LlmCallLogScalarWhereWithAggregatesInput = {
+    AND?: LlmCallLogScalarWhereWithAggregatesInput | LlmCallLogScalarWhereWithAggregatesInput[]
+    OR?: LlmCallLogScalarWhereWithAggregatesInput[]
+    NOT?: LlmCallLogScalarWhereWithAggregatesInput | LlmCallLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LlmCallLog"> | string
+    organizationId?: StringWithAggregatesFilter<"LlmCallLog"> | string
+    loadId?: StringWithAggregatesFilter<"LlmCallLog"> | string
+    model?: StringWithAggregatesFilter<"LlmCallLog"> | string
+    promptVersion?: StringWithAggregatesFilter<"LlmCallLog"> | string
+    inputTokens?: IntWithAggregatesFilter<"LlmCallLog"> | number
+    outputTokens?: IntWithAggregatesFilter<"LlmCallLog"> | number
+    imageCount?: IntWithAggregatesFilter<"LlmCallLog"> | number
+    latencyMs?: IntWithAggregatesFilter<"LlmCallLog"> | number
+    estimatedCost?: BigIntWithAggregatesFilter<"LlmCallLog"> | bigint | number
+    success?: BoolWithAggregatesFilter<"LlmCallLog"> | boolean
+    errorMessage?: StringNullableWithAggregatesFilter<"LlmCallLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"LlmCallLog"> | Date | string
+  }
+
   export type AuditLogWhereInput = {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
@@ -15352,6 +16832,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
   }
 
@@ -15367,6 +16848,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -15382,6 +16864,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -15397,6 +16880,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -16037,6 +17521,117 @@ export namespace Prisma {
     acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type LlmCallLogCreateInput = {
+    id?: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutLlmCallLogsInput
+  }
+
+  export type LlmCallLogUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LlmCallLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutLlmCallLogsNestedInput
+  }
+
+  export type LlmCallLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LlmCallLogCreateManyInput = {
+    id?: string
+    organizationId: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LlmCallLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LlmCallLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuditLogCreateInput = {
     id?: string
     actorType: $Enums.AuditActorType
@@ -16223,6 +17818,12 @@ export namespace Prisma {
     none?: HumanFallbackEventWhereInput
   }
 
+  export type LlmCallLogListRelationFilter = {
+    every?: LlmCallLogWhereInput
+    some?: LlmCallLogWhereInput
+    none?: LlmCallLogWhereInput
+  }
+
   export type AuditLogListRelationFilter = {
     every?: AuditLogWhereInput
     some?: AuditLogWhereInput
@@ -16247,6 +17848,10 @@ export namespace Prisma {
   }
 
   export type HumanFallbackEventOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LlmCallLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16864,6 +18469,110 @@ export namespace Prisma {
     acknowledgedAt?: SortOrder
   }
 
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type LlmCallLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    loadId?: SortOrder
+    model?: SortOrder
+    promptVersion?: SortOrder
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+    success?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LlmCallLogAvgOrderByAggregateInput = {
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+  }
+
+  export type LlmCallLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    loadId?: SortOrder
+    model?: SortOrder
+    promptVersion?: SortOrder
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+    success?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LlmCallLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    loadId?: SortOrder
+    model?: SortOrder
+    promptVersion?: SortOrder
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+    success?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LlmCallLogSumOrderByAggregateInput = {
+    inputTokens?: SortOrder
+    outputTokens?: SortOrder
+    imageCount?: SortOrder
+    latencyMs?: SortOrder
+    estimatedCost?: SortOrder
+  }
+
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type EnumAuditActorTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.AuditActorType | EnumAuditActorTypeFieldRefInput<$PrismaModel>
     in?: $Enums.AuditActorType[] | ListEnumAuditActorTypeFieldRefInput<$PrismaModel>
@@ -17005,6 +18714,13 @@ export namespace Prisma {
     connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
   }
 
+  export type LlmCallLogCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput> | LlmCallLogCreateWithoutOrganizationInput[] | LlmCallLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LlmCallLogCreateOrConnectWithoutOrganizationInput | LlmCallLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: LlmCallLogCreateManyOrganizationInputEnvelope
+    connect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+  }
+
   export type AuditLogCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<AuditLogCreateWithoutOrganizationInput, AuditLogUncheckedCreateWithoutOrganizationInput> | AuditLogCreateWithoutOrganizationInput[] | AuditLogUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutOrganizationInput | AuditLogCreateOrConnectWithoutOrganizationInput[]
@@ -17038,6 +18754,13 @@ export namespace Prisma {
     connectOrCreate?: HumanFallbackEventCreateOrConnectWithoutOrganizationInput | HumanFallbackEventCreateOrConnectWithoutOrganizationInput[]
     createMany?: HumanFallbackEventCreateManyOrganizationInputEnvelope
     connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+  }
+
+  export type LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput> | LlmCallLogCreateWithoutOrganizationInput[] | LlmCallLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LlmCallLogCreateOrConnectWithoutOrganizationInput | LlmCallLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: LlmCallLogCreateManyOrganizationInputEnvelope
+    connect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
   }
 
   export type AuditLogUncheckedCreateNestedManyWithoutOrganizationInput = {
@@ -17123,6 +18846,20 @@ export namespace Prisma {
     deleteMany?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
   }
 
+  export type LlmCallLogUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput> | LlmCallLogCreateWithoutOrganizationInput[] | LlmCallLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LlmCallLogCreateOrConnectWithoutOrganizationInput | LlmCallLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: LlmCallLogUpsertWithWhereUniqueWithoutOrganizationInput | LlmCallLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: LlmCallLogCreateManyOrganizationInputEnvelope
+    set?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    disconnect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    delete?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    connect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    update?: LlmCallLogUpdateWithWhereUniqueWithoutOrganizationInput | LlmCallLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: LlmCallLogUpdateManyWithWhereWithoutOrganizationInput | LlmCallLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: LlmCallLogScalarWhereInput | LlmCallLogScalarWhereInput[]
+  }
+
   export type AuditLogUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AuditLogCreateWithoutOrganizationInput, AuditLogUncheckedCreateWithoutOrganizationInput> | AuditLogCreateWithoutOrganizationInput[] | AuditLogUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutOrganizationInput | AuditLogCreateOrConnectWithoutOrganizationInput[]
@@ -17191,6 +18928,20 @@ export namespace Prisma {
     update?: HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput | HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput | HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
+  }
+
+  export type LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput> | LlmCallLogCreateWithoutOrganizationInput[] | LlmCallLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LlmCallLogCreateOrConnectWithoutOrganizationInput | LlmCallLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: LlmCallLogUpsertWithWhereUniqueWithoutOrganizationInput | LlmCallLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: LlmCallLogCreateManyOrganizationInputEnvelope
+    set?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    disconnect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    delete?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    connect?: LlmCallLogWhereUniqueInput | LlmCallLogWhereUniqueInput[]
+    update?: LlmCallLogUpdateWithWhereUniqueWithoutOrganizationInput | LlmCallLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: LlmCallLogUpdateManyWithWhereWithoutOrganizationInput | LlmCallLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: LlmCallLogScalarWhereInput | LlmCallLogScalarWhereInput[]
   }
 
   export type AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput = {
@@ -17507,6 +19258,32 @@ export namespace Prisma {
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutHumanFallbackEventsInput, OrganizationUpdateWithoutHumanFallbackEventsInput>, OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutLlmCallLogsInput = {
+    create?: XOR<OrganizationCreateWithoutLlmCallLogsInput, OrganizationUncheckedCreateWithoutLlmCallLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutLlmCallLogsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutLlmCallLogsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutLlmCallLogsInput, OrganizationUncheckedCreateWithoutLlmCallLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutLlmCallLogsInput
+    upsert?: OrganizationUpsertWithoutLlmCallLogsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutLlmCallLogsInput, OrganizationUpdateWithoutLlmCallLogsInput>, OrganizationUncheckedUpdateWithoutLlmCallLogsInput>
+  }
+
   export type OrganizationCreateNestedOneWithoutAuditLogsInput = {
     create?: XOR<OrganizationCreateWithoutAuditLogsInput, OrganizationUncheckedCreateWithoutAuditLogsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutAuditLogsInput
@@ -17770,6 +19547,46 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedEnumAuditActorTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.AuditActorType | EnumAuditActorTypeFieldRefInput<$PrismaModel>
     in?: $Enums.AuditActorType[] | ListEnumAuditActorTypeFieldRefInput<$PrismaModel>
@@ -17921,6 +19738,46 @@ export namespace Prisma {
 
   export type HumanFallbackEventCreateManyOrganizationInputEnvelope = {
     data: HumanFallbackEventCreateManyOrganizationInput | HumanFallbackEventCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LlmCallLogCreateWithoutOrganizationInput = {
+    id?: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LlmCallLogUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LlmCallLogCreateOrConnectWithoutOrganizationInput = {
+    where: LlmCallLogWhereUniqueInput
+    create: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type LlmCallLogCreateManyOrganizationInputEnvelope = {
+    data: LlmCallLogCreateManyOrganizationInput | LlmCallLogCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -18081,6 +19938,41 @@ export namespace Prisma {
     instruction?: StringFilter<"HumanFallbackEvent"> | string
     createdAt?: DateTimeFilter<"HumanFallbackEvent"> | Date | string
     acknowledgedAt?: DateTimeNullableFilter<"HumanFallbackEvent"> | Date | string | null
+  }
+
+  export type LlmCallLogUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: LlmCallLogWhereUniqueInput
+    update: XOR<LlmCallLogUpdateWithoutOrganizationInput, LlmCallLogUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<LlmCallLogCreateWithoutOrganizationInput, LlmCallLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type LlmCallLogUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: LlmCallLogWhereUniqueInput
+    data: XOR<LlmCallLogUpdateWithoutOrganizationInput, LlmCallLogUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type LlmCallLogUpdateManyWithWhereWithoutOrganizationInput = {
+    where: LlmCallLogScalarWhereInput
+    data: XOR<LlmCallLogUpdateManyMutationInput, LlmCallLogUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type LlmCallLogScalarWhereInput = {
+    AND?: LlmCallLogScalarWhereInput | LlmCallLogScalarWhereInput[]
+    OR?: LlmCallLogScalarWhereInput[]
+    NOT?: LlmCallLogScalarWhereInput | LlmCallLogScalarWhereInput[]
+    id?: StringFilter<"LlmCallLog"> | string
+    organizationId?: StringFilter<"LlmCallLog"> | string
+    loadId?: StringFilter<"LlmCallLog"> | string
+    model?: StringFilter<"LlmCallLog"> | string
+    promptVersion?: StringFilter<"LlmCallLog"> | string
+    inputTokens?: IntFilter<"LlmCallLog"> | number
+    outputTokens?: IntFilter<"LlmCallLog"> | number
+    imageCount?: IntFilter<"LlmCallLog"> | number
+    latencyMs?: IntFilter<"LlmCallLog"> | number
+    estimatedCost?: BigIntFilter<"LlmCallLog"> | bigint | number
+    success?: BoolFilter<"LlmCallLog"> | boolean
+    errorMessage?: StringNullableFilter<"LlmCallLog"> | string | null
+    createdAt?: DateTimeFilter<"LlmCallLog"> | Date | string
   }
 
   export type AuditLogUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -18550,6 +20442,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18564,6 +20457,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18627,6 +20521,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18641,6 +20536,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18655,6 +20551,7 @@ export namespace Prisma {
     memberships?: MembershipCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18669,6 +20566,7 @@ export namespace Prisma {
     memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18699,6 +20597,7 @@ export namespace Prisma {
     memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18713,6 +20612,7 @@ export namespace Prisma {
     memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18727,6 +20627,7 @@ export namespace Prisma {
     memberships?: MembershipCreateNestedManyWithoutOrganizationInput
     jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18741,6 +20642,7 @@ export namespace Prisma {
     memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
     jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18771,6 +20673,7 @@ export namespace Prisma {
     memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
     jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18785,6 +20688,7 @@ export namespace Prisma {
     memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
     jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18799,6 +20703,7 @@ export namespace Prisma {
     memberships?: MembershipCreateNestedManyWithoutOrganizationInput
     jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18813,6 +20718,7 @@ export namespace Prisma {
     memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
     jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -18843,6 +20749,7 @@ export namespace Prisma {
     memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
     jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18857,6 +20764,83 @@ export namespace Prisma {
     memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
     jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutLlmCallLogsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutLlmCallLogsInput, OrganizationUncheckedCreateWithoutLlmCallLogsInput>
+  }
+
+  export type OrganizationUpsertWithoutLlmCallLogsInput = {
+    update: XOR<OrganizationUpdateWithoutLlmCallLogsInput, OrganizationUncheckedUpdateWithoutLlmCallLogsInput>
+    create: XOR<OrganizationCreateWithoutLlmCallLogsInput, OrganizationUncheckedCreateWithoutLlmCallLogsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutLlmCallLogsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutLlmCallLogsInput, OrganizationUncheckedUpdateWithoutLlmCallLogsInput>
+  }
+
+  export type OrganizationUpdateWithoutLlmCallLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -18872,6 +20856,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -18886,6 +20871,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -18916,6 +20902,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -18930,6 +20917,7 @@ export namespace Prisma {
     jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -18967,6 +20955,21 @@ export namespace Prisma {
     instruction: string
     createdAt?: Date | string
     acknowledgedAt?: Date | string | null
+  }
+
+  export type LlmCallLogCreateManyOrganizationInput = {
+    id?: string
+    loadId: string
+    model: string
+    promptVersion: string
+    inputTokens: number
+    outputTokens: number
+    imageCount: number
+    latencyMs: number
+    estimatedCost: bigint | number
+    success: boolean
+    errorMessage?: string | null
+    createdAt?: Date | string
   }
 
   export type AuditLogCreateManyOrganizationInput = {
@@ -19094,6 +21097,51 @@ export namespace Prisma {
     instruction?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type LlmCallLogUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LlmCallLogUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LlmCallLogUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadId?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    promptVersion?: StringFieldUpdateOperationsInput | string
+    inputTokens?: IntFieldUpdateOperationsInput | number
+    outputTokens?: IntFieldUpdateOperationsInput | number
+    imageCount?: IntFieldUpdateOperationsInput | number
+    latencyMs?: IntFieldUpdateOperationsInput | number
+    estimatedCost?: BigIntFieldUpdateOperationsInput | bigint | number
+    success?: BoolFieldUpdateOperationsInput | boolean
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AuditLogUpdateWithoutOrganizationInput = {

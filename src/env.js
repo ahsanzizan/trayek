@@ -20,6 +20,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    SENTRY_DSN: z.string().url(),
     UPLOADTHING_TOKEN: z.string(),
   },
 
@@ -42,6 +43,7 @@ export const env = createEnv({
     AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
     AUTH_EMAIL_FROM: process.env.AUTH_EMAIL_FROM,
     NODE_ENV: process.env.NODE_ENV,
+    SENTRY_DSN: process.env.SENTRY_DSN,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
   },
   /**

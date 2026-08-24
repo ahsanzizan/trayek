@@ -5,6 +5,14 @@ import { type JobWithMetadata, type PgBoss } from "pg-boss";
 import { db } from "~/server/db";
 import { type JobEnvelope } from "~/server/domain/jobs/port";
 import { runJob } from "~/server/domain/jobs/runner";
+import {
+  createObservabilityContext,
+  runWithObservabilityContext,
+} from "~/server/observability/context";
+import {
+  reporter as defaultReporter,
+  type Reporter,
+} from "~/server/observability/reporter";
 import { PrismaJobStore } from "~/server/jobs/prisma-job-store";
 import { createBoss } from "~/server/jobs/boss";
 import { PgBossJobQueue } from "~/server/jobs/queue";
@@ -31,6 +39,37 @@ function isJobEnvelope(value: unknown): value is JobEnvelope {
   );
 }
 
+export type JobObservabilityParams<TPayload, TResult> = {
+  jobId: string;
+  name: string;
+  envelope: JobEnvelope<TPayload>;
+  operation: () => Promise<TResult>;
+  reporter?: Reporter;
+};
+
+export async function runWithJobObservability<TPayload, TResult>({
+  jobId,
+  name,
+  envelope,
+  operation,
+  reporter = defaultReporter,
+}: JobObservabilityParams<TPayload, TResult>): Promise<TResult> {
+  return runWithObservabilityContext(
+    createObservabilityContext(`job-${jobId}`, envelope.organizationId),
+    async () => {
+      try {
+        return await operation();
+      } catch (error) {
+        reporter.reportError(error, "Job attempt failed", {
+          jobName: name,
+          jobKey: envelope.key,
+        });
+        throw error;
+      }
+    },
+  );
+}
+
 export async function startWorker(): Promise<PgBoss> {
   assertEveryJobTypeHasHandler();
 
@@ -38,13 +77,7 @@ export async function startWorker(): Promise<PgBoss> {
   const store = new PrismaJobStore(db);
 
   boss.on("error", (error: unknown) => {
-    console.error(
-      JSON.stringify({
-        level: "error",
-        scope: "pg-boss",
-        error: String(error),
-      }),
-    );
+    defaultReporter.reportError(error, "pg-boss error", { scope: "pg-boss" });
   });
 
   // Idempotent: opens the connection and declares one queue per job type.
@@ -59,16 +92,34 @@ export async function startWorker(): Promise<PgBoss> {
       async (jobs: JobWithMetadata<unknown>[]) => {
         for (const job of jobs) {
           if (!isJobEnvelope(job.data)) {
-            throw new Error(`Job ${job.id} on ${name} has no tenant envelope`);
+            const error = new Error(
+              `Job ${job.id} on ${name} has no tenant envelope`,
+            );
+            runWithObservabilityContext(
+              createObservabilityContext(`job-${job.id}`),
+              () =>
+                defaultReporter.reportError(error, "Job envelope invalid", {
+                  jobName: name,
+                  jobId: job.id,
+                }),
+            );
+            throw error;
           }
 
-          const outcome = await runJob({
-            definition,
-            envelope: job.data,
-            // retryCount is 0 on the first run; attempt is 1-based.
-            attempt: job.retryCount + 1,
-            store,
-            handler: jobHandler(name),
+          const envelope = job.data;
+          const outcome = await runWithJobObservability({
+            jobId: job.id,
+            name,
+            envelope,
+            operation: () =>
+              runJob({
+                definition,
+                envelope,
+                // retryCount is 0 on the first run; attempt is 1-based.
+                attempt: job.retryCount + 1,
+                store,
+                handler: jobHandler(name),
+              }),
           });
 
           if (outcome.status === "retry") {
@@ -77,17 +128,11 @@ export async function startWorker(): Promise<PgBoss> {
           }
 
           if (outcome.status === "dead-letter") {
-            console.error(
-              JSON.stringify({
-                level: "error",
-                scope: "job",
-                name,
-                organizationId: job.data.organizationId,
-                key: job.data.key,
-                error: outcome.error.message,
-                fallbackEmitted: outcome.fallbackEmitted,
-              }),
-            );
+            defaultReporter.reportError(outcome.error, "Job dead-lettered", {
+              jobName: name,
+              jobKey: job.data.key,
+              fallbackEmitted: outcome.fallbackEmitted,
+            });
           }
         }
       },

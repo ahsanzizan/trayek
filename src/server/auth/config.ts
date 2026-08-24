@@ -150,8 +150,7 @@ export const authConfig = {
       // the JWT strategy and does not expire the session. Enforce the idle
       // window here against the last observed activity.
       const idleTimeout =
-        token.sessionIdleTimeoutSeconds ??
-        DEFAULT_SESSION_IDLE_TIMEOUT_SECONDS;
+        token.sessionIdleTimeoutSeconds ?? DEFAULT_SESSION_IDLE_TIMEOUT_SECONDS;
       if (now - (token.lastActivityAt ?? now) >= idleTimeout) return null;
 
       token.lastActivityAt = now;

@@ -16,9 +16,7 @@ export const testMembership = {
   role: "VIEWER" as const,
 };
 
-export function createDatabase(
-  foundMembership: typeof testMembership | null,
-) {
+export function createDatabase(foundMembership: typeof testMembership | null) {
   let database = {} as typeof db;
   database = {
     membership: {
@@ -44,6 +42,7 @@ export function createCaller(
   const caller = createCallerFactory(router)(async () => ({
     db: database,
     headers: new Headers(),
+    requestId: "test-request",
     session: {
       user: { id: testUserId, activeOrganizationId },
       memberships: [],

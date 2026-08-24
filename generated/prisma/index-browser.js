@@ -217,6 +217,22 @@ exports.Prisma.HumanFallbackEventScalarFieldEnum = {
   acknowledgedAt: 'acknowledgedAt'
 };
 
+exports.Prisma.LlmCallLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  loadId: 'loadId',
+  model: 'model',
+  promptVersion: 'promptVersion',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  imageCount: 'imageCount',
+  latencyMs: 'latencyMs',
+  estimatedCost: 'estimatedCost',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AuditLogScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -292,6 +308,7 @@ exports.Prisma.ModelName = {
   JobExecution: 'JobExecution',
   DeadLetterJob: 'DeadLetterJob',
   HumanFallbackEvent: 'HumanFallbackEvent',
+  LlmCallLog: 'LlmCallLog',
   AuditLog: 'AuditLog'
 };
 

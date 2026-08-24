@@ -19,6 +19,14 @@ import {
 } from "~/server/auth/membership";
 import { db } from "~/server/db";
 import { createTenantScopedDb } from "~/server/api/tenant-extension";
+import {
+  createObservabilityContext,
+  createRequestId,
+  getObservabilityContext,
+  requestIdFromHeaders,
+  runWithObservabilityContext,
+} from "~/server/observability/context";
+import { logger } from "~/server/observability/logger";
 
 type AuthSession = {
   user: {
@@ -59,6 +67,7 @@ export const createTRPCContext = async ({
     db: providedDb ?? db,
     session,
     headers,
+    requestId: requestIdFromHeaders(headers),
   };
 };
 
@@ -110,9 +119,11 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
-const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
-
+async function runTimedProcedure<T>(
+  path: string,
+  start: number,
+  next: () => Promise<T>,
+): Promise<T> {
   if (t._config.isDev) {
     // artificial delay in dev
     const waitMs = Math.floor(Math.random() * 400) + 100;
@@ -121,10 +132,25 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
   const result = await next();
 
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+  logger.info("tRPC procedure completed", {
+    path,
+    durationMs: Date.now() - start,
+  });
 
   return result;
+}
+
+const timingMiddleware = t.middleware(async ({ ctx, next, path }) => {
+  const start = Date.now();
+  const currentContext = getObservabilityContext();
+  const requestId = createRequestId(
+    ctx.requestId ?? requestIdFromHeaders(ctx.headers),
+  );
+
+  return runWithObservabilityContext(
+    createObservabilityContext(requestId, currentContext.organizationId),
+    () => runTimedProcedure(path, start, () => next({ ctx: { requestId } })),
+  );
 });
 
 /**
@@ -136,6 +162,21 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
+const protectedAuthMiddleware = t.middleware(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      // infers the session as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+const authenticatedProcedure = t.procedure.use(protectedAuthMiddleware);
+
 /**
  * Protected (authenticated) procedure
  *
@@ -144,47 +185,48 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
-  .use(({ ctx, next }) => {
-    if (!ctx.session?.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-    return next({
-      ctx: {
-        // infers the `session` as non-nullable
-        session: { ...ctx.session, user: ctx.session.user },
-      },
-    });
-  });
+export const protectedProcedure = authenticatedProcedure.use(timingMiddleware);
 
 /**
  * Authenticated procedure with a live membership check and fail-closed tenant
  * scoped database client.
  */
-export const orgProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const organizationId = ctx.session.user.activeOrganizationId;
-  if (!organizationId) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+export const orgProcedure = authenticatedProcedure.use(
+  async ({ ctx, next, path }) => {
+    const start = Date.now();
+    const organizationId = ctx.session.user.activeOrganizationId;
+    if (!organizationId) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
 
-  const membership = await resolveMembership(
-    ctx.db,
-    ctx.session.user.id,
-    organizationId,
-  );
-  if (!membership) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return next({
-    ctx: {
-      db: createTenantScopedDb(ctx.db, organizationId),
-      membership,
+    const membership = await resolveMembership(
+      ctx.db,
+      ctx.session.user.id,
       organizationId,
-    },
-  });
-});
+    );
+    if (!membership) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    const requestId = createRequestId(
+      ctx.requestId ?? requestIdFromHeaders(ctx.headers),
+    );
+
+    return runWithObservabilityContext(
+      createObservabilityContext(requestId, organizationId),
+      () =>
+        runTimedProcedure(path, start, () =>
+          next({
+            ctx: {
+              db: createTenantScopedDb(ctx.db, organizationId),
+              membership,
+              organizationId,
+            },
+          }),
+        ),
+    );
+  },
+);
 
 export function roleProcedure(role: MembershipRole) {
   return orgProcedure.use(({ ctx, next }) => {
