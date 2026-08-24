@@ -3,7 +3,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { ESLint } from "eslint";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const eslint = new ESLint({ cwd: process.cwd() });
 
@@ -47,6 +47,16 @@ function hasErrorContaining(
 }
 
 describe("domain import guardrails", () => {
+  // ESLint's first run pays config resolution and plugin loading. Warm it once
+  // here so that cost is not charged to whichever test happens to run first,
+  // which otherwise makes this file flaky under a loaded parallel suite.
+  beforeAll(async () => {
+    await lintFixture(
+      "src/server/domain/warmup.ts",
+      "export const warm = true;\n",
+    );
+  }, 60_000);
+
   it("does not overwrite or delete an existing fixture path", async () => {
     const relativeFilePath = `src/server/domain/guardrail-existing-${randomUUID()}.ts`;
     const absoluteFilePath = path.resolve(relativeFilePath);

@@ -56,3 +56,5 @@ Attempts are retried with exponential backoff up to the type's `maxAttempts`. Af
 Both writes are idempotent, so a redelivered terminal attempt cannot produce a second notification. Jobs are also idempotent by key: replaying a key recorded in `JobExecution` is a no-op and never re-runs the handler.
 
 `jobQueue.metrics()` reports queue depth, active count, and failure count per type. TRK-007 wires these into the dashboard.
+
+Two things to know about it. The counts are materialized on pg-boss's own queue table and advanced by the worker's monitor sweep, so they are eventually consistent — a queue reads zero until a worker has swept it once, and metrics mean nothing while no worker is running. And the web process runs an enqueue-only pg-boss (`supervise: false`, `schedule: false`) that opens its connection lazily on first `send`, so maintenance runs in exactly one place: the worker.

@@ -6,7 +6,8 @@ import { db } from "~/server/db";
 import { type JobEnvelope } from "~/server/domain/jobs/port";
 import { runJob } from "~/server/domain/jobs/runner";
 import { PrismaJobStore } from "~/server/jobs/prisma-job-store";
-import { createBoss, PgBossJobQueue } from "~/server/jobs/queue";
+import { createBoss } from "~/server/jobs/boss";
+import { PgBossJobQueue } from "~/server/jobs/queue";
 import {
   assertEveryJobTypeHasHandler,
   jobHandler,
@@ -46,8 +47,8 @@ export async function startWorker(): Promise<PgBoss> {
     );
   });
 
-  await boss.start();
-  await new PgBossJobQueue(boss, jobTypes).migrateQueues();
+  // Idempotent: opens the connection and declares one queue per job type.
+  await new PgBossJobQueue(boss, jobTypes).start();
 
   for (const name of jobTypes.names()) {
     const definition = jobTypes.get(name);
