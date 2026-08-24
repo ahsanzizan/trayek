@@ -25,10 +25,10 @@ describe("magic-link login surface", () => {
     expect(pageSource).toContain('title: "Masuk — Trayek"');
     expect(pageSource).toContain("bg-background");
     expect(pageSource).toContain("text-title-lg");
-    expect(layoutSource).toContain('<html lang="id"');
+    expect(layoutSource).toContain('lang="id"');
   });
 
-  it("keeps organization switching and sign-out in the authenticated utility bar", async () => {
+  it("keeps organization switching and sign-out available for the operations shell", async () => {
     const [layoutSource, utilitySource, switcherSource, signOutSource] =
       await Promise.all([
         readSource("src/app/layout.tsx"),
@@ -37,7 +37,7 @@ describe("magic-link login surface", () => {
         readSource("src/app/_components/sign-out-form.tsx"),
       ]);
 
-    expect(layoutSource).toContain("UtilityBar");
+    expect(layoutSource).not.toContain("UtilityBar");
     expect(utilitySource).toContain("SignOutForm");
     expect(signOutSource).toContain("signOut");
     expect(signOutSource).toContain("Keluar");
@@ -46,17 +46,46 @@ describe("magic-link login surface", () => {
     expect(switcherSource).toContain("update({ activeOrganizationId");
   });
 
-  it("keeps the home route quiet and gives users without an organization one exit", async () => {
-    const [homeSource, emptyStateSource, signOutSource] = await Promise.all([
+  it("renders a static landing page with the public dashboard route", async () => {
+    const [homeSource, layoutSource] = await Promise.all([
       readSource("src/app/page.tsx"),
-      readSource("src/app/_components/no-organization.tsx"),
-      readSource("src/app/_components/sign-out-form.tsx"),
+      readSource("src/app/layout.tsx"),
     ]);
 
-    expect(homeSource).toContain("NoOrganization");
-    expect(homeSource).not.toContain("/register");
+    expect(homeSource).toContain("export default function Home()");
+    expect(homeSource.match(/href="\/dashboard"/g)).toHaveLength(2);
+    expect(homeSource).toContain(
+      "AI Coordination Layer · Siklus Kas Forwarder",
+    );
+    expect(homeSource).toContain(
+      "Trayek memendekkan jarak antara POD dan kas cair.",
+    );
+    expect(homeSource).toContain("Tangkap POD");
+    expect(homeSource).toContain("Validasi Kelengkapan");
+    expect(homeSource).toContain("Rakit & Tagih");
+    expect(homeSource).toContain(
+      "Trayek Settle — bukan asisten percakapan untuk quoting",
+    );
+    expect(homeSource).toContain("catatan berkas tagih.");
+    expect(homeSource).toContain("md:grid-cols-3");
+    expect(homeSource).toContain(
+      'const containerClasses = "mx-auto w-full max-w-[1100px] px-6"',
+    );
+    expect(homeSource).toContain("${containerClasses} grid flex-1 gap-4");
+    expect(homeSource).not.toContain("max-w-[900px]");
+    expect(homeSource).toContain("font-mono");
+    expect(homeSource).not.toMatch(/#[0-9a-f]{3,8}/i);
+    expect(homeSource).not.toContain("auth");
+    expect(homeSource).not.toContain("api.");
+    expect(homeSource).not.toContain('"use client"');
     expect(homeSource).not.toContain("bg-gradient");
-    expect(emptyStateSource).toContain("Belum ada akses organisasi");
-    expect(signOutSource).toContain("Keluar");
+
+    expect(layoutSource).toContain("JetBrains_Mono");
+    expect(layoutSource).toContain('title: "Trayek Settle"');
+    expect(layoutSource).toContain(
+      "AI coordination layer untuk siklus kas forwarder Indonesia — POD, berkas tagih, invoice.",
+    );
+    expect(layoutSource).not.toContain("UtilityBar");
+    expect(layoutSource).not.toContain("auth()");
   });
 });
