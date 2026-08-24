@@ -184,9 +184,46 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.JobExecutionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  idempotencyKey: 'idempotencyKey',
+  attempts: 'attempts',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.DeadLetterJobScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  idempotencyKey: 'idempotencyKey',
+  payload: 'payload',
+  error: 'error',
+  attempts: 'attempts',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt'
+};
+
+exports.Prisma.HumanFallbackEventScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  source: 'source',
+  dedupeKey: 'dedupeKey',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  instruction: 'instruction',
+  createdAt: 'createdAt',
+  acknowledgedAt: 'acknowledgedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -197,6 +234,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.OrganizationType = exports.$Enums.OrganizationType = {
   FORWARDER: 'FORWARDER',
@@ -217,7 +260,10 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   User: 'User',
   Membership: 'Membership',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  JobExecution: 'JobExecution',
+  DeadLetterJob: 'DeadLetterJob',
+  HumanFallbackEvent: 'HumanFallbackEvent'
 };
 
 /**

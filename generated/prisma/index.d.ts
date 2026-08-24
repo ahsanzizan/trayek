@@ -48,6 +48,24 @@ export type Membership = $Result.DefaultSelection<Prisma.$MembershipPayload>
  * 
  */
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
+/**
+ * Model JobExecution
+ * Completion ledger backing job idempotency. A key that appears here has
+ * already run to success, so replaying it is a no-op (TRK-005).
+ */
+export type JobExecution = $Result.DefaultSelection<Prisma.$JobExecutionPayload>
+/**
+ * Model DeadLetterJob
+ * Jobs that exhausted their retries, with the payload and error a person
+ * needs to work them by hand. Every row has a matching HumanFallbackEvent.
+ */
+export type DeadLetterJob = $Result.DefaultSelection<Prisma.$DeadLetterJobPayload>
+/**
+ * Model HumanFallbackEvent
+ * INV-6. One row per agent failure a person now has to resolve. `instruction`
+ * is plain Bahasa Indonesia describing the manual work, not an error message.
+ */
+export type HumanFallbackEvent = $Result.DefaultSelection<Prisma.$HumanFallbackEventPayload>
 
 /**
  * Enums
@@ -267,6 +285,36 @@ export class PrismaClient<
     * ```
     */
   get verificationToken(): Prisma.VerificationTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.jobExecution`: Exposes CRUD operations for the **JobExecution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more JobExecutions
+    * const jobExecutions = await prisma.jobExecution.findMany()
+    * ```
+    */
+  get jobExecution(): Prisma.JobExecutionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.deadLetterJob`: Exposes CRUD operations for the **DeadLetterJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DeadLetterJobs
+    * const deadLetterJobs = await prisma.deadLetterJob.findMany()
+    * ```
+    */
+  get deadLetterJob(): Prisma.DeadLetterJobDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.humanFallbackEvent`: Exposes CRUD operations for the **HumanFallbackEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HumanFallbackEvents
+    * const humanFallbackEvents = await prisma.humanFallbackEvent.findMany()
+    * ```
+    */
+  get humanFallbackEvent(): Prisma.HumanFallbackEventDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -714,7 +762,10 @@ export namespace Prisma {
     Session: 'Session',
     User: 'User',
     Membership: 'Membership',
-    VerificationToken: 'VerificationToken'
+    VerificationToken: 'VerificationToken',
+    JobExecution: 'JobExecution',
+    DeadLetterJob: 'DeadLetterJob',
+    HumanFallbackEvent: 'HumanFallbackEvent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -733,7 +784,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1255,6 +1306,228 @@ export namespace Prisma {
           }
         }
       }
+      JobExecution: {
+        payload: Prisma.$JobExecutionPayload<ExtArgs>
+        fields: Prisma.JobExecutionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.JobExecutionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.JobExecutionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          findFirst: {
+            args: Prisma.JobExecutionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.JobExecutionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          findMany: {
+            args: Prisma.JobExecutionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          create: {
+            args: Prisma.JobExecutionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          createMany: {
+            args: Prisma.JobExecutionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.JobExecutionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          delete: {
+            args: Prisma.JobExecutionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          update: {
+            args: Prisma.JobExecutionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          deleteMany: {
+            args: Prisma.JobExecutionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.JobExecutionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.JobExecutionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          upsert: {
+            args: Prisma.JobExecutionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          aggregate: {
+            args: Prisma.JobExecutionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateJobExecution>
+          }
+          groupBy: {
+            args: Prisma.JobExecutionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<JobExecutionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.JobExecutionCountArgs<ExtArgs>
+            result: $Utils.Optional<JobExecutionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DeadLetterJob: {
+        payload: Prisma.$DeadLetterJobPayload<ExtArgs>
+        fields: Prisma.DeadLetterJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DeadLetterJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DeadLetterJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          findFirst: {
+            args: Prisma.DeadLetterJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DeadLetterJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          findMany: {
+            args: Prisma.DeadLetterJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+          }
+          create: {
+            args: Prisma.DeadLetterJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          createMany: {
+            args: Prisma.DeadLetterJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DeadLetterJobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+          }
+          delete: {
+            args: Prisma.DeadLetterJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          update: {
+            args: Prisma.DeadLetterJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.DeadLetterJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DeadLetterJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DeadLetterJobUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>[]
+          }
+          upsert: {
+            args: Prisma.DeadLetterJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DeadLetterJobPayload>
+          }
+          aggregate: {
+            args: Prisma.DeadLetterJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDeadLetterJob>
+          }
+          groupBy: {
+            args: Prisma.DeadLetterJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DeadLetterJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DeadLetterJobCountArgs<ExtArgs>
+            result: $Utils.Optional<DeadLetterJobCountAggregateOutputType> | number
+          }
+        }
+      }
+      HumanFallbackEvent: {
+        payload: Prisma.$HumanFallbackEventPayload<ExtArgs>
+        fields: Prisma.HumanFallbackEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HumanFallbackEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HumanFallbackEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          findFirst: {
+            args: Prisma.HumanFallbackEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HumanFallbackEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          findMany: {
+            args: Prisma.HumanFallbackEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>[]
+          }
+          create: {
+            args: Prisma.HumanFallbackEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          createMany: {
+            args: Prisma.HumanFallbackEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.HumanFallbackEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>[]
+          }
+          delete: {
+            args: Prisma.HumanFallbackEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          update: {
+            args: Prisma.HumanFallbackEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.HumanFallbackEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HumanFallbackEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.HumanFallbackEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.HumanFallbackEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HumanFallbackEventPayload>
+          }
+          aggregate: {
+            args: Prisma.HumanFallbackEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHumanFallbackEvent>
+          }
+          groupBy: {
+            args: Prisma.HumanFallbackEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HumanFallbackEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.HumanFallbackEventCountArgs<ExtArgs>
+            result: $Utils.Optional<HumanFallbackEventCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1358,6 +1631,9 @@ export namespace Prisma {
     user?: UserOmit
     membership?: MembershipOmit
     verificationToken?: VerificationTokenOmit
+    jobExecution?: JobExecutionOmit
+    deadLetterJob?: DeadLetterJobOmit
+    humanFallbackEvent?: HumanFallbackEventOmit
   }
 
   /* Types for Logging */
@@ -1439,10 +1715,16 @@ export namespace Prisma {
 
   export type OrganizationCountOutputType = {
     memberships: number
+    jobExecutions: number
+    deadLetterJobs: number
+    humanFallbackEvents: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberships?: boolean | OrganizationCountOutputTypeCountMembershipsArgs
+    jobExecutions?: boolean | OrganizationCountOutputTypeCountJobExecutionsArgs
+    deadLetterJobs?: boolean | OrganizationCountOutputTypeCountDeadLetterJobsArgs
+    humanFallbackEvents?: boolean | OrganizationCountOutputTypeCountHumanFallbackEventsArgs
   }
 
   // Custom InputTypes
@@ -1461,6 +1743,27 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MembershipWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountJobExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JobExecutionWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountDeadLetterJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DeadLetterJobWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountHumanFallbackEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HumanFallbackEventWhereInput
   }
 
 
@@ -1745,6 +2048,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     memberships?: boolean | Organization$membershipsArgs<ExtArgs>
+    jobExecutions?: boolean | Organization$jobExecutionsArgs<ExtArgs>
+    deadLetterJobs?: boolean | Organization$deadLetterJobsArgs<ExtArgs>
+    humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -1781,6 +2087,9 @@ export namespace Prisma {
   export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "sessionMaxAgeSeconds" | "sessionIdleTimeoutSeconds" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberships?: boolean | Organization$membershipsArgs<ExtArgs>
+    jobExecutions?: boolean | Organization$jobExecutionsArgs<ExtArgs>
+    deadLetterJobs?: boolean | Organization$deadLetterJobsArgs<ExtArgs>
+    humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1790,6 +2099,9 @@ export namespace Prisma {
     name: "Organization"
     objects: {
       memberships: Prisma.$MembershipPayload<ExtArgs>[]
+      jobExecutions: Prisma.$JobExecutionPayload<ExtArgs>[]
+      deadLetterJobs: Prisma.$DeadLetterJobPayload<ExtArgs>[]
+      humanFallbackEvents: Prisma.$HumanFallbackEventPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2194,6 +2506,9 @@ export namespace Prisma {
   export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     memberships<T extends Organization$membershipsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    jobExecutions<T extends Organization$jobExecutionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$jobExecutionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    deadLetterJobs<T extends Organization$deadLetterJobsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$deadLetterJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    humanFallbackEvents<T extends Organization$humanFallbackEventsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$humanFallbackEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2639,6 +2954,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MembershipScalarFieldEnum | MembershipScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.jobExecutions
+   */
+  export type Organization$jobExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    where?: JobExecutionWhereInput
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    cursor?: JobExecutionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.deadLetterJobs
+   */
+  export type Organization$deadLetterJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    where?: DeadLetterJobWhereInput
+    orderBy?: DeadLetterJobOrderByWithRelationInput | DeadLetterJobOrderByWithRelationInput[]
+    cursor?: DeadLetterJobWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DeadLetterJobScalarFieldEnum | DeadLetterJobScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.humanFallbackEvents
+   */
+  export type Organization$humanFallbackEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    where?: HumanFallbackEventWhereInput
+    orderBy?: HumanFallbackEventOrderByWithRelationInput | HumanFallbackEventOrderByWithRelationInput[]
+    cursor?: HumanFallbackEventWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HumanFallbackEventScalarFieldEnum | HumanFallbackEventScalarFieldEnum[]
   }
 
   /**
@@ -9187,6 +9574,3361 @@ export namespace Prisma {
 
 
   /**
+   * Model JobExecution
+   */
+
+  export type AggregateJobExecution = {
+    _count: JobExecutionCountAggregateOutputType | null
+    _avg: JobExecutionAvgAggregateOutputType | null
+    _sum: JobExecutionSumAggregateOutputType | null
+    _min: JobExecutionMinAggregateOutputType | null
+    _max: JobExecutionMaxAggregateOutputType | null
+  }
+
+  export type JobExecutionAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type JobExecutionSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type JobExecutionMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    idempotencyKey: string | null
+    attempts: number | null
+    completedAt: Date | null
+  }
+
+  export type JobExecutionMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    idempotencyKey: string | null
+    attempts: number | null
+    completedAt: Date | null
+  }
+
+  export type JobExecutionCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    name: number
+    idempotencyKey: number
+    attempts: number
+    completedAt: number
+    _all: number
+  }
+
+
+  export type JobExecutionAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type JobExecutionSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type JobExecutionMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    attempts?: true
+    completedAt?: true
+  }
+
+  export type JobExecutionMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    attempts?: true
+    completedAt?: true
+  }
+
+  export type JobExecutionCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    attempts?: true
+    completedAt?: true
+    _all?: true
+  }
+
+  export type JobExecutionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JobExecution to aggregate.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned JobExecutions
+    **/
+    _count?: true | JobExecutionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: JobExecutionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: JobExecutionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: JobExecutionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: JobExecutionMaxAggregateInputType
+  }
+
+  export type GetJobExecutionAggregateType<T extends JobExecutionAggregateArgs> = {
+        [P in keyof T & keyof AggregateJobExecution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateJobExecution[P]>
+      : GetScalarType<T[P], AggregateJobExecution[P]>
+  }
+
+
+
+
+  export type JobExecutionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JobExecutionWhereInput
+    orderBy?: JobExecutionOrderByWithAggregationInput | JobExecutionOrderByWithAggregationInput[]
+    by: JobExecutionScalarFieldEnum[] | JobExecutionScalarFieldEnum
+    having?: JobExecutionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: JobExecutionCountAggregateInputType | true
+    _avg?: JobExecutionAvgAggregateInputType
+    _sum?: JobExecutionSumAggregateInputType
+    _min?: JobExecutionMinAggregateInputType
+    _max?: JobExecutionMaxAggregateInputType
+  }
+
+  export type JobExecutionGroupByOutputType = {
+    id: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    attempts: number
+    completedAt: Date
+    _count: JobExecutionCountAggregateOutputType | null
+    _avg: JobExecutionAvgAggregateOutputType | null
+    _sum: JobExecutionSumAggregateOutputType | null
+    _min: JobExecutionMinAggregateOutputType | null
+    _max: JobExecutionMaxAggregateOutputType | null
+  }
+
+  type GetJobExecutionGroupByPayload<T extends JobExecutionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<JobExecutionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof JobExecutionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], JobExecutionGroupByOutputType[P]>
+            : GetScalarType<T[P], JobExecutionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type JobExecutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    attempts?: boolean
+    completedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    attempts?: boolean
+    completedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    attempts?: boolean
+    completedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    attempts?: boolean
+    completedAt?: boolean
+  }
+
+  export type JobExecutionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "idempotencyKey" | "attempts" | "completedAt", ExtArgs["result"]["jobExecution"]>
+  export type JobExecutionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type JobExecutionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type JobExecutionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $JobExecutionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "JobExecution"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      name: string
+      idempotencyKey: string
+      attempts: number
+      completedAt: Date
+    }, ExtArgs["result"]["jobExecution"]>
+    composites: {}
+  }
+
+  type JobExecutionGetPayload<S extends boolean | null | undefined | JobExecutionDefaultArgs> = $Result.GetResult<Prisma.$JobExecutionPayload, S>
+
+  type JobExecutionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<JobExecutionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: JobExecutionCountAggregateInputType | true
+    }
+
+  export interface JobExecutionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['JobExecution'], meta: { name: 'JobExecution' } }
+    /**
+     * Find zero or one JobExecution that matches the filter.
+     * @param {JobExecutionFindUniqueArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends JobExecutionFindUniqueArgs>(args: SelectSubset<T, JobExecutionFindUniqueArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one JobExecution that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {JobExecutionFindUniqueOrThrowArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends JobExecutionFindUniqueOrThrowArgs>(args: SelectSubset<T, JobExecutionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first JobExecution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindFirstArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends JobExecutionFindFirstArgs>(args?: SelectSubset<T, JobExecutionFindFirstArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first JobExecution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindFirstOrThrowArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends JobExecutionFindFirstOrThrowArgs>(args?: SelectSubset<T, JobExecutionFindFirstOrThrowArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more JobExecutions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all JobExecutions
+     * const jobExecutions = await prisma.jobExecution.findMany()
+     * 
+     * // Get first 10 JobExecutions
+     * const jobExecutions = await prisma.jobExecution.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends JobExecutionFindManyArgs>(args?: SelectSubset<T, JobExecutionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a JobExecution.
+     * @param {JobExecutionCreateArgs} args - Arguments to create a JobExecution.
+     * @example
+     * // Create one JobExecution
+     * const JobExecution = await prisma.jobExecution.create({
+     *   data: {
+     *     // ... data to create a JobExecution
+     *   }
+     * })
+     * 
+     */
+    create<T extends JobExecutionCreateArgs>(args: SelectSubset<T, JobExecutionCreateArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many JobExecutions.
+     * @param {JobExecutionCreateManyArgs} args - Arguments to create many JobExecutions.
+     * @example
+     * // Create many JobExecutions
+     * const jobExecution = await prisma.jobExecution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends JobExecutionCreateManyArgs>(args?: SelectSubset<T, JobExecutionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many JobExecutions and returns the data saved in the database.
+     * @param {JobExecutionCreateManyAndReturnArgs} args - Arguments to create many JobExecutions.
+     * @example
+     * // Create many JobExecutions
+     * const jobExecution = await prisma.jobExecution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many JobExecutions and only return the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends JobExecutionCreateManyAndReturnArgs>(args?: SelectSubset<T, JobExecutionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a JobExecution.
+     * @param {JobExecutionDeleteArgs} args - Arguments to delete one JobExecution.
+     * @example
+     * // Delete one JobExecution
+     * const JobExecution = await prisma.jobExecution.delete({
+     *   where: {
+     *     // ... filter to delete one JobExecution
+     *   }
+     * })
+     * 
+     */
+    delete<T extends JobExecutionDeleteArgs>(args: SelectSubset<T, JobExecutionDeleteArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one JobExecution.
+     * @param {JobExecutionUpdateArgs} args - Arguments to update one JobExecution.
+     * @example
+     * // Update one JobExecution
+     * const jobExecution = await prisma.jobExecution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends JobExecutionUpdateArgs>(args: SelectSubset<T, JobExecutionUpdateArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more JobExecutions.
+     * @param {JobExecutionDeleteManyArgs} args - Arguments to filter JobExecutions to delete.
+     * @example
+     * // Delete a few JobExecutions
+     * const { count } = await prisma.jobExecution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends JobExecutionDeleteManyArgs>(args?: SelectSubset<T, JobExecutionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more JobExecutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many JobExecutions
+     * const jobExecution = await prisma.jobExecution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends JobExecutionUpdateManyArgs>(args: SelectSubset<T, JobExecutionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more JobExecutions and returns the data updated in the database.
+     * @param {JobExecutionUpdateManyAndReturnArgs} args - Arguments to update many JobExecutions.
+     * @example
+     * // Update many JobExecutions
+     * const jobExecution = await prisma.jobExecution.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more JobExecutions and only return the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends JobExecutionUpdateManyAndReturnArgs>(args: SelectSubset<T, JobExecutionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one JobExecution.
+     * @param {JobExecutionUpsertArgs} args - Arguments to update or create a JobExecution.
+     * @example
+     * // Update or create a JobExecution
+     * const jobExecution = await prisma.jobExecution.upsert({
+     *   create: {
+     *     // ... data to create a JobExecution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the JobExecution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends JobExecutionUpsertArgs>(args: SelectSubset<T, JobExecutionUpsertArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of JobExecutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionCountArgs} args - Arguments to filter JobExecutions to count.
+     * @example
+     * // Count the number of JobExecutions
+     * const count = await prisma.jobExecution.count({
+     *   where: {
+     *     // ... the filter for the JobExecutions we want to count
+     *   }
+     * })
+    **/
+    count<T extends JobExecutionCountArgs>(
+      args?: Subset<T, JobExecutionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], JobExecutionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a JobExecution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends JobExecutionAggregateArgs>(args: Subset<T, JobExecutionAggregateArgs>): Prisma.PrismaPromise<GetJobExecutionAggregateType<T>>
+
+    /**
+     * Group by JobExecution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends JobExecutionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: JobExecutionGroupByArgs['orderBy'] }
+        : { orderBy?: JobExecutionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, JobExecutionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJobExecutionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the JobExecution model
+   */
+  readonly fields: JobExecutionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for JobExecution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__JobExecutionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the JobExecution model
+   */
+  interface JobExecutionFieldRefs {
+    readonly id: FieldRef<"JobExecution", 'String'>
+    readonly organizationId: FieldRef<"JobExecution", 'String'>
+    readonly name: FieldRef<"JobExecution", 'String'>
+    readonly idempotencyKey: FieldRef<"JobExecution", 'String'>
+    readonly attempts: FieldRef<"JobExecution", 'Int'>
+    readonly completedAt: FieldRef<"JobExecution", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * JobExecution findUnique
+   */
+  export type JobExecutionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution findUniqueOrThrow
+   */
+  export type JobExecutionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution findFirst
+   */
+  export type JobExecutionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JobExecutions.
+     */
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution findFirstOrThrow
+   */
+  export type JobExecutionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JobExecutions.
+     */
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution findMany
+   */
+  export type JobExecutionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which JobExecutions to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution create
+   */
+  export type JobExecutionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a JobExecution.
+     */
+    data: XOR<JobExecutionCreateInput, JobExecutionUncheckedCreateInput>
+  }
+
+  /**
+   * JobExecution createMany
+   */
+  export type JobExecutionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many JobExecutions.
+     */
+    data: JobExecutionCreateManyInput | JobExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * JobExecution createManyAndReturn
+   */
+  export type JobExecutionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to create many JobExecutions.
+     */
+    data: JobExecutionCreateManyInput | JobExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * JobExecution update
+   */
+  export type JobExecutionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a JobExecution.
+     */
+    data: XOR<JobExecutionUpdateInput, JobExecutionUncheckedUpdateInput>
+    /**
+     * Choose, which JobExecution to update.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution updateMany
+   */
+  export type JobExecutionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update JobExecutions.
+     */
+    data: XOR<JobExecutionUpdateManyMutationInput, JobExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which JobExecutions to update
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * JobExecution updateManyAndReturn
+   */
+  export type JobExecutionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to update JobExecutions.
+     */
+    data: XOR<JobExecutionUpdateManyMutationInput, JobExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which JobExecutions to update
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * JobExecution upsert
+   */
+  export type JobExecutionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the JobExecution to update in case it exists.
+     */
+    where: JobExecutionWhereUniqueInput
+    /**
+     * In case the JobExecution found by the `where` argument doesn't exist, create a new JobExecution with this data.
+     */
+    create: XOR<JobExecutionCreateInput, JobExecutionUncheckedCreateInput>
+    /**
+     * In case the JobExecution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<JobExecutionUpdateInput, JobExecutionUncheckedUpdateInput>
+  }
+
+  /**
+   * JobExecution delete
+   */
+  export type JobExecutionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+    /**
+     * Filter which JobExecution to delete.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution deleteMany
+   */
+  export type JobExecutionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JobExecutions to delete
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * JobExecution without action
+   */
+  export type JobExecutionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JobExecutionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DeadLetterJob
+   */
+
+  export type AggregateDeadLetterJob = {
+    _count: DeadLetterJobCountAggregateOutputType | null
+    _avg: DeadLetterJobAvgAggregateOutputType | null
+    _sum: DeadLetterJobSumAggregateOutputType | null
+    _min: DeadLetterJobMinAggregateOutputType | null
+    _max: DeadLetterJobMaxAggregateOutputType | null
+  }
+
+  export type DeadLetterJobAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type DeadLetterJobSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type DeadLetterJobMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    idempotencyKey: string | null
+    error: string | null
+    attempts: number | null
+    createdAt: Date | null
+    resolvedAt: Date | null
+  }
+
+  export type DeadLetterJobMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    idempotencyKey: string | null
+    error: string | null
+    attempts: number | null
+    createdAt: Date | null
+    resolvedAt: Date | null
+  }
+
+  export type DeadLetterJobCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    name: number
+    idempotencyKey: number
+    payload: number
+    error: number
+    attempts: number
+    createdAt: number
+    resolvedAt: number
+    _all: number
+  }
+
+
+  export type DeadLetterJobAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type DeadLetterJobSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type DeadLetterJobMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    error?: true
+    attempts?: true
+    createdAt?: true
+    resolvedAt?: true
+  }
+
+  export type DeadLetterJobMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    error?: true
+    attempts?: true
+    createdAt?: true
+    resolvedAt?: true
+  }
+
+  export type DeadLetterJobCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    idempotencyKey?: true
+    payload?: true
+    error?: true
+    attempts?: true
+    createdAt?: true
+    resolvedAt?: true
+    _all?: true
+  }
+
+  export type DeadLetterJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DeadLetterJob to aggregate.
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeadLetterJobs to fetch.
+     */
+    orderBy?: DeadLetterJobOrderByWithRelationInput | DeadLetterJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DeadLetterJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeadLetterJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeadLetterJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DeadLetterJobs
+    **/
+    _count?: true | DeadLetterJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DeadLetterJobAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DeadLetterJobSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DeadLetterJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DeadLetterJobMaxAggregateInputType
+  }
+
+  export type GetDeadLetterJobAggregateType<T extends DeadLetterJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateDeadLetterJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDeadLetterJob[P]>
+      : GetScalarType<T[P], AggregateDeadLetterJob[P]>
+  }
+
+
+
+
+  export type DeadLetterJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DeadLetterJobWhereInput
+    orderBy?: DeadLetterJobOrderByWithAggregationInput | DeadLetterJobOrderByWithAggregationInput[]
+    by: DeadLetterJobScalarFieldEnum[] | DeadLetterJobScalarFieldEnum
+    having?: DeadLetterJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DeadLetterJobCountAggregateInputType | true
+    _avg?: DeadLetterJobAvgAggregateInputType
+    _sum?: DeadLetterJobSumAggregateInputType
+    _min?: DeadLetterJobMinAggregateInputType
+    _max?: DeadLetterJobMaxAggregateInputType
+  }
+
+  export type DeadLetterJobGroupByOutputType = {
+    id: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    payload: JsonValue
+    error: string
+    attempts: number
+    createdAt: Date
+    resolvedAt: Date | null
+    _count: DeadLetterJobCountAggregateOutputType | null
+    _avg: DeadLetterJobAvgAggregateOutputType | null
+    _sum: DeadLetterJobSumAggregateOutputType | null
+    _min: DeadLetterJobMinAggregateOutputType | null
+    _max: DeadLetterJobMaxAggregateOutputType | null
+  }
+
+  type GetDeadLetterJobGroupByPayload<T extends DeadLetterJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DeadLetterJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DeadLetterJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DeadLetterJobGroupByOutputType[P]>
+            : GetScalarType<T[P], DeadLetterJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DeadLetterJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    payload?: boolean
+    error?: boolean
+    attempts?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["deadLetterJob"]>
+
+  export type DeadLetterJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    payload?: boolean
+    error?: boolean
+    attempts?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["deadLetterJob"]>
+
+  export type DeadLetterJobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    payload?: boolean
+    error?: boolean
+    attempts?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["deadLetterJob"]>
+
+  export type DeadLetterJobSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    idempotencyKey?: boolean
+    payload?: boolean
+    error?: boolean
+    attempts?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+  }
+
+  export type DeadLetterJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "idempotencyKey" | "payload" | "error" | "attempts" | "createdAt" | "resolvedAt", ExtArgs["result"]["deadLetterJob"]>
+  export type DeadLetterJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type DeadLetterJobIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type DeadLetterJobIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $DeadLetterJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DeadLetterJob"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      name: string
+      idempotencyKey: string
+      payload: Prisma.JsonValue
+      error: string
+      attempts: number
+      createdAt: Date
+      resolvedAt: Date | null
+    }, ExtArgs["result"]["deadLetterJob"]>
+    composites: {}
+  }
+
+  type DeadLetterJobGetPayload<S extends boolean | null | undefined | DeadLetterJobDefaultArgs> = $Result.GetResult<Prisma.$DeadLetterJobPayload, S>
+
+  type DeadLetterJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DeadLetterJobFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DeadLetterJobCountAggregateInputType | true
+    }
+
+  export interface DeadLetterJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DeadLetterJob'], meta: { name: 'DeadLetterJob' } }
+    /**
+     * Find zero or one DeadLetterJob that matches the filter.
+     * @param {DeadLetterJobFindUniqueArgs} args - Arguments to find a DeadLetterJob
+     * @example
+     * // Get one DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DeadLetterJobFindUniqueArgs>(args: SelectSubset<T, DeadLetterJobFindUniqueArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DeadLetterJob that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DeadLetterJobFindUniqueOrThrowArgs} args - Arguments to find a DeadLetterJob
+     * @example
+     * // Get one DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DeadLetterJobFindUniqueOrThrowArgs>(args: SelectSubset<T, DeadLetterJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DeadLetterJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobFindFirstArgs} args - Arguments to find a DeadLetterJob
+     * @example
+     * // Get one DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DeadLetterJobFindFirstArgs>(args?: SelectSubset<T, DeadLetterJobFindFirstArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DeadLetterJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobFindFirstOrThrowArgs} args - Arguments to find a DeadLetterJob
+     * @example
+     * // Get one DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DeadLetterJobFindFirstOrThrowArgs>(args?: SelectSubset<T, DeadLetterJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DeadLetterJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DeadLetterJobs
+     * const deadLetterJobs = await prisma.deadLetterJob.findMany()
+     * 
+     * // Get first 10 DeadLetterJobs
+     * const deadLetterJobs = await prisma.deadLetterJob.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const deadLetterJobWithIdOnly = await prisma.deadLetterJob.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DeadLetterJobFindManyArgs>(args?: SelectSubset<T, DeadLetterJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DeadLetterJob.
+     * @param {DeadLetterJobCreateArgs} args - Arguments to create a DeadLetterJob.
+     * @example
+     * // Create one DeadLetterJob
+     * const DeadLetterJob = await prisma.deadLetterJob.create({
+     *   data: {
+     *     // ... data to create a DeadLetterJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends DeadLetterJobCreateArgs>(args: SelectSubset<T, DeadLetterJobCreateArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DeadLetterJobs.
+     * @param {DeadLetterJobCreateManyArgs} args - Arguments to create many DeadLetterJobs.
+     * @example
+     * // Create many DeadLetterJobs
+     * const deadLetterJob = await prisma.deadLetterJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DeadLetterJobCreateManyArgs>(args?: SelectSubset<T, DeadLetterJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DeadLetterJobs and returns the data saved in the database.
+     * @param {DeadLetterJobCreateManyAndReturnArgs} args - Arguments to create many DeadLetterJobs.
+     * @example
+     * // Create many DeadLetterJobs
+     * const deadLetterJob = await prisma.deadLetterJob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DeadLetterJobs and only return the `id`
+     * const deadLetterJobWithIdOnly = await prisma.deadLetterJob.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DeadLetterJobCreateManyAndReturnArgs>(args?: SelectSubset<T, DeadLetterJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DeadLetterJob.
+     * @param {DeadLetterJobDeleteArgs} args - Arguments to delete one DeadLetterJob.
+     * @example
+     * // Delete one DeadLetterJob
+     * const DeadLetterJob = await prisma.deadLetterJob.delete({
+     *   where: {
+     *     // ... filter to delete one DeadLetterJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DeadLetterJobDeleteArgs>(args: SelectSubset<T, DeadLetterJobDeleteArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DeadLetterJob.
+     * @param {DeadLetterJobUpdateArgs} args - Arguments to update one DeadLetterJob.
+     * @example
+     * // Update one DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DeadLetterJobUpdateArgs>(args: SelectSubset<T, DeadLetterJobUpdateArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DeadLetterJobs.
+     * @param {DeadLetterJobDeleteManyArgs} args - Arguments to filter DeadLetterJobs to delete.
+     * @example
+     * // Delete a few DeadLetterJobs
+     * const { count } = await prisma.deadLetterJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DeadLetterJobDeleteManyArgs>(args?: SelectSubset<T, DeadLetterJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DeadLetterJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DeadLetterJobs
+     * const deadLetterJob = await prisma.deadLetterJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DeadLetterJobUpdateManyArgs>(args: SelectSubset<T, DeadLetterJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DeadLetterJobs and returns the data updated in the database.
+     * @param {DeadLetterJobUpdateManyAndReturnArgs} args - Arguments to update many DeadLetterJobs.
+     * @example
+     * // Update many DeadLetterJobs
+     * const deadLetterJob = await prisma.deadLetterJob.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DeadLetterJobs and only return the `id`
+     * const deadLetterJobWithIdOnly = await prisma.deadLetterJob.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DeadLetterJobUpdateManyAndReturnArgs>(args: SelectSubset<T, DeadLetterJobUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DeadLetterJob.
+     * @param {DeadLetterJobUpsertArgs} args - Arguments to update or create a DeadLetterJob.
+     * @example
+     * // Update or create a DeadLetterJob
+     * const deadLetterJob = await prisma.deadLetterJob.upsert({
+     *   create: {
+     *     // ... data to create a DeadLetterJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DeadLetterJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DeadLetterJobUpsertArgs>(args: SelectSubset<T, DeadLetterJobUpsertArgs<ExtArgs>>): Prisma__DeadLetterJobClient<$Result.GetResult<Prisma.$DeadLetterJobPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DeadLetterJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobCountArgs} args - Arguments to filter DeadLetterJobs to count.
+     * @example
+     * // Count the number of DeadLetterJobs
+     * const count = await prisma.deadLetterJob.count({
+     *   where: {
+     *     // ... the filter for the DeadLetterJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends DeadLetterJobCountArgs>(
+      args?: Subset<T, DeadLetterJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DeadLetterJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DeadLetterJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DeadLetterJobAggregateArgs>(args: Subset<T, DeadLetterJobAggregateArgs>): Prisma.PrismaPromise<GetDeadLetterJobAggregateType<T>>
+
+    /**
+     * Group by DeadLetterJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DeadLetterJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DeadLetterJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DeadLetterJobGroupByArgs['orderBy'] }
+        : { orderBy?: DeadLetterJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DeadLetterJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDeadLetterJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DeadLetterJob model
+   */
+  readonly fields: DeadLetterJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DeadLetterJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DeadLetterJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DeadLetterJob model
+   */
+  interface DeadLetterJobFieldRefs {
+    readonly id: FieldRef<"DeadLetterJob", 'String'>
+    readonly organizationId: FieldRef<"DeadLetterJob", 'String'>
+    readonly name: FieldRef<"DeadLetterJob", 'String'>
+    readonly idempotencyKey: FieldRef<"DeadLetterJob", 'String'>
+    readonly payload: FieldRef<"DeadLetterJob", 'Json'>
+    readonly error: FieldRef<"DeadLetterJob", 'String'>
+    readonly attempts: FieldRef<"DeadLetterJob", 'Int'>
+    readonly createdAt: FieldRef<"DeadLetterJob", 'DateTime'>
+    readonly resolvedAt: FieldRef<"DeadLetterJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DeadLetterJob findUnique
+   */
+  export type DeadLetterJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter, which DeadLetterJob to fetch.
+     */
+    where: DeadLetterJobWhereUniqueInput
+  }
+
+  /**
+   * DeadLetterJob findUniqueOrThrow
+   */
+  export type DeadLetterJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter, which DeadLetterJob to fetch.
+     */
+    where: DeadLetterJobWhereUniqueInput
+  }
+
+  /**
+   * DeadLetterJob findFirst
+   */
+  export type DeadLetterJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter, which DeadLetterJob to fetch.
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeadLetterJobs to fetch.
+     */
+    orderBy?: DeadLetterJobOrderByWithRelationInput | DeadLetterJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DeadLetterJobs.
+     */
+    cursor?: DeadLetterJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeadLetterJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeadLetterJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DeadLetterJobs.
+     */
+    distinct?: DeadLetterJobScalarFieldEnum | DeadLetterJobScalarFieldEnum[]
+  }
+
+  /**
+   * DeadLetterJob findFirstOrThrow
+   */
+  export type DeadLetterJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter, which DeadLetterJob to fetch.
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeadLetterJobs to fetch.
+     */
+    orderBy?: DeadLetterJobOrderByWithRelationInput | DeadLetterJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DeadLetterJobs.
+     */
+    cursor?: DeadLetterJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeadLetterJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeadLetterJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DeadLetterJobs.
+     */
+    distinct?: DeadLetterJobScalarFieldEnum | DeadLetterJobScalarFieldEnum[]
+  }
+
+  /**
+   * DeadLetterJob findMany
+   */
+  export type DeadLetterJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter, which DeadLetterJobs to fetch.
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DeadLetterJobs to fetch.
+     */
+    orderBy?: DeadLetterJobOrderByWithRelationInput | DeadLetterJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DeadLetterJobs.
+     */
+    cursor?: DeadLetterJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DeadLetterJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DeadLetterJobs.
+     */
+    skip?: number
+    distinct?: DeadLetterJobScalarFieldEnum | DeadLetterJobScalarFieldEnum[]
+  }
+
+  /**
+   * DeadLetterJob create
+   */
+  export type DeadLetterJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DeadLetterJob.
+     */
+    data: XOR<DeadLetterJobCreateInput, DeadLetterJobUncheckedCreateInput>
+  }
+
+  /**
+   * DeadLetterJob createMany
+   */
+  export type DeadLetterJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DeadLetterJobs.
+     */
+    data: DeadLetterJobCreateManyInput | DeadLetterJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DeadLetterJob createManyAndReturn
+   */
+  export type DeadLetterJobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * The data used to create many DeadLetterJobs.
+     */
+    data: DeadLetterJobCreateManyInput | DeadLetterJobCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DeadLetterJob update
+   */
+  export type DeadLetterJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DeadLetterJob.
+     */
+    data: XOR<DeadLetterJobUpdateInput, DeadLetterJobUncheckedUpdateInput>
+    /**
+     * Choose, which DeadLetterJob to update.
+     */
+    where: DeadLetterJobWhereUniqueInput
+  }
+
+  /**
+   * DeadLetterJob updateMany
+   */
+  export type DeadLetterJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DeadLetterJobs.
+     */
+    data: XOR<DeadLetterJobUpdateManyMutationInput, DeadLetterJobUncheckedUpdateManyInput>
+    /**
+     * Filter which DeadLetterJobs to update
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * Limit how many DeadLetterJobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DeadLetterJob updateManyAndReturn
+   */
+  export type DeadLetterJobUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * The data used to update DeadLetterJobs.
+     */
+    data: XOR<DeadLetterJobUpdateManyMutationInput, DeadLetterJobUncheckedUpdateManyInput>
+    /**
+     * Filter which DeadLetterJobs to update
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * Limit how many DeadLetterJobs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DeadLetterJob upsert
+   */
+  export type DeadLetterJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DeadLetterJob to update in case it exists.
+     */
+    where: DeadLetterJobWhereUniqueInput
+    /**
+     * In case the DeadLetterJob found by the `where` argument doesn't exist, create a new DeadLetterJob with this data.
+     */
+    create: XOR<DeadLetterJobCreateInput, DeadLetterJobUncheckedCreateInput>
+    /**
+     * In case the DeadLetterJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DeadLetterJobUpdateInput, DeadLetterJobUncheckedUpdateInput>
+  }
+
+  /**
+   * DeadLetterJob delete
+   */
+  export type DeadLetterJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+    /**
+     * Filter which DeadLetterJob to delete.
+     */
+    where: DeadLetterJobWhereUniqueInput
+  }
+
+  /**
+   * DeadLetterJob deleteMany
+   */
+  export type DeadLetterJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DeadLetterJobs to delete
+     */
+    where?: DeadLetterJobWhereInput
+    /**
+     * Limit how many DeadLetterJobs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DeadLetterJob without action
+   */
+  export type DeadLetterJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DeadLetterJob
+     */
+    select?: DeadLetterJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DeadLetterJob
+     */
+    omit?: DeadLetterJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeadLetterJobInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model HumanFallbackEvent
+   */
+
+  export type AggregateHumanFallbackEvent = {
+    _count: HumanFallbackEventCountAggregateOutputType | null
+    _min: HumanFallbackEventMinAggregateOutputType | null
+    _max: HumanFallbackEventMaxAggregateOutputType | null
+  }
+
+  export type HumanFallbackEventMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    source: string | null
+    dedupeKey: string | null
+    entityType: string | null
+    entityId: string | null
+    instruction: string | null
+    createdAt: Date | null
+    acknowledgedAt: Date | null
+  }
+
+  export type HumanFallbackEventMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    source: string | null
+    dedupeKey: string | null
+    entityType: string | null
+    entityId: string | null
+    instruction: string | null
+    createdAt: Date | null
+    acknowledgedAt: Date | null
+  }
+
+  export type HumanFallbackEventCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    source: number
+    dedupeKey: number
+    entityType: number
+    entityId: number
+    instruction: number
+    createdAt: number
+    acknowledgedAt: number
+    _all: number
+  }
+
+
+  export type HumanFallbackEventMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    source?: true
+    dedupeKey?: true
+    entityType?: true
+    entityId?: true
+    instruction?: true
+    createdAt?: true
+    acknowledgedAt?: true
+  }
+
+  export type HumanFallbackEventMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    source?: true
+    dedupeKey?: true
+    entityType?: true
+    entityId?: true
+    instruction?: true
+    createdAt?: true
+    acknowledgedAt?: true
+  }
+
+  export type HumanFallbackEventCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    source?: true
+    dedupeKey?: true
+    entityType?: true
+    entityId?: true
+    instruction?: true
+    createdAt?: true
+    acknowledgedAt?: true
+    _all?: true
+  }
+
+  export type HumanFallbackEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HumanFallbackEvent to aggregate.
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HumanFallbackEvents to fetch.
+     */
+    orderBy?: HumanFallbackEventOrderByWithRelationInput | HumanFallbackEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HumanFallbackEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HumanFallbackEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HumanFallbackEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned HumanFallbackEvents
+    **/
+    _count?: true | HumanFallbackEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HumanFallbackEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HumanFallbackEventMaxAggregateInputType
+  }
+
+  export type GetHumanFallbackEventAggregateType<T extends HumanFallbackEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateHumanFallbackEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHumanFallbackEvent[P]>
+      : GetScalarType<T[P], AggregateHumanFallbackEvent[P]>
+  }
+
+
+
+
+  export type HumanFallbackEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HumanFallbackEventWhereInput
+    orderBy?: HumanFallbackEventOrderByWithAggregationInput | HumanFallbackEventOrderByWithAggregationInput[]
+    by: HumanFallbackEventScalarFieldEnum[] | HumanFallbackEventScalarFieldEnum
+    having?: HumanFallbackEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HumanFallbackEventCountAggregateInputType | true
+    _min?: HumanFallbackEventMinAggregateInputType
+    _max?: HumanFallbackEventMaxAggregateInputType
+  }
+
+  export type HumanFallbackEventGroupByOutputType = {
+    id: string
+    organizationId: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId: string | null
+    instruction: string
+    createdAt: Date
+    acknowledgedAt: Date | null
+    _count: HumanFallbackEventCountAggregateOutputType | null
+    _min: HumanFallbackEventMinAggregateOutputType | null
+    _max: HumanFallbackEventMaxAggregateOutputType | null
+  }
+
+  type GetHumanFallbackEventGroupByPayload<T extends HumanFallbackEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HumanFallbackEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HumanFallbackEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HumanFallbackEventGroupByOutputType[P]>
+            : GetScalarType<T[P], HumanFallbackEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HumanFallbackEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    source?: boolean
+    dedupeKey?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    instruction?: boolean
+    createdAt?: boolean
+    acknowledgedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["humanFallbackEvent"]>
+
+  export type HumanFallbackEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    source?: boolean
+    dedupeKey?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    instruction?: boolean
+    createdAt?: boolean
+    acknowledgedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["humanFallbackEvent"]>
+
+  export type HumanFallbackEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    source?: boolean
+    dedupeKey?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    instruction?: boolean
+    createdAt?: boolean
+    acknowledgedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["humanFallbackEvent"]>
+
+  export type HumanFallbackEventSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    source?: boolean
+    dedupeKey?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    instruction?: boolean
+    createdAt?: boolean
+    acknowledgedAt?: boolean
+  }
+
+  export type HumanFallbackEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "source" | "dedupeKey" | "entityType" | "entityId" | "instruction" | "createdAt" | "acknowledgedAt", ExtArgs["result"]["humanFallbackEvent"]>
+  export type HumanFallbackEventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type HumanFallbackEventIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type HumanFallbackEventIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $HumanFallbackEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "HumanFallbackEvent"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      source: string
+      dedupeKey: string
+      entityType: string
+      entityId: string | null
+      instruction: string
+      createdAt: Date
+      acknowledgedAt: Date | null
+    }, ExtArgs["result"]["humanFallbackEvent"]>
+    composites: {}
+  }
+
+  type HumanFallbackEventGetPayload<S extends boolean | null | undefined | HumanFallbackEventDefaultArgs> = $Result.GetResult<Prisma.$HumanFallbackEventPayload, S>
+
+  type HumanFallbackEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<HumanFallbackEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: HumanFallbackEventCountAggregateInputType | true
+    }
+
+  export interface HumanFallbackEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['HumanFallbackEvent'], meta: { name: 'HumanFallbackEvent' } }
+    /**
+     * Find zero or one HumanFallbackEvent that matches the filter.
+     * @param {HumanFallbackEventFindUniqueArgs} args - Arguments to find a HumanFallbackEvent
+     * @example
+     * // Get one HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HumanFallbackEventFindUniqueArgs>(args: SelectSubset<T, HumanFallbackEventFindUniqueArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one HumanFallbackEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {HumanFallbackEventFindUniqueOrThrowArgs} args - Arguments to find a HumanFallbackEvent
+     * @example
+     * // Get one HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HumanFallbackEventFindUniqueOrThrowArgs>(args: SelectSubset<T, HumanFallbackEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HumanFallbackEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventFindFirstArgs} args - Arguments to find a HumanFallbackEvent
+     * @example
+     * // Get one HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HumanFallbackEventFindFirstArgs>(args?: SelectSubset<T, HumanFallbackEventFindFirstArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HumanFallbackEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventFindFirstOrThrowArgs} args - Arguments to find a HumanFallbackEvent
+     * @example
+     * // Get one HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HumanFallbackEventFindFirstOrThrowArgs>(args?: SelectSubset<T, HumanFallbackEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more HumanFallbackEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HumanFallbackEvents
+     * const humanFallbackEvents = await prisma.humanFallbackEvent.findMany()
+     * 
+     * // Get first 10 HumanFallbackEvents
+     * const humanFallbackEvents = await prisma.humanFallbackEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const humanFallbackEventWithIdOnly = await prisma.humanFallbackEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HumanFallbackEventFindManyArgs>(args?: SelectSubset<T, HumanFallbackEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a HumanFallbackEvent.
+     * @param {HumanFallbackEventCreateArgs} args - Arguments to create a HumanFallbackEvent.
+     * @example
+     * // Create one HumanFallbackEvent
+     * const HumanFallbackEvent = await prisma.humanFallbackEvent.create({
+     *   data: {
+     *     // ... data to create a HumanFallbackEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends HumanFallbackEventCreateArgs>(args: SelectSubset<T, HumanFallbackEventCreateArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many HumanFallbackEvents.
+     * @param {HumanFallbackEventCreateManyArgs} args - Arguments to create many HumanFallbackEvents.
+     * @example
+     * // Create many HumanFallbackEvents
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HumanFallbackEventCreateManyArgs>(args?: SelectSubset<T, HumanFallbackEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many HumanFallbackEvents and returns the data saved in the database.
+     * @param {HumanFallbackEventCreateManyAndReturnArgs} args - Arguments to create many HumanFallbackEvents.
+     * @example
+     * // Create many HumanFallbackEvents
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many HumanFallbackEvents and only return the `id`
+     * const humanFallbackEventWithIdOnly = await prisma.humanFallbackEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends HumanFallbackEventCreateManyAndReturnArgs>(args?: SelectSubset<T, HumanFallbackEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a HumanFallbackEvent.
+     * @param {HumanFallbackEventDeleteArgs} args - Arguments to delete one HumanFallbackEvent.
+     * @example
+     * // Delete one HumanFallbackEvent
+     * const HumanFallbackEvent = await prisma.humanFallbackEvent.delete({
+     *   where: {
+     *     // ... filter to delete one HumanFallbackEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HumanFallbackEventDeleteArgs>(args: SelectSubset<T, HumanFallbackEventDeleteArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one HumanFallbackEvent.
+     * @param {HumanFallbackEventUpdateArgs} args - Arguments to update one HumanFallbackEvent.
+     * @example
+     * // Update one HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HumanFallbackEventUpdateArgs>(args: SelectSubset<T, HumanFallbackEventUpdateArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more HumanFallbackEvents.
+     * @param {HumanFallbackEventDeleteManyArgs} args - Arguments to filter HumanFallbackEvents to delete.
+     * @example
+     * // Delete a few HumanFallbackEvents
+     * const { count } = await prisma.humanFallbackEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HumanFallbackEventDeleteManyArgs>(args?: SelectSubset<T, HumanFallbackEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HumanFallbackEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HumanFallbackEvents
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HumanFallbackEventUpdateManyArgs>(args: SelectSubset<T, HumanFallbackEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HumanFallbackEvents and returns the data updated in the database.
+     * @param {HumanFallbackEventUpdateManyAndReturnArgs} args - Arguments to update many HumanFallbackEvents.
+     * @example
+     * // Update many HumanFallbackEvents
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more HumanFallbackEvents and only return the `id`
+     * const humanFallbackEventWithIdOnly = await prisma.humanFallbackEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends HumanFallbackEventUpdateManyAndReturnArgs>(args: SelectSubset<T, HumanFallbackEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one HumanFallbackEvent.
+     * @param {HumanFallbackEventUpsertArgs} args - Arguments to update or create a HumanFallbackEvent.
+     * @example
+     * // Update or create a HumanFallbackEvent
+     * const humanFallbackEvent = await prisma.humanFallbackEvent.upsert({
+     *   create: {
+     *     // ... data to create a HumanFallbackEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HumanFallbackEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HumanFallbackEventUpsertArgs>(args: SelectSubset<T, HumanFallbackEventUpsertArgs<ExtArgs>>): Prisma__HumanFallbackEventClient<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of HumanFallbackEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventCountArgs} args - Arguments to filter HumanFallbackEvents to count.
+     * @example
+     * // Count the number of HumanFallbackEvents
+     * const count = await prisma.humanFallbackEvent.count({
+     *   where: {
+     *     // ... the filter for the HumanFallbackEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends HumanFallbackEventCountArgs>(
+      args?: Subset<T, HumanFallbackEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HumanFallbackEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HumanFallbackEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HumanFallbackEventAggregateArgs>(args: Subset<T, HumanFallbackEventAggregateArgs>): Prisma.PrismaPromise<GetHumanFallbackEventAggregateType<T>>
+
+    /**
+     * Group by HumanFallbackEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HumanFallbackEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HumanFallbackEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HumanFallbackEventGroupByArgs['orderBy'] }
+        : { orderBy?: HumanFallbackEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HumanFallbackEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHumanFallbackEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the HumanFallbackEvent model
+   */
+  readonly fields: HumanFallbackEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for HumanFallbackEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HumanFallbackEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the HumanFallbackEvent model
+   */
+  interface HumanFallbackEventFieldRefs {
+    readonly id: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly organizationId: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly source: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly dedupeKey: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly entityType: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly entityId: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly instruction: FieldRef<"HumanFallbackEvent", 'String'>
+    readonly createdAt: FieldRef<"HumanFallbackEvent", 'DateTime'>
+    readonly acknowledgedAt: FieldRef<"HumanFallbackEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * HumanFallbackEvent findUnique
+   */
+  export type HumanFallbackEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter, which HumanFallbackEvent to fetch.
+     */
+    where: HumanFallbackEventWhereUniqueInput
+  }
+
+  /**
+   * HumanFallbackEvent findUniqueOrThrow
+   */
+  export type HumanFallbackEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter, which HumanFallbackEvent to fetch.
+     */
+    where: HumanFallbackEventWhereUniqueInput
+  }
+
+  /**
+   * HumanFallbackEvent findFirst
+   */
+  export type HumanFallbackEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter, which HumanFallbackEvent to fetch.
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HumanFallbackEvents to fetch.
+     */
+    orderBy?: HumanFallbackEventOrderByWithRelationInput | HumanFallbackEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HumanFallbackEvents.
+     */
+    cursor?: HumanFallbackEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HumanFallbackEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HumanFallbackEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HumanFallbackEvents.
+     */
+    distinct?: HumanFallbackEventScalarFieldEnum | HumanFallbackEventScalarFieldEnum[]
+  }
+
+  /**
+   * HumanFallbackEvent findFirstOrThrow
+   */
+  export type HumanFallbackEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter, which HumanFallbackEvent to fetch.
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HumanFallbackEvents to fetch.
+     */
+    orderBy?: HumanFallbackEventOrderByWithRelationInput | HumanFallbackEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HumanFallbackEvents.
+     */
+    cursor?: HumanFallbackEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HumanFallbackEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HumanFallbackEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HumanFallbackEvents.
+     */
+    distinct?: HumanFallbackEventScalarFieldEnum | HumanFallbackEventScalarFieldEnum[]
+  }
+
+  /**
+   * HumanFallbackEvent findMany
+   */
+  export type HumanFallbackEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter, which HumanFallbackEvents to fetch.
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HumanFallbackEvents to fetch.
+     */
+    orderBy?: HumanFallbackEventOrderByWithRelationInput | HumanFallbackEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing HumanFallbackEvents.
+     */
+    cursor?: HumanFallbackEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HumanFallbackEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HumanFallbackEvents.
+     */
+    skip?: number
+    distinct?: HumanFallbackEventScalarFieldEnum | HumanFallbackEventScalarFieldEnum[]
+  }
+
+  /**
+   * HumanFallbackEvent create
+   */
+  export type HumanFallbackEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * The data needed to create a HumanFallbackEvent.
+     */
+    data: XOR<HumanFallbackEventCreateInput, HumanFallbackEventUncheckedCreateInput>
+  }
+
+  /**
+   * HumanFallbackEvent createMany
+   */
+  export type HumanFallbackEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many HumanFallbackEvents.
+     */
+    data: HumanFallbackEventCreateManyInput | HumanFallbackEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * HumanFallbackEvent createManyAndReturn
+   */
+  export type HumanFallbackEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many HumanFallbackEvents.
+     */
+    data: HumanFallbackEventCreateManyInput | HumanFallbackEventCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HumanFallbackEvent update
+   */
+  export type HumanFallbackEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * The data needed to update a HumanFallbackEvent.
+     */
+    data: XOR<HumanFallbackEventUpdateInput, HumanFallbackEventUncheckedUpdateInput>
+    /**
+     * Choose, which HumanFallbackEvent to update.
+     */
+    where: HumanFallbackEventWhereUniqueInput
+  }
+
+  /**
+   * HumanFallbackEvent updateMany
+   */
+  export type HumanFallbackEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update HumanFallbackEvents.
+     */
+    data: XOR<HumanFallbackEventUpdateManyMutationInput, HumanFallbackEventUncheckedUpdateManyInput>
+    /**
+     * Filter which HumanFallbackEvents to update
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * Limit how many HumanFallbackEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * HumanFallbackEvent updateManyAndReturn
+   */
+  export type HumanFallbackEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * The data used to update HumanFallbackEvents.
+     */
+    data: XOR<HumanFallbackEventUpdateManyMutationInput, HumanFallbackEventUncheckedUpdateManyInput>
+    /**
+     * Filter which HumanFallbackEvents to update
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * Limit how many HumanFallbackEvents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HumanFallbackEvent upsert
+   */
+  export type HumanFallbackEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * The filter to search for the HumanFallbackEvent to update in case it exists.
+     */
+    where: HumanFallbackEventWhereUniqueInput
+    /**
+     * In case the HumanFallbackEvent found by the `where` argument doesn't exist, create a new HumanFallbackEvent with this data.
+     */
+    create: XOR<HumanFallbackEventCreateInput, HumanFallbackEventUncheckedCreateInput>
+    /**
+     * In case the HumanFallbackEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HumanFallbackEventUpdateInput, HumanFallbackEventUncheckedUpdateInput>
+  }
+
+  /**
+   * HumanFallbackEvent delete
+   */
+  export type HumanFallbackEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+    /**
+     * Filter which HumanFallbackEvent to delete.
+     */
+    where: HumanFallbackEventWhereUniqueInput
+  }
+
+  /**
+   * HumanFallbackEvent deleteMany
+   */
+  export type HumanFallbackEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HumanFallbackEvents to delete
+     */
+    where?: HumanFallbackEventWhereInput
+    /**
+     * Limit how many HumanFallbackEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * HumanFallbackEvent without action
+   */
+  export type HumanFallbackEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HumanFallbackEvent
+     */
+    select?: HumanFallbackEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HumanFallbackEvent
+     */
+    omit?: HumanFallbackEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HumanFallbackEventInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9284,12 +13026,61 @@ export namespace Prisma {
   export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+  export const JobExecutionScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    name: 'name',
+    idempotencyKey: 'idempotencyKey',
+    attempts: 'attempts',
+    completedAt: 'completedAt'
+  };
+
+  export type JobExecutionScalarFieldEnum = (typeof JobExecutionScalarFieldEnum)[keyof typeof JobExecutionScalarFieldEnum]
+
+
+  export const DeadLetterJobScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    name: 'name',
+    idempotencyKey: 'idempotencyKey',
+    payload: 'payload',
+    error: 'error',
+    attempts: 'attempts',
+    createdAt: 'createdAt',
+    resolvedAt: 'resolvedAt'
+  };
+
+  export type DeadLetterJobScalarFieldEnum = (typeof DeadLetterJobScalarFieldEnum)[keyof typeof DeadLetterJobScalarFieldEnum]
+
+
+  export const HumanFallbackEventScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    source: 'source',
+    dedupeKey: 'dedupeKey',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    instruction: 'instruction',
+    createdAt: 'createdAt',
+    acknowledgedAt: 'acknowledgedAt'
+  };
+
+  export type HumanFallbackEventScalarFieldEnum = (typeof HumanFallbackEventScalarFieldEnum)[keyof typeof HumanFallbackEventScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -9306,6 +13097,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -9384,6 +13184,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9412,6 +13226,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     updatedAt?: DateTimeFilter<"Organization"> | Date | string
     memberships?: MembershipListRelationFilter
+    jobExecutions?: JobExecutionListRelationFilter
+    deadLetterJobs?: DeadLetterJobListRelationFilter
+    humanFallbackEvents?: HumanFallbackEventListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -9423,6 +13240,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     memberships?: MembershipOrderByRelationAggregateInput
+    jobExecutions?: JobExecutionOrderByRelationAggregateInput
+    deadLetterJobs?: DeadLetterJobOrderByRelationAggregateInput
+    humanFallbackEvents?: HumanFallbackEventOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -9437,6 +13257,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     updatedAt?: DateTimeFilter<"Organization"> | Date | string
     memberships?: MembershipListRelationFilter
+    jobExecutions?: JobExecutionListRelationFilter
+    deadLetterJobs?: DeadLetterJobListRelationFilter
+    humanFallbackEvents?: HumanFallbackEventListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -9838,6 +13661,223 @@ export namespace Prisma {
     expires?: DateTimeWithAggregatesFilter<"VerificationToken"> | Date | string
   }
 
+  export type JobExecutionWhereInput = {
+    AND?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    OR?: JobExecutionWhereInput[]
+    NOT?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    id?: StringFilter<"JobExecution"> | string
+    organizationId?: StringFilter<"JobExecution"> | string
+    name?: StringFilter<"JobExecution"> | string
+    idempotencyKey?: StringFilter<"JobExecution"> | string
+    attempts?: IntFilter<"JobExecution"> | number
+    completedAt?: DateTimeFilter<"JobExecution"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type JobExecutionOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    attempts?: SortOrder
+    completedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type JobExecutionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_idempotencyKey?: JobExecutionOrganizationIdIdempotencyKeyCompoundUniqueInput
+    AND?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    OR?: JobExecutionWhereInput[]
+    NOT?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    organizationId?: StringFilter<"JobExecution"> | string
+    name?: StringFilter<"JobExecution"> | string
+    idempotencyKey?: StringFilter<"JobExecution"> | string
+    attempts?: IntFilter<"JobExecution"> | number
+    completedAt?: DateTimeFilter<"JobExecution"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_idempotencyKey">
+
+  export type JobExecutionOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    attempts?: SortOrder
+    completedAt?: SortOrder
+    _count?: JobExecutionCountOrderByAggregateInput
+    _avg?: JobExecutionAvgOrderByAggregateInput
+    _max?: JobExecutionMaxOrderByAggregateInput
+    _min?: JobExecutionMinOrderByAggregateInput
+    _sum?: JobExecutionSumOrderByAggregateInput
+  }
+
+  export type JobExecutionScalarWhereWithAggregatesInput = {
+    AND?: JobExecutionScalarWhereWithAggregatesInput | JobExecutionScalarWhereWithAggregatesInput[]
+    OR?: JobExecutionScalarWhereWithAggregatesInput[]
+    NOT?: JobExecutionScalarWhereWithAggregatesInput | JobExecutionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"JobExecution"> | string
+    organizationId?: StringWithAggregatesFilter<"JobExecution"> | string
+    name?: StringWithAggregatesFilter<"JobExecution"> | string
+    idempotencyKey?: StringWithAggregatesFilter<"JobExecution"> | string
+    attempts?: IntWithAggregatesFilter<"JobExecution"> | number
+    completedAt?: DateTimeWithAggregatesFilter<"JobExecution"> | Date | string
+  }
+
+  export type DeadLetterJobWhereInput = {
+    AND?: DeadLetterJobWhereInput | DeadLetterJobWhereInput[]
+    OR?: DeadLetterJobWhereInput[]
+    NOT?: DeadLetterJobWhereInput | DeadLetterJobWhereInput[]
+    id?: StringFilter<"DeadLetterJob"> | string
+    organizationId?: StringFilter<"DeadLetterJob"> | string
+    name?: StringFilter<"DeadLetterJob"> | string
+    idempotencyKey?: StringFilter<"DeadLetterJob"> | string
+    payload?: JsonFilter<"DeadLetterJob">
+    error?: StringFilter<"DeadLetterJob"> | string
+    attempts?: IntFilter<"DeadLetterJob"> | number
+    createdAt?: DateTimeFilter<"DeadLetterJob"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"DeadLetterJob"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type DeadLetterJobOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    payload?: SortOrder
+    error?: SortOrder
+    attempts?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type DeadLetterJobWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_idempotencyKey?: DeadLetterJobOrganizationIdIdempotencyKeyCompoundUniqueInput
+    AND?: DeadLetterJobWhereInput | DeadLetterJobWhereInput[]
+    OR?: DeadLetterJobWhereInput[]
+    NOT?: DeadLetterJobWhereInput | DeadLetterJobWhereInput[]
+    organizationId?: StringFilter<"DeadLetterJob"> | string
+    name?: StringFilter<"DeadLetterJob"> | string
+    idempotencyKey?: StringFilter<"DeadLetterJob"> | string
+    payload?: JsonFilter<"DeadLetterJob">
+    error?: StringFilter<"DeadLetterJob"> | string
+    attempts?: IntFilter<"DeadLetterJob"> | number
+    createdAt?: DateTimeFilter<"DeadLetterJob"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"DeadLetterJob"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_idempotencyKey">
+
+  export type DeadLetterJobOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    payload?: SortOrder
+    error?: SortOrder
+    attempts?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    _count?: DeadLetterJobCountOrderByAggregateInput
+    _avg?: DeadLetterJobAvgOrderByAggregateInput
+    _max?: DeadLetterJobMaxOrderByAggregateInput
+    _min?: DeadLetterJobMinOrderByAggregateInput
+    _sum?: DeadLetterJobSumOrderByAggregateInput
+  }
+
+  export type DeadLetterJobScalarWhereWithAggregatesInput = {
+    AND?: DeadLetterJobScalarWhereWithAggregatesInput | DeadLetterJobScalarWhereWithAggregatesInput[]
+    OR?: DeadLetterJobScalarWhereWithAggregatesInput[]
+    NOT?: DeadLetterJobScalarWhereWithAggregatesInput | DeadLetterJobScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DeadLetterJob"> | string
+    organizationId?: StringWithAggregatesFilter<"DeadLetterJob"> | string
+    name?: StringWithAggregatesFilter<"DeadLetterJob"> | string
+    idempotencyKey?: StringWithAggregatesFilter<"DeadLetterJob"> | string
+    payload?: JsonWithAggregatesFilter<"DeadLetterJob">
+    error?: StringWithAggregatesFilter<"DeadLetterJob"> | string
+    attempts?: IntWithAggregatesFilter<"DeadLetterJob"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"DeadLetterJob"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"DeadLetterJob"> | Date | string | null
+  }
+
+  export type HumanFallbackEventWhereInput = {
+    AND?: HumanFallbackEventWhereInput | HumanFallbackEventWhereInput[]
+    OR?: HumanFallbackEventWhereInput[]
+    NOT?: HumanFallbackEventWhereInput | HumanFallbackEventWhereInput[]
+    id?: StringFilter<"HumanFallbackEvent"> | string
+    organizationId?: StringFilter<"HumanFallbackEvent"> | string
+    source?: StringFilter<"HumanFallbackEvent"> | string
+    dedupeKey?: StringFilter<"HumanFallbackEvent"> | string
+    entityType?: StringFilter<"HumanFallbackEvent"> | string
+    entityId?: StringNullableFilter<"HumanFallbackEvent"> | string | null
+    instruction?: StringFilter<"HumanFallbackEvent"> | string
+    createdAt?: DateTimeFilter<"HumanFallbackEvent"> | Date | string
+    acknowledgedAt?: DateTimeNullableFilter<"HumanFallbackEvent"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type HumanFallbackEventOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    source?: SortOrder
+    dedupeKey?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    instruction?: SortOrder
+    createdAt?: SortOrder
+    acknowledgedAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type HumanFallbackEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_source_dedupeKey?: HumanFallbackEventOrganizationIdSourceDedupeKeyCompoundUniqueInput
+    AND?: HumanFallbackEventWhereInput | HumanFallbackEventWhereInput[]
+    OR?: HumanFallbackEventWhereInput[]
+    NOT?: HumanFallbackEventWhereInput | HumanFallbackEventWhereInput[]
+    organizationId?: StringFilter<"HumanFallbackEvent"> | string
+    source?: StringFilter<"HumanFallbackEvent"> | string
+    dedupeKey?: StringFilter<"HumanFallbackEvent"> | string
+    entityType?: StringFilter<"HumanFallbackEvent"> | string
+    entityId?: StringNullableFilter<"HumanFallbackEvent"> | string | null
+    instruction?: StringFilter<"HumanFallbackEvent"> | string
+    createdAt?: DateTimeFilter<"HumanFallbackEvent"> | Date | string
+    acknowledgedAt?: DateTimeNullableFilter<"HumanFallbackEvent"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_source_dedupeKey">
+
+  export type HumanFallbackEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    source?: SortOrder
+    dedupeKey?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    instruction?: SortOrder
+    createdAt?: SortOrder
+    acknowledgedAt?: SortOrderInput | SortOrder
+    _count?: HumanFallbackEventCountOrderByAggregateInput
+    _max?: HumanFallbackEventMaxOrderByAggregateInput
+    _min?: HumanFallbackEventMinOrderByAggregateInput
+  }
+
+  export type HumanFallbackEventScalarWhereWithAggregatesInput = {
+    AND?: HumanFallbackEventScalarWhereWithAggregatesInput | HumanFallbackEventScalarWhereWithAggregatesInput[]
+    OR?: HumanFallbackEventScalarWhereWithAggregatesInput[]
+    NOT?: HumanFallbackEventScalarWhereWithAggregatesInput | HumanFallbackEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    organizationId?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    source?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    dedupeKey?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    entityType?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    entityId?: StringNullableWithAggregatesFilter<"HumanFallbackEvent"> | string | null
+    instruction?: StringWithAggregatesFilter<"HumanFallbackEvent"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"HumanFallbackEvent"> | Date | string
+    acknowledgedAt?: DateTimeNullableWithAggregatesFilter<"HumanFallbackEvent"> | Date | string | null
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -9847,6 +13887,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -9858,6 +13901,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -9869,6 +13915,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -9880,6 +13929,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -10291,6 +14343,234 @@ export namespace Prisma {
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type JobExecutionCreateInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutJobExecutionsInput
+  }
+
+  export type JobExecutionUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+  }
+
+  export type JobExecutionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutJobExecutionsNestedInput
+  }
+
+  export type JobExecutionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionCreateManyInput = {
+    id?: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+  }
+
+  export type JobExecutionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeadLetterJobCreateInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutDeadLetterJobsInput
+  }
+
+  export type DeadLetterJobUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type DeadLetterJobUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutDeadLetterJobsNestedInput
+  }
+
+  export type DeadLetterJobUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DeadLetterJobCreateManyInput = {
+    id?: string
+    organizationId: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type DeadLetterJobUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DeadLetterJobUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventCreateInput = {
+    id?: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutHumanFallbackEventsInput
+  }
+
+  export type HumanFallbackEventUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
+  }
+
+  export type HumanFallbackEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutHumanFallbackEventsNestedInput
+  }
+
+  export type HumanFallbackEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventCreateManyInput = {
+    id?: string
+    organizationId: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
+  }
+
+  export type HumanFallbackEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10341,12 +14621,42 @@ export namespace Prisma {
     none?: MembershipWhereInput
   }
 
+  export type JobExecutionListRelationFilter = {
+    every?: JobExecutionWhereInput
+    some?: JobExecutionWhereInput
+    none?: JobExecutionWhereInput
+  }
+
+  export type DeadLetterJobListRelationFilter = {
+    every?: DeadLetterJobWhereInput
+    some?: DeadLetterJobWhereInput
+    none?: DeadLetterJobWhereInput
+  }
+
+  export type HumanFallbackEventListRelationFilter = {
+    every?: HumanFallbackEventWhereInput
+    some?: HumanFallbackEventWhereInput
+    none?: HumanFallbackEventWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
   export type MembershipOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type JobExecutionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DeadLetterJobOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type HumanFallbackEventOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -10782,6 +15092,184 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type JobExecutionOrganizationIdIdempotencyKeyCompoundUniqueInput = {
+    organizationId: string
+    idempotencyKey: string
+  }
+
+  export type JobExecutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    attempts?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type JobExecutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    attempts?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    attempts?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionSumOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type DeadLetterJobOrganizationIdIdempotencyKeyCompoundUniqueInput = {
+    organizationId: string
+    idempotencyKey: string
+  }
+
+  export type DeadLetterJobCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    payload?: SortOrder
+    error?: SortOrder
+    attempts?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type DeadLetterJobAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type DeadLetterJobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    error?: SortOrder
+    attempts?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type DeadLetterJobMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    idempotencyKey?: SortOrder
+    error?: SortOrder
+    attempts?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+  }
+
+  export type DeadLetterJobSumOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type HumanFallbackEventOrganizationIdSourceDedupeKeyCompoundUniqueInput = {
+    organizationId: string
+    source: string
+    dedupeKey: string
+  }
+
+  export type HumanFallbackEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    source?: SortOrder
+    dedupeKey?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    instruction?: SortOrder
+    createdAt?: SortOrder
+    acknowledgedAt?: SortOrder
+  }
+
+  export type HumanFallbackEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    source?: SortOrder
+    dedupeKey?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    instruction?: SortOrder
+    createdAt?: SortOrder
+    acknowledgedAt?: SortOrder
+  }
+
+  export type HumanFallbackEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    source?: SortOrder
+    dedupeKey?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    instruction?: SortOrder
+    createdAt?: SortOrder
+    acknowledgedAt?: SortOrder
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -10789,11 +15277,53 @@ export namespace Prisma {
     connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
   }
 
+  export type JobExecutionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput> | JobExecutionCreateWithoutOrganizationInput[] | JobExecutionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: JobExecutionCreateOrConnectWithoutOrganizationInput | JobExecutionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: JobExecutionCreateManyOrganizationInputEnvelope
+    connect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+  }
+
+  export type DeadLetterJobCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput> | DeadLetterJobCreateWithoutOrganizationInput[] | DeadLetterJobUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DeadLetterJobCreateOrConnectWithoutOrganizationInput | DeadLetterJobCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DeadLetterJobCreateManyOrganizationInputEnvelope
+    connect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+  }
+
+  export type HumanFallbackEventCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput> | HumanFallbackEventCreateWithoutOrganizationInput[] | HumanFallbackEventUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HumanFallbackEventCreateOrConnectWithoutOrganizationInput | HumanFallbackEventCreateOrConnectWithoutOrganizationInput[]
+    createMany?: HumanFallbackEventCreateManyOrganizationInputEnvelope
+    connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
     createMany?: MembershipCreateManyOrganizationInputEnvelope
     connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
+  }
+
+  export type JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput> | JobExecutionCreateWithoutOrganizationInput[] | JobExecutionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: JobExecutionCreateOrConnectWithoutOrganizationInput | JobExecutionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: JobExecutionCreateManyOrganizationInputEnvelope
+    connect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+  }
+
+  export type DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput> | DeadLetterJobCreateWithoutOrganizationInput[] | DeadLetterJobUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DeadLetterJobCreateOrConnectWithoutOrganizationInput | DeadLetterJobCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DeadLetterJobCreateManyOrganizationInputEnvelope
+    connect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+  }
+
+  export type HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput> | HumanFallbackEventCreateWithoutOrganizationInput[] | HumanFallbackEventUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HumanFallbackEventCreateOrConnectWithoutOrganizationInput | HumanFallbackEventCreateOrConnectWithoutOrganizationInput[]
+    createMany?: HumanFallbackEventCreateManyOrganizationInputEnvelope
+    connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -10830,6 +15360,48 @@ export namespace Prisma {
     deleteMany?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
   }
 
+  export type JobExecutionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput> | JobExecutionCreateWithoutOrganizationInput[] | JobExecutionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: JobExecutionCreateOrConnectWithoutOrganizationInput | JobExecutionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: JobExecutionUpsertWithWhereUniqueWithoutOrganizationInput | JobExecutionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: JobExecutionCreateManyOrganizationInputEnvelope
+    set?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    disconnect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    delete?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    connect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    update?: JobExecutionUpdateWithWhereUniqueWithoutOrganizationInput | JobExecutionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: JobExecutionUpdateManyWithWhereWithoutOrganizationInput | JobExecutionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: JobExecutionScalarWhereInput | JobExecutionScalarWhereInput[]
+  }
+
+  export type DeadLetterJobUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput> | DeadLetterJobCreateWithoutOrganizationInput[] | DeadLetterJobUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DeadLetterJobCreateOrConnectWithoutOrganizationInput | DeadLetterJobCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DeadLetterJobUpsertWithWhereUniqueWithoutOrganizationInput | DeadLetterJobUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DeadLetterJobCreateManyOrganizationInputEnvelope
+    set?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    disconnect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    delete?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    connect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    update?: DeadLetterJobUpdateWithWhereUniqueWithoutOrganizationInput | DeadLetterJobUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DeadLetterJobUpdateManyWithWhereWithoutOrganizationInput | DeadLetterJobUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DeadLetterJobScalarWhereInput | DeadLetterJobScalarWhereInput[]
+  }
+
+  export type HumanFallbackEventUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput> | HumanFallbackEventCreateWithoutOrganizationInput[] | HumanFallbackEventUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HumanFallbackEventCreateOrConnectWithoutOrganizationInput | HumanFallbackEventCreateOrConnectWithoutOrganizationInput[]
+    upsert?: HumanFallbackEventUpsertWithWhereUniqueWithoutOrganizationInput | HumanFallbackEventUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: HumanFallbackEventCreateManyOrganizationInputEnvelope
+    set?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    disconnect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    delete?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    update?: HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput | HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput | HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -10842,6 +15414,48 @@ export namespace Prisma {
     update?: MembershipUpdateWithWhereUniqueWithoutOrganizationInput | MembershipUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: MembershipUpdateManyWithWhereWithoutOrganizationInput | MembershipUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
+  }
+
+  export type JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput> | JobExecutionCreateWithoutOrganizationInput[] | JobExecutionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: JobExecutionCreateOrConnectWithoutOrganizationInput | JobExecutionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: JobExecutionUpsertWithWhereUniqueWithoutOrganizationInput | JobExecutionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: JobExecutionCreateManyOrganizationInputEnvelope
+    set?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    disconnect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    delete?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    connect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
+    update?: JobExecutionUpdateWithWhereUniqueWithoutOrganizationInput | JobExecutionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: JobExecutionUpdateManyWithWhereWithoutOrganizationInput | JobExecutionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: JobExecutionScalarWhereInput | JobExecutionScalarWhereInput[]
+  }
+
+  export type DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput> | DeadLetterJobCreateWithoutOrganizationInput[] | DeadLetterJobUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DeadLetterJobCreateOrConnectWithoutOrganizationInput | DeadLetterJobCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DeadLetterJobUpsertWithWhereUniqueWithoutOrganizationInput | DeadLetterJobUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DeadLetterJobCreateManyOrganizationInputEnvelope
+    set?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    disconnect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    delete?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    connect?: DeadLetterJobWhereUniqueInput | DeadLetterJobWhereUniqueInput[]
+    update?: DeadLetterJobUpdateWithWhereUniqueWithoutOrganizationInput | DeadLetterJobUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DeadLetterJobUpdateManyWithWhereWithoutOrganizationInput | DeadLetterJobUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DeadLetterJobScalarWhereInput | DeadLetterJobScalarWhereInput[]
+  }
+
+  export type HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput> | HumanFallbackEventCreateWithoutOrganizationInput[] | HumanFallbackEventUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HumanFallbackEventCreateOrConnectWithoutOrganizationInput | HumanFallbackEventCreateOrConnectWithoutOrganizationInput[]
+    upsert?: HumanFallbackEventUpsertWithWhereUniqueWithoutOrganizationInput | HumanFallbackEventUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: HumanFallbackEventCreateManyOrganizationInputEnvelope
+    set?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    disconnect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    delete?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    connect?: HumanFallbackEventWhereUniqueInput | HumanFallbackEventWhereUniqueInput[]
+    update?: HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput | HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput | HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -11102,6 +15716,48 @@ export namespace Prisma {
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutMembershipsInput, OrganizationUpdateWithoutMembershipsInput>, OrganizationUncheckedUpdateWithoutMembershipsInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutJobExecutionsInput = {
+    create?: XOR<OrganizationCreateWithoutJobExecutionsInput, OrganizationUncheckedCreateWithoutJobExecutionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutJobExecutionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutJobExecutionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutJobExecutionsInput, OrganizationUncheckedCreateWithoutJobExecutionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutJobExecutionsInput
+    upsert?: OrganizationUpsertWithoutJobExecutionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutJobExecutionsInput, OrganizationUpdateWithoutJobExecutionsInput>, OrganizationUncheckedUpdateWithoutJobExecutionsInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutDeadLetterJobsInput = {
+    create?: XOR<OrganizationCreateWithoutDeadLetterJobsInput, OrganizationUncheckedCreateWithoutDeadLetterJobsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDeadLetterJobsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutDeadLetterJobsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutDeadLetterJobsInput, OrganizationUncheckedCreateWithoutDeadLetterJobsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDeadLetterJobsInput
+    upsert?: OrganizationUpsertWithoutDeadLetterJobsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDeadLetterJobsInput, OrganizationUpdateWithoutDeadLetterJobsInput>, OrganizationUncheckedUpdateWithoutDeadLetterJobsInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutHumanFallbackEventsInput = {
+    create?: XOR<OrganizationCreateWithoutHumanFallbackEventsInput, OrganizationUncheckedCreateWithoutHumanFallbackEventsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutHumanFallbackEventsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutHumanFallbackEventsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutHumanFallbackEventsInput, OrganizationUncheckedCreateWithoutHumanFallbackEventsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutHumanFallbackEventsInput
+    upsert?: OrganizationUpsertWithoutHumanFallbackEventsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutHumanFallbackEventsInput, OrganizationUpdateWithoutHumanFallbackEventsInput>, OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -11323,6 +15979,29 @@ export namespace Prisma {
     _min?: NestedEnumMembershipRoleFilter<$PrismaModel>
     _max?: NestedEnumMembershipRoleFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type MembershipCreateWithoutOrganizationInput = {
     id?: string
@@ -11345,6 +16024,96 @@ export namespace Prisma {
 
   export type MembershipCreateManyOrganizationInputEnvelope = {
     data: MembershipCreateManyOrganizationInput | MembershipCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type JobExecutionCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+  }
+
+  export type JobExecutionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+  }
+
+  export type JobExecutionCreateOrConnectWithoutOrganizationInput = {
+    where: JobExecutionWhereUniqueInput
+    create: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type JobExecutionCreateManyOrganizationInputEnvelope = {
+    data: JobExecutionCreateManyOrganizationInput | JobExecutionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DeadLetterJobCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type DeadLetterJobUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type DeadLetterJobCreateOrConnectWithoutOrganizationInput = {
+    where: DeadLetterJobWhereUniqueInput
+    create: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DeadLetterJobCreateManyOrganizationInputEnvelope = {
+    data: DeadLetterJobCreateManyOrganizationInput | DeadLetterJobCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type HumanFallbackEventCreateWithoutOrganizationInput = {
+    id?: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
+  }
+
+  export type HumanFallbackEventUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
+  }
+
+  export type HumanFallbackEventCreateOrConnectWithoutOrganizationInput = {
+    where: HumanFallbackEventWhereUniqueInput
+    create: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type HumanFallbackEventCreateManyOrganizationInputEnvelope = {
+    data: HumanFallbackEventCreateManyOrganizationInput | HumanFallbackEventCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -11373,6 +16142,96 @@ export namespace Prisma {
     organizationId?: StringFilter<"Membership"> | string
     role?: EnumMembershipRoleFilter<"Membership"> | $Enums.MembershipRole
     createdAt?: DateTimeFilter<"Membership"> | Date | string
+  }
+
+  export type JobExecutionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: JobExecutionWhereUniqueInput
+    update: XOR<JobExecutionUpdateWithoutOrganizationInput, JobExecutionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<JobExecutionCreateWithoutOrganizationInput, JobExecutionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type JobExecutionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: JobExecutionWhereUniqueInput
+    data: XOR<JobExecutionUpdateWithoutOrganizationInput, JobExecutionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type JobExecutionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: JobExecutionScalarWhereInput
+    data: XOR<JobExecutionUpdateManyMutationInput, JobExecutionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type JobExecutionScalarWhereInput = {
+    AND?: JobExecutionScalarWhereInput | JobExecutionScalarWhereInput[]
+    OR?: JobExecutionScalarWhereInput[]
+    NOT?: JobExecutionScalarWhereInput | JobExecutionScalarWhereInput[]
+    id?: StringFilter<"JobExecution"> | string
+    organizationId?: StringFilter<"JobExecution"> | string
+    name?: StringFilter<"JobExecution"> | string
+    idempotencyKey?: StringFilter<"JobExecution"> | string
+    attempts?: IntFilter<"JobExecution"> | number
+    completedAt?: DateTimeFilter<"JobExecution"> | Date | string
+  }
+
+  export type DeadLetterJobUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: DeadLetterJobWhereUniqueInput
+    update: XOR<DeadLetterJobUpdateWithoutOrganizationInput, DeadLetterJobUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<DeadLetterJobCreateWithoutOrganizationInput, DeadLetterJobUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DeadLetterJobUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: DeadLetterJobWhereUniqueInput
+    data: XOR<DeadLetterJobUpdateWithoutOrganizationInput, DeadLetterJobUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DeadLetterJobUpdateManyWithWhereWithoutOrganizationInput = {
+    where: DeadLetterJobScalarWhereInput
+    data: XOR<DeadLetterJobUpdateManyMutationInput, DeadLetterJobUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type DeadLetterJobScalarWhereInput = {
+    AND?: DeadLetterJobScalarWhereInput | DeadLetterJobScalarWhereInput[]
+    OR?: DeadLetterJobScalarWhereInput[]
+    NOT?: DeadLetterJobScalarWhereInput | DeadLetterJobScalarWhereInput[]
+    id?: StringFilter<"DeadLetterJob"> | string
+    organizationId?: StringFilter<"DeadLetterJob"> | string
+    name?: StringFilter<"DeadLetterJob"> | string
+    idempotencyKey?: StringFilter<"DeadLetterJob"> | string
+    payload?: JsonFilter<"DeadLetterJob">
+    error?: StringFilter<"DeadLetterJob"> | string
+    attempts?: IntFilter<"DeadLetterJob"> | number
+    createdAt?: DateTimeFilter<"DeadLetterJob"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"DeadLetterJob"> | Date | string | null
+  }
+
+  export type HumanFallbackEventUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: HumanFallbackEventWhereUniqueInput
+    update: XOR<HumanFallbackEventUpdateWithoutOrganizationInput, HumanFallbackEventUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<HumanFallbackEventCreateWithoutOrganizationInput, HumanFallbackEventUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type HumanFallbackEventUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: HumanFallbackEventWhereUniqueInput
+    data: XOR<HumanFallbackEventUpdateWithoutOrganizationInput, HumanFallbackEventUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type HumanFallbackEventUpdateManyWithWhereWithoutOrganizationInput = {
+    where: HumanFallbackEventScalarWhereInput
+    data: XOR<HumanFallbackEventUpdateManyMutationInput, HumanFallbackEventUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type HumanFallbackEventScalarWhereInput = {
+    AND?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
+    OR?: HumanFallbackEventScalarWhereInput[]
+    NOT?: HumanFallbackEventScalarWhereInput | HumanFallbackEventScalarWhereInput[]
+    id?: StringFilter<"HumanFallbackEvent"> | string
+    organizationId?: StringFilter<"HumanFallbackEvent"> | string
+    source?: StringFilter<"HumanFallbackEvent"> | string
+    dedupeKey?: StringFilter<"HumanFallbackEvent"> | string
+    entityType?: StringFilter<"HumanFallbackEvent"> | string
+    entityId?: StringNullableFilter<"HumanFallbackEvent"> | string | null
+    instruction?: StringFilter<"HumanFallbackEvent"> | string
+    createdAt?: DateTimeFilter<"HumanFallbackEvent"> | Date | string
+    acknowledgedAt?: DateTimeNullableFilter<"HumanFallbackEvent"> | Date | string | null
   }
 
   export type UserCreateWithoutPostsInput = {
@@ -11803,6 +16662,9 @@ export namespace Prisma {
     sessionIdleTimeoutSeconds?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -11813,6 +16675,9 @@ export namespace Prisma {
     sessionIdleTimeoutSeconds?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -11872,6 +16737,9 @@ export namespace Prisma {
     sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -11882,6 +16750,213 @@ export namespace Prisma {
     sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutJobExecutionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutJobExecutionsInput, OrganizationUncheckedCreateWithoutJobExecutionsInput>
+  }
+
+  export type OrganizationUpsertWithoutJobExecutionsInput = {
+    update: XOR<OrganizationUpdateWithoutJobExecutionsInput, OrganizationUncheckedUpdateWithoutJobExecutionsInput>
+    create: XOR<OrganizationCreateWithoutJobExecutionsInput, OrganizationUncheckedCreateWithoutJobExecutionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutJobExecutionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutJobExecutionsInput, OrganizationUncheckedUpdateWithoutJobExecutionsInput>
+  }
+
+  export type OrganizationUpdateWithoutJobExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutDeadLetterJobsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutDeadLetterJobsInput, OrganizationUncheckedCreateWithoutDeadLetterJobsInput>
+  }
+
+  export type OrganizationUpsertWithoutDeadLetterJobsInput = {
+    update: XOR<OrganizationUpdateWithoutDeadLetterJobsInput, OrganizationUncheckedUpdateWithoutDeadLetterJobsInput>
+    create: XOR<OrganizationCreateWithoutDeadLetterJobsInput, OrganizationUncheckedCreateWithoutDeadLetterJobsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutDeadLetterJobsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutDeadLetterJobsInput, OrganizationUncheckedUpdateWithoutDeadLetterJobsInput>
+  }
+
+  export type OrganizationUpdateWithoutDeadLetterJobsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutHumanFallbackEventsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutHumanFallbackEventsInput, OrganizationUncheckedCreateWithoutHumanFallbackEventsInput>
+  }
+
+  export type OrganizationUpsertWithoutHumanFallbackEventsInput = {
+    update: XOR<OrganizationUpdateWithoutHumanFallbackEventsInput, OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput>
+    create: XOR<OrganizationCreateWithoutHumanFallbackEventsInput, OrganizationUncheckedCreateWithoutHumanFallbackEventsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutHumanFallbackEventsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutHumanFallbackEventsInput, OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput>
+  }
+
+  export type OrganizationUpdateWithoutHumanFallbackEventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -11889,6 +16964,36 @@ export namespace Prisma {
     userId: string
     role: $Enums.MembershipRole
     createdAt?: Date | string
+  }
+
+  export type JobExecutionCreateManyOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    attempts?: number
+    completedAt?: Date | string
+  }
+
+  export type DeadLetterJobCreateManyOrganizationInput = {
+    id?: string
+    name: string
+    idempotencyKey: string
+    payload: JsonNullValueInput | InputJsonValue
+    error: string
+    attempts: number
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+  }
+
+  export type HumanFallbackEventCreateManyOrganizationInput = {
+    id?: string
+    source: string
+    dedupeKey: string
+    entityType: string
+    entityId?: string | null
+    instruction: string
+    createdAt?: Date | string
+    acknowledgedAt?: Date | string | null
   }
 
   export type MembershipUpdateWithoutOrganizationInput = {
@@ -11910,6 +17015,96 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     role?: EnumMembershipRoleFieldUpdateOperationsInput | $Enums.MembershipRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DeadLetterJobUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DeadLetterJobUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DeadLetterJobUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    error?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type HumanFallbackEventUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    dedupeKey?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    instruction?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AccountCreateManyUserInput = {

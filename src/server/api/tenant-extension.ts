@@ -3,11 +3,15 @@ import { type PrismaClient } from "../../../generated/prisma";
 type RecordValue = Record<string, unknown>;
 
 /**
- * The current schema has no organization-owned resource yet. New tenant models
- * must be added here in the same change that adds their router and isolation
- * tests. Unknown models fail closed below.
+ * Organization-owned models. New tenant models must be added here in the same
+ * change that adds them to the schema, with an isolation test. Unknown models
+ * fail closed below.
  */
-export const TENANT_SCOPED_MODELS = new Set<string>();
+export const TENANT_SCOPED_MODELS = new Set<string>([
+  "JobExecution",
+  "DeadLetterJob",
+  "HumanFallbackEvent",
+]);
 const UNSCOPED_MODELS = new Set(["User", "Organization", "Membership", "Post"]);
 
 type ScopeTenantOperationInput = {

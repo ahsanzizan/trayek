@@ -41,6 +41,10 @@ function getRestriction(source, filename) {
     return "Prisma client dependencies belong in infrastructure adapters";
   }
 
+  if (source === "pg-boss" || source.startsWith("pg-boss/")) {
+    return "the queue vendor belongs behind JobQueuePort, not in the domain";
+  }
+
   const resolvedPath = resolveImportPath(source, filename);
 
   if (!resolvedPath) {
@@ -63,6 +67,10 @@ function getRestriction(source, filename) {
     return "channel adapters must depend on the domain, not the reverse";
   }
 
+  if (matchesPath(relativePath, "src/server/jobs")) {
+    return "the queue implementation must depend on the domain, not the reverse";
+  }
+
   return undefined;
 }
 
@@ -72,7 +80,7 @@ export const noDomainInfrastructureImports = {
     type: "problem",
     docs: {
       description:
-        "Keep Prisma and channel infrastructure outside the domain layer",
+        "Keep Prisma, queue, and channel infrastructure outside the domain layer",
     },
     schema: [],
   },
