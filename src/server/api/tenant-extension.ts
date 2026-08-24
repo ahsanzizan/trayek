@@ -11,6 +11,7 @@ export const TENANT_SCOPED_MODELS = new Set<string>([
   "JobExecution",
   "DeadLetterJob",
   "HumanFallbackEvent",
+  "AuditLog",
 ]);
 const UNSCOPED_MODELS = new Set(["User", "Organization", "Membership", "Post"]);
 
