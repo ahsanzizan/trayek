@@ -44,6 +44,39 @@ describe("Baileys channel adapter", () => {
     ]);
   });
 
+  it("records zero-cost Baileys attribution metadata before sending", async () => {
+    let createdData: unknown;
+    const messageLog: BaileysMessageLogStore = {
+      async create({ data }) {
+        createdData = data;
+        return { id: "log-1" };
+      },
+      async update() {
+        return undefined;
+      },
+    };
+    const adapter = createBaileysAdapter({
+      organizationId: "org-a",
+      socket: {
+        async sendMessage() {
+          return { key: { id: "wa-message-1" } };
+        },
+      },
+      messageLog,
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+    });
+
+    await adapter.sendMessage("+6281234567890", "hello");
+
+    expect(createdData).toEqual(
+      expect.objectContaining({
+        category: "WHATSAPP_BAILEYS",
+        estimatedCost: 0,
+        conversationWindowState: "N/A",
+      }),
+    );
+  });
+
   it("marks a failed send and emits one human fallback", async () => {
     const operations: string[] = [];
     const notifyHumanFallback = vi.fn().mockResolvedValue(undefined);
@@ -70,7 +103,8 @@ describe("Baileys channel adapter", () => {
         organizationId: "org-a",
         source: "baileys",
         entityId: "log-1",
-        instruction: expect.stringContaining("manual"),
+        instruction:
+          "Pesan WhatsApp gagal terkirim — coba lagi manual dari console",
       }),
     );
     expect(reporter.reportError).toHaveBeenCalled();

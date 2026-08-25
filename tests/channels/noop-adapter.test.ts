@@ -58,10 +58,12 @@ describe("no-op channel adapter", () => {
   it("records PENDING before completing the send as SENT", async () => {
     const operations: string[] = [];
     const statuses: string[] = [];
+    let createdData: unknown;
     const adapter = createNoopAdapter({
       organizationId: "org-a",
       messageLog: {
         async create({ data }) {
+          createdData = data;
           operations.push("create");
           statuses.push(data.status);
           expect(data.organizationId).toBe("org-a");
@@ -74,6 +76,7 @@ describe("no-op channel adapter", () => {
         },
       },
       channel: "EMAIL",
+      costTable: { UTILITY: 0 },
       idGenerator: () => "message-1",
     });
 
@@ -82,6 +85,13 @@ describe("no-op channel adapter", () => {
     ).resolves.toEqual({ messageId: "message-1" });
     expect(operations).toEqual(["create", "update:log-1"]);
     expect(statuses).toEqual(["PENDING", "SENT"]);
+    expect(createdData).toEqual(
+      expect.objectContaining({
+        category: "UTILITY",
+        estimatedCost: 0,
+        conversationWindowState: "N/A",
+      }),
+    );
   });
 
   it("parses a channel-neutral inbound message without vendor types", () => {

@@ -261,6 +261,9 @@ exports.Prisma.MessageLogScalarFieldEnum = {
   status: 'status',
   externalId: 'externalId',
   truncated: 'truncated',
+  category: 'category',
+  estimatedCost: 'estimatedCost',
+  conversationWindowState: 'conversationWindowState',
   createdAt: 'createdAt'
 };
 

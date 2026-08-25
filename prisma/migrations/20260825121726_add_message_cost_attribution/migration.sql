@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "MessageLog" ADD COLUMN     "category" TEXT NOT NULL DEFAULT 'WHATSAPP_BAILEYS',
+ADD COLUMN     "conversationWindowState" TEXT NOT NULL DEFAULT 'N/A',
+ADD COLUMN     "estimatedCost" DECIMAL(12,4) NOT NULL DEFAULT 0;

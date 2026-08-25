@@ -6,9 +6,14 @@ import {
   type ChannelType,
   type InboundMessage,
 } from "~/server/domain/ports/channel";
+import {
+  costMetadataFor,
+  type MessageCostTable,
+  type MessageCostMetadata,
+} from "~/server/domain/channel/cost";
 import { MAX_MESSAGE_BODY_LENGTH } from "~/server/channels/message-log";
 
-type PendingMessageData = {
+type PendingMessageData = MessageCostMetadata & {
   organizationId: string;
   channel: ChannelType;
   direction: "OUTBOUND";
@@ -36,6 +41,7 @@ export interface NoopAdapterOptions {
   organizationId: string;
   messageLog: NoopMessageLogStore;
   channel?: ChannelType;
+  costTable?: MessageCostTable;
   from?: string;
   idGenerator?: () => string;
 }
@@ -65,12 +71,14 @@ export function createNoopAdapter({
   organizationId,
   messageLog,
   channel = "WHATSAPP_BAILEYS",
+  costTable,
   from = "system",
   idGenerator = randomUUID,
 }: NoopAdapterOptions): ChannelAdapter {
   return {
     async sendMessage(to, body) {
       const truncated = body.length > MAX_MESSAGE_BODY_LENGTH;
+      const costMetadata = costMetadataFor(channel, costTable);
       const log = await messageLog.create({
         data: {
           organizationId,
@@ -81,6 +89,7 @@ export function createNoopAdapter({
           body: body.slice(0, MAX_MESSAGE_BODY_LENGTH),
           status: "PENDING",
           truncated,
+          ...costMetadata,
         },
       });
       const messageId = idGenerator();

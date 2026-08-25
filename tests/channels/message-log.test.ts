@@ -18,6 +18,10 @@ async function readSchema() {
   return readFile(path.join(repositoryRoot, "prisma/schema.prisma"), "utf8");
 }
 
+async function readMigration(relativePath: string) {
+  return readFile(path.join(repositoryRoot, relativePath), "utf8");
+}
+
 function modelBlock(schema: string, model: string) {
   return new RegExp(`model ${model}\\s*\\{[\\s\\S]*?\\n\\}`).exec(schema)?.[0];
 }
@@ -53,6 +57,15 @@ describe("channel persistence schema", () => {
     );
     expect(messageLog).toMatch(/externalId\s+String\?/);
     expect(messageLog).toMatch(/truncated\s+Boolean\s+@default\(false\)/);
+    expect(messageLog).toMatch(
+      /category\s+String\s+@default\("WHATSAPP_BAILEYS"\)/,
+    );
+    expect(messageLog).toMatch(
+      /estimatedCost\s+Decimal\s+@default\(0\)\s+@db\.Decimal\(12,\s*4\)/,
+    );
+    expect(messageLog).toMatch(
+      /conversationWindowState\s+String\s+@default\("N\/A"\)/,
+    );
     expect(messageLog).toMatch(/@@unique\(\[organizationId, externalId\]\)/);
     expect(messageLog).toMatch(/@@index\(\[organizationId\]\)/);
     expect(messageLog).toMatch(/@@index\(\[organizationId, createdAt\]\)/);
@@ -103,5 +116,23 @@ describe("channel tenant boundary", () => {
     expect(create.args).toEqual({
       data: { organizationId: "org-a", body: "hello" },
     });
+  });
+});
+
+describe("MessageLog cost attribution migration", () => {
+  it("keeps cost metadata immutable during delivery transitions", async () => {
+    const migration = await readMigration(
+      "prisma/migrations/20260825150000_harden_message_log_cost_guard/migration.sql",
+    );
+
+    expect(migration).toMatch(
+      /OLD\."category"\s+IS DISTINCT FROM NEW\."category"/,
+    );
+    expect(migration).toMatch(
+      /OLD\."estimatedCost"\s+IS DISTINCT FROM NEW\."estimatedCost"/,
+    );
+    expect(migration).toMatch(
+      /OLD\."conversationWindowState"\s+IS DISTINCT FROM NEW\."conversationWindowState"/,
+    );
   });
 });

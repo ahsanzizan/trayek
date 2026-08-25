@@ -23,6 +23,7 @@ import {
   type ChannelConnectionStatus,
 } from "~/server/channels/whatsapp/session-store";
 import { type ChannelAdapter } from "~/server/domain/ports/channel";
+import { costMetadataFor } from "~/server/domain/channel/cost";
 import { type HumanFallbackRequired } from "~/server/domain/jobs/port";
 import { PrismaJobStore } from "~/server/jobs/prisma-job-store";
 import {
@@ -430,6 +431,7 @@ export function createBaileysChannelWorker({
               return;
             }
 
+            const costMetadata = costMetadataFor("WHATSAPP_BAILEYS");
             return messageLog
               .create({
                 data: {
@@ -441,6 +443,7 @@ export function createBaileysChannelWorker({
                   body: inboundTruncated.body,
                   status: "PENDING",
                   truncated: inboundTruncated.truncated,
+                  ...costMetadata,
                 },
               })
               .then((log) =>

@@ -6,6 +6,12 @@ import { qrDataUrl } from "~/server/channels/qr-code";
 
 import { createTRPCRouter, orgProcedure } from "~/server/api/trpc";
 import {
+  designRuleViolation,
+  messageCategorySchema,
+  toCsv,
+} from "~/server/domain/channel/cost";
+import { isRecord } from "~/lib/guards";
+import {
   CHANNEL_HEARTBEAT_TIMEOUT_MS,
   channelConnectionStatusSchema,
   channelTypeSchema,
@@ -15,6 +21,25 @@ import {
 } from "~/server/domain/ports/channel";
 
 const QR_POLL_INTERVAL_MS = 2_000;
+
+const monthlyReportInput = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+});
+
+const monthlyReportOutput = z.object({
+  month: z.string(),
+  totalMessages: z.number().int().nonnegative(),
+  byCategory: z.array(
+    z.object({
+      category: messageCategorySchema,
+      messageCount: z.number().int().nonnegative(),
+      estimatedCost: z.number().finite().nonnegative(),
+    }),
+  ),
+  avgPerPod: z.number().finite().min(0).nullable(),
+  designRuleViolation: z.boolean(),
+  csv: z.string(),
+});
 
 const channelInput = z
   .object({ channel: channelTypeSchema.default(channelTypeValues[0]) })
@@ -51,6 +76,50 @@ const qrStreamOutput = z.object({
   dataUrl: z.string(),
   createdAt: z.string(),
 });
+
+type DecimalLike = { toNumber: () => unknown };
+
+function hasToNumber(value: unknown): value is DecimalLike {
+  return isRecord(value) && typeof value.toNumber === "function";
+}
+
+function monthBounds(month: string): { gte: Date; lt: Date } {
+  const year = Number(month.slice(0, 4));
+  const monthIndex = Number(month.slice(5, 7)) - 1;
+
+  return {
+    gte: new Date(Date.UTC(year, monthIndex, 1)),
+    lt: new Date(Date.UTC(year, monthIndex + 1, 1)),
+  };
+}
+
+function trailingWindowBounds(
+  end: Date,
+  days: number,
+): {
+  gte: Date;
+  lt: Date;
+} {
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - days);
+
+  return { gte: start, lt: end };
+}
+
+function toEstimatedCostNumber(value: unknown): number {
+  const numberValue =
+    typeof value === "number"
+      ? value
+      : hasToNumber(value)
+        ? Number(value.toNumber())
+        : Number(value ?? 0);
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
+    throw new Error("Invalid message cost stored in database");
+  }
+
+  return numberValue;
+}
 
 export const channelRouter = createTRPCRouter({
   connect: orgProcedure.input(channelInput).mutation(async ({ ctx, input }) => {
@@ -111,6 +180,57 @@ export const channelRouter = createTRPCRouter({
         channel: connection.channel,
         status: isStale ? ("DISCONNECTED" as const) : connection.status,
         lastConnectedAt: connection.lastConnectedAt,
+      };
+    }),
+
+  monthlyReport: orgProcedure
+    .input(monthlyReportInput)
+    .output(monthlyReportOutput)
+    .query(async ({ ctx, input }) => {
+      const monthRange = monthBounds(input.month);
+      const averageRange = trailingWindowBounds(monthRange.lt, 30);
+      const [categoryRows, messageCount, podCount] = await Promise.all([
+        ctx.db.messageLog.groupBy({
+          by: ["category"],
+          where: {
+            organizationId: ctx.organizationId,
+            createdAt: monthRange,
+          },
+          _count: { _all: true },
+          _sum: { estimatedCost: true },
+        }),
+        ctx.db.messageLog.count({
+          where: {
+            organizationId: ctx.organizationId,
+            createdAt: averageRange,
+          },
+        }),
+        ctx.db.podSubmission.count({
+          where: {
+            organizationId: ctx.organizationId,
+            receivedAt: averageRange,
+          },
+        }),
+      ]);
+
+      const byCategory = categoryRows.map((row) => ({
+        category: messageCategorySchema.parse(row.category),
+        messageCount: row._count._all,
+        estimatedCost: toEstimatedCostNumber(row._sum.estimatedCost),
+      }));
+      const totalMessages = byCategory.reduce(
+        (total, row) => total + row.messageCount,
+        0,
+      );
+      const avgPerPod = podCount === 0 ? null : messageCount / podCount;
+
+      return {
+        month: input.month,
+        totalMessages,
+        byCategory,
+        avgPerPod,
+        designRuleViolation: designRuleViolation(avgPerPod),
+        csv: toCsv(byCategory),
       };
     }),
 
