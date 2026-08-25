@@ -4,10 +4,14 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 const sourceDirectory = fileURLToPath(new URL("./src", import.meta.url));
+const generatedDirectory = fileURLToPath(
+  new URL("./generated", import.meta.url),
+);
 
 export default defineConfig({
   resolve: {
     alias: {
+      "~/generated": path.resolve(generatedDirectory),
       "~": path.resolve(sourceDirectory),
     },
   },

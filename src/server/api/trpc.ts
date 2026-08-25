@@ -119,25 +119,45 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
+const ROUTINE_POLLING_PROCEDURES = new Set([
+  "channel.status",
+  "channel.intake",
+  "status",
+  "intake",
+]);
+
 async function runTimedProcedure<T>(
   path: string,
   start: number,
   next: () => Promise<T>,
 ): Promise<T> {
   if (t._config.isDev) {
-    // artificial delay in dev
     const waitMs = Math.floor(Math.random() * 400) + 100;
     await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 
   const result = await next();
+  const durationMs = Date.now() - start;
+  const isRoutinePolling = ROUTINE_POLLING_PROCEDURES.has(path);
 
-  logger.info("tRPC procedure completed", {
-    path,
-    durationMs: Date.now() - start,
-  });
+  if (!isRoutinePolling || durationMs > 1000) {
+    logger.info("tRPC procedure completed", { path, durationMs });
+  }
 
   return result;
+}
+
+async function withTimedObservability<T>(
+  path: string,
+  start: number,
+  requestId: string,
+  organizationId: string | null | undefined,
+  next: () => Promise<T>,
+): Promise<T> {
+  return runWithObservabilityContext(
+    createObservabilityContext(requestId, organizationId ?? null),
+    () => runTimedProcedure(path, start, next),
+  );
 }
 
 const timingMiddleware = t.middleware(async ({ ctx, next, path }) => {
@@ -147,9 +167,12 @@ const timingMiddleware = t.middleware(async ({ ctx, next, path }) => {
     ctx.requestId ?? requestIdFromHeaders(ctx.headers),
   );
 
-  return runWithObservabilityContext(
-    createObservabilityContext(requestId, currentContext.organizationId),
-    () => runTimedProcedure(path, start, () => next({ ctx: { requestId } })),
+  return withTimedObservability(
+    path,
+    start,
+    requestId,
+    currentContext.organizationId,
+    () => next({ ctx: { requestId } }),
   );
 });
 
@@ -212,18 +235,14 @@ export const orgProcedure = authenticatedProcedure.use(
       ctx.requestId ?? requestIdFromHeaders(ctx.headers),
     );
 
-    return runWithObservabilityContext(
-      createObservabilityContext(requestId, organizationId),
-      () =>
-        runTimedProcedure(path, start, () =>
-          next({
-            ctx: {
-              db: createTenantScopedDb(ctx.db, organizationId),
-              membership,
-              organizationId,
-            },
-          }),
-        ),
+    return withTimedObservability(path, start, requestId, organizationId, () =>
+      next({
+        ctx: {
+          db: createTenantScopedDb(ctx.db, organizationId),
+          membership,
+          organizationId,
+        },
+      }),
     );
   },
 );

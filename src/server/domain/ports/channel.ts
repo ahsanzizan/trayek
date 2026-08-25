@@ -1,12 +1,44 @@
 import { z } from "zod";
 
-import { normalizeIndonesianPhone } from "~/server/domain/driver/phone";
+export const CHANNEL_HEARTBEAT_TIMEOUT_MS = 15_000;
+
+export const MAX_MESSAGE_BODY_LENGTH = 4096;
 
 export const channelTypeValues = ["WHATSAPP_BAILEYS", "EMAIL"] as const;
 
 export type ChannelType = (typeof channelTypeValues)[number];
 
 export const channelTypeSchema = z.enum(channelTypeValues);
+
+export const channelConnectionStatusValues = [
+  "CONNECTED",
+  "DISCONNECTED",
+  "NEEDS_PAIRING",
+] as const;
+
+export type ChannelConnectionStatus =
+  (typeof channelConnectionStatusValues)[number];
+
+export const channelConnectionStatusSchema = z.enum(
+  channelConnectionStatusValues,
+);
+
+export const messageStatusValues = [
+  "PENDING",
+  "SENT",
+  "DELIVERED",
+  "FAILED",
+] as const;
+
+export type MessageStatus = (typeof messageStatusValues)[number];
+
+export const messageStatusSchema = z.enum(messageStatusValues);
+
+export const messageDirectionValues = ["INBOUND", "OUTBOUND"] as const;
+
+export type MessageDirection = (typeof messageDirectionValues)[number];
+
+export const messageDirectionSchema = z.enum(messageDirectionValues);
 
 export interface InboundMessage {
   id: string;
@@ -34,6 +66,7 @@ export interface ChannelAdapter {
     options?: { subject?: string; mediaUrl?: string },
   ): Promise<{ messageId: string }>;
   parseInbound(payload: unknown): InboundMessage;
+  parseInboundBatch?(payload: unknown): InboundMessage[];
 }
 
 export interface WebhookVerifiable {
@@ -42,30 +75,4 @@ export interface WebhookVerifiable {
 
 export interface ChannelRegistry {
   get(organizationId: string, channel: ChannelType): ChannelAdapter;
-}
-
-export function toJid(phone: string): string {
-  const result = normalizeIndonesianPhone(phone);
-
-  if (!result.ok) {
-    throw new Error("INVALID_E164");
-  }
-
-  return `${result.e164.slice(1)}@s.whatsapp.net`;
-}
-
-export function fromE164(jid: string): string {
-  const suffix = "@s.whatsapp.net";
-
-  if (!jid.endsWith(suffix)) {
-    throw new Error("INVALID_JID");
-  }
-
-  const result = normalizeIndonesianPhone(`+${jid.slice(0, -suffix.length)}`);
-
-  if (!result.ok) {
-    throw new Error("INVALID_JID");
-  }
-
-  return result.e164;
 }

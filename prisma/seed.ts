@@ -273,6 +273,11 @@ export const seedFixturesData = {
       name: "Ibu Sri",
       email: "shipper-c.owner@example.test",
     },
+    {
+      id: "user-sabri",
+      name: "Sabri Siraj Kholbi Abby",
+      email: "sabrisirajkholbiabby@gmail.com",
+    },
   ],
   memberships: [
     {
@@ -309,6 +314,18 @@ export const seedFixturesData = {
       id: "membership-shipper-c-owner",
       userId: "user-shipper-c-owner",
       organizationId: "org-shipper-c",
+      role: "OWNER",
+    },
+    {
+      id: "membership-sabri-forwarder-a-owner",
+      userId: "user-sabri",
+      organizationId: "org-forwarder-a",
+      role: "OWNER",
+    },
+    {
+      id: "membership-sabri-forwarder-b-owner",
+      userId: "user-sabri",
+      organizationId: "org-forwarder-b",
       role: "OWNER",
     },
   ],

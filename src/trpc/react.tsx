@@ -1,7 +1,12 @@
 "use client";
 
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
-import { httpBatchStreamLink, loggerLink } from "@trpc/client";
+import {
+  httpBatchStreamLink,
+  httpSubscriptionLink,
+  loggerLink,
+  splitLink,
+} from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { type Session } from "next-auth";
@@ -54,14 +59,21 @@ export function TRPCReactProvider(props: {
             process.env.NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
-        httpBatchStreamLink({
-          transformer: SuperJSON,
-          url: getBaseUrl() + "/api/trpc",
-          headers: () => {
-            const headers = new Headers();
-            headers.set("x-trpc-source", "nextjs-react");
-            return headers;
-          },
+        splitLink({
+          condition: (op) => op.type === "subscription",
+          true: httpSubscriptionLink({
+            transformer: SuperJSON,
+            url: getBaseUrl() + "/api/trpc",
+          }),
+          false: httpBatchStreamLink({
+            transformer: SuperJSON,
+            url: getBaseUrl() + "/api/trpc",
+            headers: () => {
+              const headers = new Headers();
+              headers.set("x-trpc-source", "nextjs-react");
+              return headers;
+            },
+          }),
         }),
       ],
     }),

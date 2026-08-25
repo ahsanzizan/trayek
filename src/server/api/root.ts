@@ -1,5 +1,6 @@
 import { auditRouter } from "~/server/api/routers/audit";
 import { baselineRouter } from "~/server/api/routers/baseline";
+import { channelRouter } from "~/server/api/routers/channel";
 import { driverRouter } from "~/server/api/routers/driver";
 import { orderRouter } from "~/server/api/routers/order";
 import { podLinkRouter } from "~/server/api/routers/pod-link";
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   driver: driverRouter,
   order: orderRouter,
   baseline: baselineRouter,
+  channel: channelRouter,
   podLink: podLinkRouter,
 });
 

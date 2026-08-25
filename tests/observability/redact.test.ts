@@ -90,6 +90,20 @@ describe("observability redaction", () => {
     expect(result.tokenCount).toBe(1820);
   });
 
+  it("redacts channel identifiers and persisted authentication state", () => {
+    const result = asRecord(
+      redactValue({
+        jid: "6281234567890@s.whatsapp.net",
+        remoteJid: "6281234567890@s.whatsapp.net",
+        authState: { creds: { registered: true } },
+      }),
+    );
+
+    expect(result.jid).toBe("[REDACTED]");
+    expect(result.remoteJid).toBe("[REDACTED]");
+    expect(result.authState).toBe("[REDACTED]");
+  });
+
   it("redacts sensitive keyed payloads while retaining safe correlation IDs", () => {
     const result = asRecord(
       redactValue({

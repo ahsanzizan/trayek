@@ -48,6 +48,11 @@ const NOT_AUDITED = new Map<string, string>([
     "changes which organization the caller is viewing; writes no domain entity. " +
       "It resolves a membership the user already holds and returns it for the session.",
   ],
+  [
+    "channel.connect",
+    "ensures a ChannelConnection row exists for pairing; writes no domain entity " +
+      "and the row is infra state (authState/status) owned by the channel worker.",
+  ],
 ]);
 
 function mutationNames(): string[] {

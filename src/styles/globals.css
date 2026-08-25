@@ -52,6 +52,12 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
   --text-title-lg: 2rem;
   --text-title-lg--line-height: 2.5rem;
   --text-title-sm: 1.25rem;
@@ -77,6 +83,12 @@
   --text-secondary: #d1d2d5;
   --text-muted: #9fa0a2;
   --text-faint: #6d6f73;
+  --success: #4ba56b;
+  --success-subtle: #153b25;
+  --warning: #de6925;
+  --warning-subtle: #4a3832;
+  --danger: #d55353;
+  --danger-subtle: #3a2021;
   --card: var(--surface);
   --card-foreground: var(--text-primary);
   --popover: var(--surface-raised);

@@ -6,8 +6,7 @@ import {
   type ChannelType,
   type InboundMessage,
 } from "~/server/domain/ports/channel";
-
-const MAX_MESSAGE_BODY_LENGTH = 4096;
+import { MAX_MESSAGE_BODY_LENGTH } from "~/server/channels/message-log";
 
 type PendingMessageData = {
   organizationId: string;
