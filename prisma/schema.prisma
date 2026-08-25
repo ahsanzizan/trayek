@@ -295,7 +295,10 @@ model MessageLog {
     status         MessageLogStatus @default(PENDING)
     externalId     String?
     truncated      Boolean         @default(false)
-    createdAt      DateTime        @default(now())
+    category                 String   @default("WHATSAPP_BAILEYS")
+    estimatedCost            Decimal  @default(0) @db.Decimal(12, 4)
+    conversationWindowState  String   @default("N/A")
+    createdAt                DateTime @default(now())
 
     organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 

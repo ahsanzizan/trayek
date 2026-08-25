@@ -9,6 +9,10 @@ import {
   type MessageDirection,
   type MessageStatus,
 } from "~/server/domain/ports/channel";
+import {
+  costMetadataFor,
+  type MessageCostMetadata,
+} from "~/server/domain/channel/cost";
 import { type HumanFallbackRequired } from "~/server/domain/jobs/port";
 import { isRecord } from "~/lib/guards";
 import { fromE164, isWhatsappUserJid, toJid } from "./jid";
@@ -25,7 +29,7 @@ export interface BaileysSocket {
   ): Promise<{ key?: { id?: string | null } } | undefined>;
 }
 
-type PendingMessageData = {
+type PendingMessageData = MessageCostMetadata & {
   organizationId: string;
   channel: ChannelType;
   direction: MessageDirection;
@@ -195,6 +199,7 @@ export function createBaileysAdapter({
     async sendMessage(to, body, _options) {
       const jid = toJid(to);
       const { body: truncatedBody, truncated } = truncateBody(body);
+      const costMetadata = costMetadataFor("WHATSAPP_BAILEYS");
       const log = await messageLog.create({
         data: {
           organizationId,
@@ -205,6 +210,7 @@ export function createBaileysAdapter({
           body: truncatedBody,
           status: "PENDING",
           truncated,
+          ...costMetadata,
         },
       });
 

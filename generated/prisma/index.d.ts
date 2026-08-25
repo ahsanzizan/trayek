@@ -17403,8 +17403,18 @@ export namespace Prisma {
 
   export type AggregateMessageLog = {
     _count: MessageLogCountAggregateOutputType | null
+    _avg: MessageLogAvgAggregateOutputType | null
+    _sum: MessageLogSumAggregateOutputType | null
     _min: MessageLogMinAggregateOutputType | null
     _max: MessageLogMaxAggregateOutputType | null
+  }
+
+  export type MessageLogAvgAggregateOutputType = {
+    estimatedCost: Decimal | null
+  }
+
+  export type MessageLogSumAggregateOutputType = {
+    estimatedCost: Decimal | null
   }
 
   export type MessageLogMinAggregateOutputType = {
@@ -17418,6 +17428,9 @@ export namespace Prisma {
     status: $Enums.MessageLogStatus | null
     externalId: string | null
     truncated: boolean | null
+    category: string | null
+    estimatedCost: Decimal | null
+    conversationWindowState: string | null
     createdAt: Date | null
   }
 
@@ -17432,6 +17445,9 @@ export namespace Prisma {
     status: $Enums.MessageLogStatus | null
     externalId: string | null
     truncated: boolean | null
+    category: string | null
+    estimatedCost: Decimal | null
+    conversationWindowState: string | null
     createdAt: Date | null
   }
 
@@ -17446,10 +17462,21 @@ export namespace Prisma {
     status: number
     externalId: number
     truncated: number
+    category: number
+    estimatedCost: number
+    conversationWindowState: number
     createdAt: number
     _all: number
   }
 
+
+  export type MessageLogAvgAggregateInputType = {
+    estimatedCost?: true
+  }
+
+  export type MessageLogSumAggregateInputType = {
+    estimatedCost?: true
+  }
 
   export type MessageLogMinAggregateInputType = {
     id?: true
@@ -17462,6 +17489,9 @@ export namespace Prisma {
     status?: true
     externalId?: true
     truncated?: true
+    category?: true
+    estimatedCost?: true
+    conversationWindowState?: true
     createdAt?: true
   }
 
@@ -17476,6 +17506,9 @@ export namespace Prisma {
     status?: true
     externalId?: true
     truncated?: true
+    category?: true
+    estimatedCost?: true
+    conversationWindowState?: true
     createdAt?: true
   }
 
@@ -17490,6 +17523,9 @@ export namespace Prisma {
     status?: true
     externalId?: true
     truncated?: true
+    category?: true
+    estimatedCost?: true
+    conversationWindowState?: true
     createdAt?: true
     _all?: true
   }
@@ -17532,6 +17568,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: MessageLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: MessageLogMinAggregateInputType
@@ -17562,6 +17610,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: MessageLogCountAggregateInputType | true
+    _avg?: MessageLogAvgAggregateInputType
+    _sum?: MessageLogSumAggregateInputType
     _min?: MessageLogMinAggregateInputType
     _max?: MessageLogMaxAggregateInputType
   }
@@ -17577,8 +17627,13 @@ export namespace Prisma {
     status: $Enums.MessageLogStatus
     externalId: string | null
     truncated: boolean
+    category: string
+    estimatedCost: Decimal
+    conversationWindowState: string
     createdAt: Date
     _count: MessageLogCountAggregateOutputType | null
+    _avg: MessageLogAvgAggregateOutputType | null
+    _sum: MessageLogSumAggregateOutputType | null
     _min: MessageLogMinAggregateOutputType | null
     _max: MessageLogMaxAggregateOutputType | null
   }
@@ -17608,6 +17663,9 @@ export namespace Prisma {
     status?: boolean
     externalId?: boolean
     truncated?: boolean
+    category?: boolean
+    estimatedCost?: boolean
+    conversationWindowState?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageLog"]>
@@ -17623,6 +17681,9 @@ export namespace Prisma {
     status?: boolean
     externalId?: boolean
     truncated?: boolean
+    category?: boolean
+    estimatedCost?: boolean
+    conversationWindowState?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageLog"]>
@@ -17638,6 +17699,9 @@ export namespace Prisma {
     status?: boolean
     externalId?: boolean
     truncated?: boolean
+    category?: boolean
+    estimatedCost?: boolean
+    conversationWindowState?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["messageLog"]>
@@ -17653,10 +17717,13 @@ export namespace Prisma {
     status?: boolean
     externalId?: boolean
     truncated?: boolean
+    category?: boolean
+    estimatedCost?: boolean
+    conversationWindowState?: boolean
     createdAt?: boolean
   }
 
-  export type MessageLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "channel" | "direction" | "from" | "to" | "body" | "status" | "externalId" | "truncated" | "createdAt", ExtArgs["result"]["messageLog"]>
+  export type MessageLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "channel" | "direction" | "from" | "to" | "body" | "status" | "externalId" | "truncated" | "category" | "estimatedCost" | "conversationWindowState" | "createdAt", ExtArgs["result"]["messageLog"]>
   export type MessageLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }
@@ -17683,6 +17750,9 @@ export namespace Prisma {
       status: $Enums.MessageLogStatus
       externalId: string | null
       truncated: boolean
+      category: string
+      estimatedCost: Prisma.Decimal
+      conversationWindowState: string
       createdAt: Date
     }, ExtArgs["result"]["messageLog"]>
     composites: {}
@@ -18118,6 +18188,9 @@ export namespace Prisma {
     readonly status: FieldRef<"MessageLog", 'MessageLogStatus'>
     readonly externalId: FieldRef<"MessageLog", 'String'>
     readonly truncated: FieldRef<"MessageLog", 'Boolean'>
+    readonly category: FieldRef<"MessageLog", 'String'>
+    readonly estimatedCost: FieldRef<"MessageLog", 'Decimal'>
+    readonly conversationWindowState: FieldRef<"MessageLog", 'String'>
     readonly createdAt: FieldRef<"MessageLog", 'DateTime'>
   }
     
@@ -31603,6 +31676,9 @@ export namespace Prisma {
     status: 'status',
     externalId: 'externalId',
     truncated: 'truncated',
+    category: 'category',
+    estimatedCost: 'estimatedCost',
+    conversationWindowState: 'conversationWindowState',
     createdAt: 'createdAt'
   };
 
@@ -31990,6 +32066,20 @@ export namespace Prisma {
    * Reference to a field of type 'MessageLogStatus[]'
    */
   export type ListEnumMessageLogStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageLogStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -32966,6 +33056,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
     externalId?: StringNullableFilter<"MessageLog"> | string | null
     truncated?: BoolFilter<"MessageLog"> | boolean
+    category?: StringFilter<"MessageLog"> | string
+    estimatedCost?: DecimalFilter<"MessageLog"> | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFilter<"MessageLog"> | string
     createdAt?: DateTimeFilter<"MessageLog"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
   }
@@ -32981,6 +33074,9 @@ export namespace Prisma {
     status?: SortOrder
     externalId?: SortOrderInput | SortOrder
     truncated?: SortOrder
+    category?: SortOrder
+    estimatedCost?: SortOrder
+    conversationWindowState?: SortOrder
     createdAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
   }
@@ -33000,6 +33096,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
     externalId?: StringNullableFilter<"MessageLog"> | string | null
     truncated?: BoolFilter<"MessageLog"> | boolean
+    category?: StringFilter<"MessageLog"> | string
+    estimatedCost?: DecimalFilter<"MessageLog"> | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFilter<"MessageLog"> | string
     createdAt?: DateTimeFilter<"MessageLog"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
   }, "id" | "organizationId_externalId">
@@ -33015,10 +33114,15 @@ export namespace Prisma {
     status?: SortOrder
     externalId?: SortOrderInput | SortOrder
     truncated?: SortOrder
+    category?: SortOrder
+    estimatedCost?: SortOrder
+    conversationWindowState?: SortOrder
     createdAt?: SortOrder
     _count?: MessageLogCountOrderByAggregateInput
+    _avg?: MessageLogAvgOrderByAggregateInput
     _max?: MessageLogMaxOrderByAggregateInput
     _min?: MessageLogMinOrderByAggregateInput
+    _sum?: MessageLogSumOrderByAggregateInput
   }
 
   export type MessageLogScalarWhereWithAggregatesInput = {
@@ -33035,6 +33139,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusWithAggregatesFilter<"MessageLog"> | $Enums.MessageLogStatus
     externalId?: StringNullableWithAggregatesFilter<"MessageLog"> | string | null
     truncated?: BoolWithAggregatesFilter<"MessageLog"> | boolean
+    category?: StringWithAggregatesFilter<"MessageLog"> | string
+    estimatedCost?: DecimalWithAggregatesFilter<"MessageLog"> | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringWithAggregatesFilter<"MessageLog"> | string
     createdAt?: DateTimeWithAggregatesFilter<"MessageLog"> | Date | string
   }
 
@@ -34935,6 +35042,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutMessageLogsInput
   }
@@ -34950,6 +35060,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
   }
 
@@ -34963,6 +35076,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMessageLogsNestedInput
   }
@@ -34978,6 +35094,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -34992,6 +35111,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
   }
 
@@ -35005,6 +35127,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -35019,6 +35144,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -37059,6 +37187,17 @@ export namespace Prisma {
     not?: NestedEnumMessageLogStatusFilter<$PrismaModel> | $Enums.MessageLogStatus
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type MessageLogOrganizationIdExternalIdCompoundUniqueInput = {
     organizationId: string
     externalId: string
@@ -37075,7 +37214,14 @@ export namespace Prisma {
     status?: SortOrder
     externalId?: SortOrder
     truncated?: SortOrder
+    category?: SortOrder
+    estimatedCost?: SortOrder
+    conversationWindowState?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type MessageLogAvgOrderByAggregateInput = {
+    estimatedCost?: SortOrder
   }
 
   export type MessageLogMaxOrderByAggregateInput = {
@@ -37089,6 +37235,9 @@ export namespace Prisma {
     status?: SortOrder
     externalId?: SortOrder
     truncated?: SortOrder
+    category?: SortOrder
+    estimatedCost?: SortOrder
+    conversationWindowState?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -37103,7 +37252,14 @@ export namespace Prisma {
     status?: SortOrder
     externalId?: SortOrder
     truncated?: SortOrder
+    category?: SortOrder
+    estimatedCost?: SortOrder
+    conversationWindowState?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type MessageLogSumOrderByAggregateInput = {
+    estimatedCost?: SortOrder
   }
 
   export type EnumChannelTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -37134,6 +37290,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumMessageLogStatusFilter<$PrismaModel>
     _max?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type EnumChannelConnectionStatusFilter<$PrismaModel = never> = {
@@ -38873,6 +39045,14 @@ export namespace Prisma {
     set?: $Enums.MessageLogStatus
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type OrganizationUpdateOneRequiredWithoutMessageLogsNestedInput = {
     create?: XOR<OrganizationCreateWithoutMessageLogsInput, OrganizationUncheckedCreateWithoutMessageLogsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutMessageLogsInput
@@ -39785,6 +39965,17 @@ export namespace Prisma {
     not?: NestedEnumMessageLogStatusFilter<$PrismaModel> | $Enums.MessageLogStatus
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type NestedEnumChannelTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ChannelType | EnumChannelTypeFieldRefInput<$PrismaModel>
     in?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
@@ -39813,6 +40004,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumMessageLogStatusFilter<$PrismaModel>
     _max?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedEnumChannelConnectionStatusFilter<$PrismaModel = never> = {
@@ -40334,6 +40541,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
   }
 
@@ -40347,6 +40557,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
   }
 
@@ -40906,6 +41119,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
     externalId?: StringNullableFilter<"MessageLog"> | string | null
     truncated?: BoolFilter<"MessageLog"> | boolean
+    category?: StringFilter<"MessageLog"> | string
+    estimatedCost?: DecimalFilter<"MessageLog"> | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFilter<"MessageLog"> | string
     createdAt?: DateTimeFilter<"MessageLog"> | Date | string
   }
 
@@ -44576,6 +44792,9 @@ export namespace Prisma {
     status?: $Enums.MessageLogStatus
     externalId?: string | null
     truncated?: boolean
+    category?: string
+    estimatedCost?: Decimal | DecimalJsLike | number | string
+    conversationWindowState?: string
     createdAt?: Date | string
   }
 
@@ -45075,6 +45294,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -45088,6 +45310,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -45101,6 +45326,9 @@ export namespace Prisma {
     status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     truncated?: BoolFieldUpdateOperationsInput | boolean
+    category?: StringFieldUpdateOperationsInput | string
+    estimatedCost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    conversationWindowState?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

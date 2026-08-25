@@ -285,17 +285,20 @@ model AuditLog {
 }
 
 model MessageLog {
-  id             String           @id @default(cuid())
-  organizationId String
-  channel        ChannelType
-  direction      MessageDirection
-  from           String
-  to             String
-  body           String?          @db.Text
-  status         MessageLogStatus @default(PENDING)
-  externalId     String?
-  truncated      Boolean          @default(false)
-  createdAt      DateTime         @default(now())
+  id                      String           @id @default(cuid())
+  organizationId          String
+  channel                 ChannelType
+  direction               MessageDirection
+  from                    String
+  to                      String
+  body                    String?          @db.Text
+  status                  MessageLogStatus @default(PENDING)
+  externalId              String?
+  truncated               Boolean          @default(false)
+  category                String           @default("WHATSAPP_BAILEYS")
+  estimatedCost           Decimal          @default(0) @db.Decimal(12, 4)
+  conversationWindowState String           @default("N/A")
+  createdAt               DateTime         @default(now())
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
