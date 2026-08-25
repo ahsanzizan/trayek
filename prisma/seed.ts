@@ -1,5 +1,7 @@
 import { pathToFileURL } from "node:url";
 
+import { type RequirementRules } from "../src/server/domain/shipper/requirement-rules";
+
 type OrganizationType = "FORWARDER" | "SHIPPER";
 type MembershipRole = "OWNER" | "ADMIN" | "FINANCE" | "VIEWER";
 
@@ -20,6 +22,25 @@ type MembershipFixture = Readonly<{
   userId: string;
   organizationId: string;
   role: MembershipRole;
+}>;
+
+type ShipperFixture = Readonly<{
+  id: string;
+  organizationId: string;
+  name: string;
+  npwp: string | null;
+  financeContactName: string | null;
+  financeContactEmail: string | null;
+  address: string | null;
+}>;
+
+type RequirementProfileFixture = Readonly<{
+  id: string;
+  organizationId: string;
+  shipperId: string;
+  version: number;
+  rules: RequirementRules;
+  changeNote: string;
 }>;
 
 export type SeedWriter = {
@@ -46,6 +67,82 @@ export type SeedWriter = {
       update: Readonly<Pick<MembershipFixture, "role">>;
     }): Promise<unknown>;
   };
+  shipper: {
+    upsert(args: {
+      where: { id: string };
+      create: ShipperFixture;
+      update: Readonly<Omit<ShipperFixture, "id" | "organizationId">>;
+    }): Promise<unknown>;
+  };
+  requirementProfile: {
+    upsert(args: {
+      where: { id: string };
+      create: RequirementProfileFixture;
+      update: Readonly<Pick<RequirementProfileFixture, "rules" | "changeNote">>;
+    }): Promise<unknown>;
+  };
+};
+
+/**
+ * Requirement profiles for the first two design partner shippers, which is the
+ * pair TRK-010 names: one FMCG distributor that rejects on a missing stempel or
+ * foto barang, and one that wants `nama terang` and a `berita acara`.
+ *
+ * Typed as RequirementRules so an invalid seed profile fails to compile rather
+ * than failing at `pnpm db:seed`.
+ */
+const fmcgDistributorRules: RequirementRules = {
+  requiredPodFields: [
+    "tandaTangan",
+    "stempel",
+    "tanggalTerima",
+    "nomorSuratJalan",
+    "jumlahKoli",
+  ],
+  requiredDocuments: ["SURAT_JALAN", "POD", "INVOICE", "FOTO_BARANG"],
+  packetFormat: {
+    fileNamingPattern: "{nomorSuratJalan}-{documentType}",
+    ordering: ["INVOICE", "SURAT_JALAN", "POD", "FOTO_BARANG"],
+    delivery: "MERGED_PDF",
+  },
+  submissionCadence: { type: "WEEKLY", dayOfWeek: 5 },
+  terms: { netDays: 60, clockStart: "PACKET_RECEIVED_DATE" },
+};
+
+const retailChainRules: RequirementRules = {
+  requiredPodFields: [
+    "tandaTangan",
+    "namaTerang",
+    "tanggalTerima",
+    "nomorSuratJalan",
+  ],
+  requiredDocuments: [
+    "SURAT_JALAN",
+    "POD",
+    "INVOICE",
+    "FAKTUR_PAJAK",
+    "BERITA_ACARA",
+  ],
+  packetFormat: {
+    fileNamingPattern: "{nomorOrder}_{documentType}",
+    ordering: ["INVOICE", "FAKTUR_PAJAK", "SURAT_JALAN", "POD", "BERITA_ACARA"],
+    delivery: "SEPARATE_FILES",
+  },
+  submissionCadence: { type: "MONTHLY", dayOfMonth: 25 },
+  terms: { netDays: 30, clockStart: "INVOICE_DATE" },
+};
+
+/** A second organization's shipper, so tenant isolation has something to miss. */
+const chemicalDistributorRules: RequirementRules = {
+  requiredPodFields: ["tandaTangan", "stempel"],
+  requiredDocuments: ["SURAT_JALAN", "POD"],
+  packetFormat: {
+    fileNamingPattern: "{nomorSuratJalan}",
+    ordering: ["SURAT_JALAN", "POD"],
+    delivery: "MERGED_PDF",
+  },
+  submissionCadence: { type: "ROLLING" },
+  terms: { netDays: 14, clockStart: "INVOICE_DATE" },
 };
 
 export const seedFixturesData = {
@@ -131,6 +228,61 @@ export const seedFixturesData = {
       role: "OWNER",
     },
   ],
+  shippers: [
+    {
+      id: "shipper-a-fmcg",
+      organizationId: "org-forwarder-a",
+      name: "PT FMCG Indonesia",
+      npwp: "01.234.567.8-901.000",
+      financeContactName: "Ibu Sri",
+      financeContactEmail: "finance@fmcg.example.test",
+      address: "Kawasan Industri Pulogadung, Jakarta Timur",
+    },
+    {
+      id: "shipper-a-retail",
+      organizationId: "org-forwarder-a",
+      name: "PT Ritel Nusantara",
+      npwp: "02.345.678.9-012.000",
+      financeContactName: "Bapak Hendra",
+      financeContactEmail: "ap@ritelnusantara.example.test",
+      address: "Jl. Gatot Subroto No. 12, Jakarta Selatan",
+    },
+    {
+      id: "shipper-b-chemical",
+      organizationId: "org-forwarder-b",
+      name: "PT Kimia Raya",
+      npwp: null,
+      financeContactName: null,
+      financeContactEmail: null,
+      address: "Cikarang, Bekasi",
+    },
+  ],
+  requirementProfiles: [
+    {
+      id: "profile-a-fmcg-v1",
+      organizationId: "org-forwarder-a",
+      shipperId: "shipper-a-fmcg",
+      version: 1,
+      rules: fmcgDistributorRules,
+      changeNote: "Profil awal dari hasil wawancara onboarding.",
+    },
+    {
+      id: "profile-a-retail-v1",
+      organizationId: "org-forwarder-a",
+      shipperId: "shipper-a-retail",
+      version: 1,
+      rules: retailChainRules,
+      changeNote: "Profil awal dari hasil wawancara onboarding.",
+    },
+    {
+      id: "profile-b-chemical-v1",
+      organizationId: "org-forwarder-b",
+      shipperId: "shipper-b-chemical",
+      version: 1,
+      rules: chemicalDistributorRules,
+      changeNote: "Profil awal dari hasil wawancara onboarding.",
+    },
+  ],
 } as const;
 
 export async function seedFixtures(writer: SeedWriter): Promise<void> {
@@ -160,6 +312,30 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
       },
       create: membership,
       update: { role: membership.role },
+    });
+  }
+
+  for (const shipper of seedFixturesData.shippers) {
+    await writer.shipper.upsert({
+      where: { id: shipper.id },
+      create: shipper,
+      update: {
+        name: shipper.name,
+        npwp: shipper.npwp,
+        financeContactName: shipper.financeContactName,
+        financeContactEmail: shipper.financeContactEmail,
+        address: shipper.address,
+      },
+    });
+  }
+
+  // Version 1 only. A seeded profile is never superseded, so re-running the
+  // seed leaves the single active version per shipper intact.
+  for (const profile of seedFixturesData.requirementProfiles) {
+    await writer.requirementProfile.upsert({
+      where: { id: profile.id },
+      create: profile,
+      update: { rules: profile.rules, changeNote: profile.changeNote },
     });
   }
 }

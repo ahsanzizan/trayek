@@ -8,6 +8,18 @@ export type AuditTransaction = Omit<
 >;
 
 /**
+ * The entry describing a mutation, or a function producing it from the result.
+ *
+ * A create has no `entityId` until its row exists, so requiring a static entry
+ * would force every create to log an audit row that cannot name its subject.
+ */
+export type AuditEntryFor<T> = AuditEntry | ((result: T) => AuditEntry);
+
+function resolveEntry<T>(entry: AuditEntryFor<T>, result: T): AuditEntry {
+  return typeof entry === "function" ? entry(result) : entry;
+}
+
+/**
  * Runs a mutation and records it, both inside one transaction.
  *
  * Same transaction, not two writes: an audit row for a mutation that rolled
@@ -19,15 +31,20 @@ export type AuditTransaction = Omit<
  */
 export async function withAudit<T>(
   db: PrismaClient,
-  entry: AuditEntry,
+  entry: AuditEntryFor<T>,
   mutate: (tx: AuditTransaction) => Promise<T>,
 ): Promise<T> {
-  // Built before the transaction opens so an invalid entry fails without
-  // taking a connection or leaving a half-open transaction behind.
-  const row = toAuditLogRow(entry);
+  // A static entry is built before the transaction opens, so an invalid one
+  // fails without taking a connection or leaving a half-open transaction
+  // behind. A result-derived entry cannot be checked that early — the row it
+  // names does not exist yet — so it is validated inside, where a failure
+  // rolls the mutation back with it.
+  const prevalidated =
+    typeof entry === "function" ? null : toAuditLogRow(entry);
 
   return db.$transaction(async (tx) => {
     const result = await mutate(tx);
+    const row = prevalidated ?? toAuditLogRow(resolveEntry(entry, result));
 
     await tx.auditLog.create({
       data: {

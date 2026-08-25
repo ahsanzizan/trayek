@@ -250,6 +250,31 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ShipperScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  npwp: 'npwp',
+  financeContactName: 'financeContactName',
+  financeContactEmail: 'financeContactEmail',
+  financeContactPhone: 'financeContactPhone',
+  address: 'address',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RequirementProfileScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  shipperId: 'shipperId',
+  version: 'version',
+  rules: 'rules',
+  changeNote: 'changeNote',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  supersededAt: 'supersededAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -309,7 +334,9 @@ exports.Prisma.ModelName = {
   DeadLetterJob: 'DeadLetterJob',
   HumanFallbackEvent: 'HumanFallbackEvent',
   LlmCallLog: 'LlmCallLog',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Shipper: 'Shipper',
+  RequirementProfile: 'RequirementProfile'
 };
 
 /**

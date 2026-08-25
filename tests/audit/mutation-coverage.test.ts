@@ -17,7 +17,11 @@ import { appRouter } from "~/server/api/root";
  */
 
 /** Mutations that write an audit entry through `withAudit()`. */
-const AUDITED = new Set<string>([]);
+const AUDITED = new Set<string>([
+  "shipper.create",
+  "shipper.update",
+  "shipper.publishProfileVersion",
+]);
 
 /**
  * Mutations that deliberately do not audit, each with a stated reason.
