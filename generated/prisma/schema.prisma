@@ -27,6 +27,20 @@ enum MembershipRole {
   VIEWER
 }
 
+/// The life of one order, from despatch to cash. Each transition is a step the
+/// product either automates or gates; nothing here is a pricing state.
+enum OrderStatus {
+  CREATED
+  IN_TRANSIT
+  DELIVERED
+  POD_RECEIVED
+  POD_VALIDATED
+  PACKET_READY
+  INVOICED
+  PAID
+  REJECTED
+}
+
 enum AuditActorType {
   USER
   AGENT
@@ -50,6 +64,7 @@ model Organization {
   shippers                  Shipper[]
   requirementProfiles       RequirementProfile[]
   drivers                   Driver[]
+  orders                    Order[]
 }
 
 model Post {
@@ -252,6 +267,7 @@ model Shipper {
 
   organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   requirementProfiles RequirementProfile[]
+  orders              Order[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
@@ -311,7 +327,52 @@ model Driver {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders       Order[]
 
   @@unique([organizationId, phone])
   @@index([organizationId])
+}
+
+/// One shipment, and the thing a POD is matched against (TRK-011).
+///
+/// `nilaiTagihan` is copied from whatever the forwarder already agreed with the
+/// shipper. It is never computed, suggested, or derived here — INV-3 — and
+/// `tests/invariants/inv-3-no-pricing` fails the build if arithmetic appears
+/// on it anywhere in the source.
+model Order {
+  id                  String      @id @default(cuid())
+  organizationId      String
+  nomorOrder          String
+  /// Carried on the surat jalan issued before the trip; the number a POD is
+  /// matched against, and the natural key an import deduplicates on.
+  nomorSuratJalan     String
+  shipperId           String
+  /// Null until a driver is assigned. An order can be planned before anyone
+  /// is allocated to drive it.
+  driverId            String?
+  origin              String
+  destination         String
+  plannedDeliveryDate DateTime?
+  actualDeliveryDate  DateTime?
+  jumlahKoli          Int?
+  /// Grams, so weight is exact integer arithmetic rather than a float that
+  /// drifts once it is summed across a packet.
+  weightGram          Int?
+  /// Whole rupiah, copied never computed (INV-3). Not sen: the minor unit is
+  /// not used in Indonesian freight invoicing, and storing it would inflate
+  /// every value 100x and force a divide on the display path — the exact
+  /// arithmetic the invariant test exists to forbid.
+  nilaiTagihan        BigInt?
+  status              OrderStatus @default(CREATED)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  shipper      Shipper      @relation(fields: [shipperId], references: [id], onDelete: Restrict)
+  driver       Driver?      @relation(fields: [driverId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, nomorSuratJalan])
+  @@index([organizationId, status])
+  @@index([organizationId, shipperId])
+  @@index([organizationId, driverId])
 }

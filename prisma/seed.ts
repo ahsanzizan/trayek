@@ -52,6 +52,33 @@ type DriverFixture = Readonly<{
   vendorId: string | null;
 }>;
 
+type OrderStatus =
+  | "CREATED"
+  | "IN_TRANSIT"
+  | "DELIVERED"
+  | "POD_RECEIVED"
+  | "POD_VALIDATED"
+  | "PACKET_READY"
+  | "INVOICED"
+  | "PAID"
+  | "REJECTED";
+
+type OrderFixture = Readonly<{
+  id: string;
+  organizationId: string;
+  nomorOrder: string;
+  nomorSuratJalan: string;
+  shipperId: string;
+  driverId: string | null;
+  origin: string;
+  destination: string;
+  jumlahKoli: number | null;
+  weightGram: number | null;
+  /** Whole rupiah, copied as agreed. Never derived (INV-3). */
+  nilaiTagihan: bigint | null;
+  status: OrderStatus;
+}>;
+
 export type SeedWriter = {
   organization: {
     upsert(args: {
@@ -95,6 +122,13 @@ export type SeedWriter = {
       where: { id: string };
       create: DriverFixture;
       update: Readonly<Omit<DriverFixture, "id" | "organizationId">>;
+    }): Promise<unknown>;
+  };
+  order: {
+    upsert(args: {
+      where: { id: string };
+      create: OrderFixture;
+      update: Readonly<Pick<OrderFixture, "status" | "driverId">>;
     }): Promise<unknown>;
   };
 };
@@ -325,6 +359,50 @@ export const seedFixturesData = {
       vendorId: null,
     },
   ],
+  orders: [
+    {
+      id: "order-a-fmcg-1",
+      organizationId: "org-forwarder-a",
+      nomorOrder: "ORD-2026-0001",
+      nomorSuratJalan: "SJ-2026-0001",
+      shipperId: "shipper-a-fmcg",
+      driverId: "driver-a-herman",
+      origin: "Gudang Cakung, Jakarta Timur",
+      destination: "DC Bandung, Jawa Barat",
+      jumlahKoli: 120,
+      weightGram: 2_400_000,
+      nilaiTagihan: 4_500_000n,
+      status: "DELIVERED",
+    },
+    {
+      id: "order-a-retail-1",
+      organizationId: "org-forwarder-a",
+      nomorOrder: "ORD-2026-0002",
+      nomorSuratJalan: "SJ-2026-0002",
+      shipperId: "shipper-a-retail",
+      driverId: "driver-a-subcontracted",
+      origin: "Gudang Cikarang, Bekasi",
+      destination: "Toko Semarang, Jawa Tengah",
+      jumlahKoli: 45,
+      weightGram: 900_000,
+      nilaiTagihan: 2_750_000n,
+      status: "CREATED",
+    },
+    {
+      id: "order-b-only",
+      organizationId: "org-forwarder-b",
+      nomorOrder: "ORD-B-0001",
+      nomorSuratJalan: "SJ-B-0001",
+      shipperId: "shipper-b-chemical",
+      driverId: "driver-b-only",
+      origin: "Cikarang, Bekasi",
+      destination: "Cilegon, Banten",
+      jumlahKoli: 8,
+      weightGram: 160_000,
+      nilaiTagihan: 1_100_000n,
+      status: "CREATED",
+    },
+  ],
 } as const;
 
 export async function seedFixtures(writer: SeedWriter): Promise<void> {
@@ -391,6 +469,15 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
         vehiclePlate: driver.vehiclePlate,
         vendorId: driver.vendorId,
       },
+    });
+  }
+
+  // Last: an order references a shipper and a driver that must already exist.
+  for (const order of seedFixturesData.orders) {
+    await writer.order.upsert({
+      where: { id: order.id },
+      create: order,
+      update: { status: order.status, driverId: order.driverId },
     });
   }
 }

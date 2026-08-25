@@ -92,6 +92,11 @@ describe("seed fixtures", () => {
           operations.push(`driver:${create.id}`);
         },
       },
+      order: {
+        upsert: async ({ create }) => {
+          operations.push(`order:${create.id}`);
+        },
+      },
     };
 
     await seedFixtures(writer);
@@ -111,6 +116,7 @@ describe("seed fixtures", () => {
         (profile) => `requirementProfile:${profile.id}`,
       ),
       ...seedFixturesData.drivers.map((driver) => `driver:${driver.id}`),
+      ...seedFixturesData.orders.map((order) => `order:${order.id}`),
     ]);
   });
 });

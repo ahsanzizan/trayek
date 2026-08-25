@@ -1,5 +1,6 @@
 import { auditRouter } from "~/server/api/routers/audit";
 import { driverRouter } from "~/server/api/routers/driver";
+import { orderRouter } from "~/server/api/routers/order";
 import { organizationRouter } from "~/server/api/routers/organization";
 import { postRouter } from "~/server/api/routers/post";
 import { shipperRouter } from "~/server/api/routers/shipper";
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   audit: auditRouter,
   shipper: shipperRouter,
   driver: driverRouter,
+  order: orderRouter,
 });
 
 // export type definition of API
