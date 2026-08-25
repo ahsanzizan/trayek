@@ -27,6 +27,9 @@ const AUDITED = new Set<string>([
   "baseline.captureClaimed",
   "baseline.captureFromBalances",
   "baseline.importHistoricalInvoices",
+  "podLink.issue",
+  "podLink.revoke",
+  "podLink.rotate",
 ]);
 
 /**

@@ -1,5 +1,6 @@
 import { pathToFileURL } from "node:url";
 
+import { hashUploadToken } from "../src/server/domain/pod-link/token";
 import { type RequirementRules } from "../src/server/domain/shipper/requirement-rules";
 
 type OrganizationType = "FORWARDER" | "SHIPPER";
@@ -79,6 +80,15 @@ type OrderFixture = Readonly<{
   status: OrderStatus;
 }>;
 
+type PodUploadLinkFixture = Readonly<{
+  id: string;
+  organizationId: string;
+  orderId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  useBudget: number;
+}>;
+
 export type SeedWriter = {
   organization: {
     upsert(args: {
@@ -129,6 +139,13 @@ export type SeedWriter = {
       where: { id: string };
       create: OrderFixture;
       update: Readonly<Pick<OrderFixture, "status" | "driverId">>;
+    }): Promise<unknown>;
+  };
+  podUploadLink: {
+    upsert(args: {
+      where: { id: string };
+      create: PodUploadLinkFixture;
+      update: Readonly<Pick<PodUploadLinkFixture, "expiresAt" | "useBudget">>;
     }): Promise<unknown>;
   };
 };
@@ -194,6 +211,23 @@ const chemicalDistributorRules: RequirementRules = {
   submissionCadence: { type: "ROLLING" },
   terms: { netDays: 14, clockStart: "INVOICE_DATE" },
 };
+
+/**
+ * Upload tokens the fixtures issue. Deliberately fixed and deliberately
+ * obvious: the isolation tests need to present a real token belonging to one
+ * organization against another organization's order, and a token nobody can
+ * predict cannot be written into a test. Nothing outside seeding uses these,
+ * and a seeded database is never a deployed one.
+ */
+export const SEED_POD_LINK_TOKENS = {
+  forwarderA: "TRAYEKSEEDA000000001",
+  forwarderB: "TRAYEKSEEDB000000002",
+} as const;
+
+/** Far enough out that a seeded link is live for any plausible test run. */
+export const SEED_POD_LINK_EXPIRY = new Date(
+  Date.now() + 365 * 24 * 60 * 60 * 1000,
+);
 
 export const seedFixturesData = {
   organizations: [
@@ -403,6 +437,24 @@ export const seedFixturesData = {
       status: "CREATED",
     },
   ],
+  podUploadLinks: [
+    {
+      id: "pod-link-a-fmcg-1",
+      organizationId: "org-forwarder-a",
+      orderId: "order-a-fmcg-1",
+      tokenHash: hashUploadToken(SEED_POD_LINK_TOKENS.forwarderA),
+      expiresAt: SEED_POD_LINK_EXPIRY,
+      useBudget: 10,
+    },
+    {
+      id: "pod-link-b-only",
+      organizationId: "org-forwarder-b",
+      orderId: "order-b-only",
+      tokenHash: hashUploadToken(SEED_POD_LINK_TOKENS.forwarderB),
+      expiresAt: SEED_POD_LINK_EXPIRY,
+      useBudget: 10,
+    },
+  ],
 } as const;
 
 export async function seedFixtures(writer: SeedWriter): Promise<void> {
@@ -472,12 +524,21 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
     });
   }
 
-  // Last: an order references a shipper and a driver that must already exist.
+  // An order references a shipper and a driver that must already exist.
   for (const order of seedFixturesData.orders) {
     await writer.order.upsert({
       where: { id: order.id },
       create: order,
       update: { status: order.status, driverId: order.driverId },
+    });
+  }
+
+  // Last: an upload link references its order.
+  for (const link of seedFixturesData.podUploadLinks) {
+    await writer.podUploadLink.upsert({
+      where: { id: link.id },
+      create: link,
+      update: { expiresAt: link.expiresAt, useBudget: link.useBudget },
     });
   }
 }

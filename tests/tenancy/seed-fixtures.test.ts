@@ -97,6 +97,11 @@ describe("seed fixtures", () => {
           operations.push(`order:${create.id}`);
         },
       },
+      podUploadLink: {
+        upsert: async ({ create }) => {
+          operations.push(`podUploadLink:${create.id}`);
+        },
+      },
     };
 
     await seedFixtures(writer);
@@ -117,6 +122,10 @@ describe("seed fixtures", () => {
       ),
       ...seedFixturesData.drivers.map((driver) => `driver:${driver.id}`),
       ...seedFixturesData.orders.map((order) => `order:${order.id}`),
+      // Links last: one references an order that must already exist.
+      ...seedFixturesData.podUploadLinks.map(
+        (link) => `podUploadLink:${link.id}`,
+      ),
     ]);
   });
 });

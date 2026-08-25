@@ -150,6 +150,28 @@ export type DsoBaseline = $Result.DefaultSelection<Prisma.$DsoBaselinePayload>
  * Nothing derives a rate, margin, or price from it (INV-3).
  */
 export type HistoricalInvoice = $Result.DefaultSelection<Prisma.$HistoricalInvoicePayload>
+/**
+ * Model PodUploadLink
+ * A signed link that lets one driver upload a POD for exactly one order
+ * without an account (TRK-024).
+ * 
+ * The token itself is never stored, only its SHA-256 digest, so a database
+ * dump yields nothing replayable. It is an opaque random string checked
+ * against this table rather than a self-describing signed blob because both
+ * revocation and the use budget need server state anyway: a stateless token
+ * can prove it was issued, but not that it is still allowed.
+ */
+export type PodUploadLink = $Result.DefaultSelection<Prisma.$PodUploadLinkPayload>
+/**
+ * Model PodUploadThrottle
+ * Fixed-window request counters for the public POD upload route (TRK-024).
+ * 
+ * Deliberately not tenant-scoped: an IP bucket belongs to no organization,
+ * and the route is reached before any tenant is known. Only digests are
+ * stored. A raw IP is personal data under UU PDP, and a raw token here would
+ * undo the point of hashing it on `PodUploadLink`.
+ */
+export type PodUploadThrottle = $Result.DefaultSelection<Prisma.$PodUploadThrottlePayload>
 
 /**
  * Enums
@@ -595,6 +617,26 @@ export class PrismaClient<
     * ```
     */
   get historicalInvoice(): Prisma.HistoricalInvoiceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.podUploadLink`: Exposes CRUD operations for the **PodUploadLink** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PodUploadLinks
+    * const podUploadLinks = await prisma.podUploadLink.findMany()
+    * ```
+    */
+  get podUploadLink(): Prisma.PodUploadLinkDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.podUploadThrottle`: Exposes CRUD operations for the **PodUploadThrottle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PodUploadThrottles
+    * const podUploadThrottles = await prisma.podUploadThrottle.findMany()
+    * ```
+    */
+  get podUploadThrottle(): Prisma.PodUploadThrottleDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1055,7 +1097,9 @@ export namespace Prisma {
     Driver: 'Driver',
     Order: 'Order',
     DsoBaseline: 'DsoBaseline',
-    HistoricalInvoice: 'HistoricalInvoice'
+    HistoricalInvoice: 'HistoricalInvoice',
+    PodUploadLink: 'PodUploadLink',
+    PodUploadThrottle: 'PodUploadThrottle'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1074,7 +1118,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "messageLog" | "channelConnection" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "messageLog" | "channelConnection" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice" | "podUploadLink" | "podUploadThrottle"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2558,6 +2602,154 @@ export namespace Prisma {
           }
         }
       }
+      PodUploadLink: {
+        payload: Prisma.$PodUploadLinkPayload<ExtArgs>
+        fields: Prisma.PodUploadLinkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PodUploadLinkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PodUploadLinkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          findFirst: {
+            args: Prisma.PodUploadLinkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PodUploadLinkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          findMany: {
+            args: Prisma.PodUploadLinkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>[]
+          }
+          create: {
+            args: Prisma.PodUploadLinkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          createMany: {
+            args: Prisma.PodUploadLinkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PodUploadLinkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>[]
+          }
+          delete: {
+            args: Prisma.PodUploadLinkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          update: {
+            args: Prisma.PodUploadLinkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          deleteMany: {
+            args: Prisma.PodUploadLinkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PodUploadLinkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PodUploadLinkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>[]
+          }
+          upsert: {
+            args: Prisma.PodUploadLinkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadLinkPayload>
+          }
+          aggregate: {
+            args: Prisma.PodUploadLinkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePodUploadLink>
+          }
+          groupBy: {
+            args: Prisma.PodUploadLinkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PodUploadLinkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PodUploadLinkCountArgs<ExtArgs>
+            result: $Utils.Optional<PodUploadLinkCountAggregateOutputType> | number
+          }
+        }
+      }
+      PodUploadThrottle: {
+        payload: Prisma.$PodUploadThrottlePayload<ExtArgs>
+        fields: Prisma.PodUploadThrottleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PodUploadThrottleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PodUploadThrottleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          findFirst: {
+            args: Prisma.PodUploadThrottleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PodUploadThrottleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          findMany: {
+            args: Prisma.PodUploadThrottleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>[]
+          }
+          create: {
+            args: Prisma.PodUploadThrottleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          createMany: {
+            args: Prisma.PodUploadThrottleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PodUploadThrottleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>[]
+          }
+          delete: {
+            args: Prisma.PodUploadThrottleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          update: {
+            args: Prisma.PodUploadThrottleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          deleteMany: {
+            args: Prisma.PodUploadThrottleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PodUploadThrottleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PodUploadThrottleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>[]
+          }
+          upsert: {
+            args: Prisma.PodUploadThrottleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodUploadThrottlePayload>
+          }
+          aggregate: {
+            args: Prisma.PodUploadThrottleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePodUploadThrottle>
+          }
+          groupBy: {
+            args: Prisma.PodUploadThrottleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PodUploadThrottleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PodUploadThrottleCountArgs<ExtArgs>
+            result: $Utils.Optional<PodUploadThrottleCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2674,6 +2866,8 @@ export namespace Prisma {
     order?: OrderOmit
     dsoBaseline?: DsoBaselineOmit
     historicalInvoice?: HistoricalInvoiceOmit
+    podUploadLink?: PodUploadLinkOmit
+    podUploadThrottle?: PodUploadThrottleOmit
   }
 
   /* Types for Logging */
@@ -2768,6 +2962,7 @@ export namespace Prisma {
     historicalInvoices: number
     messageLogs: number
     channelConnections: number
+    podUploadLinks: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2785,6 +2980,7 @@ export namespace Prisma {
     historicalInvoices?: boolean | OrganizationCountOutputTypeCountHistoricalInvoicesArgs
     messageLogs?: boolean | OrganizationCountOutputTypeCountMessageLogsArgs
     channelConnections?: boolean | OrganizationCountOutputTypeCountChannelConnectionsArgs
+    podUploadLinks?: boolean | OrganizationCountOutputTypeCountPodUploadLinksArgs
   }
 
   // Custom InputTypes
@@ -2894,6 +3090,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountChannelConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChannelConnectionWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountPodUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodUploadLinkWhereInput
   }
 
 
@@ -3023,6 +3226,37 @@ export namespace Prisma {
    */
   export type DriverCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type OrderCountOutputType
+   */
+
+  export type OrderCountOutputType = {
+    podUploadLinks: number
+  }
+
+  export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    podUploadLinks?: boolean | OrderCountOutputTypeCountPodUploadLinksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderCountOutputType
+     */
+    select?: OrderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountPodUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodUploadLinkWhereInput
   }
 
 
@@ -3262,6 +3496,7 @@ export namespace Prisma {
     historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
     messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
     channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
+    podUploadLinks?: boolean | Organization$podUploadLinksArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -3311,6 +3546,7 @@ export namespace Prisma {
     historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
     messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
     channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
+    podUploadLinks?: boolean | Organization$podUploadLinksArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3333,6 +3569,7 @@ export namespace Prisma {
       historicalInvoices: Prisma.$HistoricalInvoicePayload<ExtArgs>[]
       messageLogs: Prisma.$MessageLogPayload<ExtArgs>[]
       channelConnections: Prisma.$ChannelConnectionPayload<ExtArgs>[]
+      podUploadLinks: Prisma.$PodUploadLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3750,6 +3987,7 @@ export namespace Prisma {
     historicalInvoices<T extends Organization$historicalInvoicesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$historicalInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messageLogs<T extends Organization$messageLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$messageLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     channelConnections<T extends Organization$channelConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$channelConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    podUploadLinks<T extends Organization$podUploadLinksArgs<ExtArgs> = {}>(args?: Subset<T, Organization$podUploadLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4507,6 +4745,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ChannelConnectionScalarFieldEnum | ChannelConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.podUploadLinks
+   */
+  export type Organization$podUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    where?: PodUploadLinkWhereInput
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    cursor?: PodUploadLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
   }
 
   /**
@@ -22848,6 +23110,8 @@ export namespace Prisma {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     shipper?: boolean | ShipperDefaultArgs<ExtArgs>
     driver?: boolean | Order$driverArgs<ExtArgs>
+    podUploadLinks?: boolean | Order$podUploadLinksArgs<ExtArgs>
+    _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -22918,6 +23182,8 @@ export namespace Prisma {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     shipper?: boolean | ShipperDefaultArgs<ExtArgs>
     driver?: boolean | Order$driverArgs<ExtArgs>
+    podUploadLinks?: boolean | Order$podUploadLinksArgs<ExtArgs>
+    _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -22936,6 +23202,7 @@ export namespace Prisma {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       shipper: Prisma.$ShipperPayload<ExtArgs>
       driver: Prisma.$DriverPayload<ExtArgs> | null
+      podUploadLinks: Prisma.$PodUploadLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23369,6 +23636,7 @@ export namespace Prisma {
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     shipper<T extends ShipperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShipperDefaultArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     driver<T extends Order$driverArgs<ExtArgs> = {}>(args?: Subset<T, Order$driverArgs<ExtArgs>>): Prisma__DriverClient<$Result.GetResult<Prisma.$DriverPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    podUploadLinks<T extends Order$podUploadLinksArgs<ExtArgs> = {}>(args?: Subset<T, Order$podUploadLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23826,6 +24094,30 @@ export namespace Prisma {
      */
     include?: DriverInclude<ExtArgs> | null
     where?: DriverWhereInput
+  }
+
+  /**
+   * Order.podUploadLinks
+   */
+  export type Order$podUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    where?: PodUploadLinkWhereInput
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    cursor?: PodUploadLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
   }
 
   /**
@@ -26208,6 +26500,2233 @@ export namespace Prisma {
 
 
   /**
+   * Model PodUploadLink
+   */
+
+  export type AggregatePodUploadLink = {
+    _count: PodUploadLinkCountAggregateOutputType | null
+    _avg: PodUploadLinkAvgAggregateOutputType | null
+    _sum: PodUploadLinkSumAggregateOutputType | null
+    _min: PodUploadLinkMinAggregateOutputType | null
+    _max: PodUploadLinkMaxAggregateOutputType | null
+  }
+
+  export type PodUploadLinkAvgAggregateOutputType = {
+    useBudget: number | null
+    useCount: number | null
+  }
+
+  export type PodUploadLinkSumAggregateOutputType = {
+    useBudget: number | null
+    useCount: number | null
+  }
+
+  export type PodUploadLinkMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    orderId: string | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    useBudget: number | null
+    useCount: number | null
+    lastUsedAt: Date | null
+    revokedAt: Date | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PodUploadLinkMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    orderId: string | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    useBudget: number | null
+    useCount: number | null
+    lastUsedAt: Date | null
+    revokedAt: Date | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PodUploadLinkCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    orderId: number
+    tokenHash: number
+    expiresAt: number
+    useBudget: number
+    useCount: number
+    lastUsedAt: number
+    revokedAt: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PodUploadLinkAvgAggregateInputType = {
+    useBudget?: true
+    useCount?: true
+  }
+
+  export type PodUploadLinkSumAggregateInputType = {
+    useBudget?: true
+    useCount?: true
+  }
+
+  export type PodUploadLinkMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    tokenHash?: true
+    expiresAt?: true
+    useBudget?: true
+    useCount?: true
+    lastUsedAt?: true
+    revokedAt?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PodUploadLinkMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    tokenHash?: true
+    expiresAt?: true
+    useBudget?: true
+    useCount?: true
+    lastUsedAt?: true
+    revokedAt?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PodUploadLinkCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    tokenHash?: true
+    expiresAt?: true
+    useBudget?: true
+    useCount?: true
+    lastUsedAt?: true
+    revokedAt?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PodUploadLinkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodUploadLink to aggregate.
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadLinks to fetch.
+     */
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PodUploadLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PodUploadLinks
+    **/
+    _count?: true | PodUploadLinkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PodUploadLinkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PodUploadLinkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PodUploadLinkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PodUploadLinkMaxAggregateInputType
+  }
+
+  export type GetPodUploadLinkAggregateType<T extends PodUploadLinkAggregateArgs> = {
+        [P in keyof T & keyof AggregatePodUploadLink]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePodUploadLink[P]>
+      : GetScalarType<T[P], AggregatePodUploadLink[P]>
+  }
+
+
+
+
+  export type PodUploadLinkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodUploadLinkWhereInput
+    orderBy?: PodUploadLinkOrderByWithAggregationInput | PodUploadLinkOrderByWithAggregationInput[]
+    by: PodUploadLinkScalarFieldEnum[] | PodUploadLinkScalarFieldEnum
+    having?: PodUploadLinkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PodUploadLinkCountAggregateInputType | true
+    _avg?: PodUploadLinkAvgAggregateInputType
+    _sum?: PodUploadLinkSumAggregateInputType
+    _min?: PodUploadLinkMinAggregateInputType
+    _max?: PodUploadLinkMaxAggregateInputType
+  }
+
+  export type PodUploadLinkGroupByOutputType = {
+    id: string
+    organizationId: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date
+    useBudget: number
+    useCount: number
+    lastUsedAt: Date | null
+    revokedAt: Date | null
+    createdById: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PodUploadLinkCountAggregateOutputType | null
+    _avg: PodUploadLinkAvgAggregateOutputType | null
+    _sum: PodUploadLinkSumAggregateOutputType | null
+    _min: PodUploadLinkMinAggregateOutputType | null
+    _max: PodUploadLinkMaxAggregateOutputType | null
+  }
+
+  type GetPodUploadLinkGroupByPayload<T extends PodUploadLinkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PodUploadLinkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PodUploadLinkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PodUploadLinkGroupByOutputType[P]>
+            : GetScalarType<T[P], PodUploadLinkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PodUploadLinkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    useBudget?: boolean
+    useCount?: boolean
+    lastUsedAt?: boolean
+    revokedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podUploadLink"]>
+
+  export type PodUploadLinkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    useBudget?: boolean
+    useCount?: boolean
+    lastUsedAt?: boolean
+    revokedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podUploadLink"]>
+
+  export type PodUploadLinkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    useBudget?: boolean
+    useCount?: boolean
+    lastUsedAt?: boolean
+    revokedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podUploadLink"]>
+
+  export type PodUploadLinkSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    useBudget?: boolean
+    useCount?: boolean
+    lastUsedAt?: boolean
+    revokedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PodUploadLinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "tokenHash" | "expiresAt" | "useBudget" | "useCount" | "lastUsedAt" | "revokedAt" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["podUploadLink"]>
+  export type PodUploadLinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type PodUploadLinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type PodUploadLinkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $PodUploadLinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PodUploadLink"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      orderId: string
+      /**
+       * SHA-256 of the token, hex. Unique, so resolving a link is one indexed
+       * read and two links can never collide on the same secret.
+       */
+      tokenHash: string
+      expiresAt: Date
+      /**
+       * A driver retakes photos, so one link is worth several uploads. Not
+       * unlimited: an exhausted budget is what keeps a leaked link from being a
+       * standing write endpoint.
+       */
+      useBudget: number
+      useCount: number
+      lastUsedAt: Date | null
+      /**
+       * Set by revocation and by rotation, which revokes the link it replaces.
+       * Nulling this again is never correct — issue a new link instead.
+       */
+      revokedAt: Date | null
+      /**
+       * Null when a link was issued by a job rather than by a person.
+       */
+      createdById: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["podUploadLink"]>
+    composites: {}
+  }
+
+  type PodUploadLinkGetPayload<S extends boolean | null | undefined | PodUploadLinkDefaultArgs> = $Result.GetResult<Prisma.$PodUploadLinkPayload, S>
+
+  type PodUploadLinkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PodUploadLinkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PodUploadLinkCountAggregateInputType | true
+    }
+
+  export interface PodUploadLinkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PodUploadLink'], meta: { name: 'PodUploadLink' } }
+    /**
+     * Find zero or one PodUploadLink that matches the filter.
+     * @param {PodUploadLinkFindUniqueArgs} args - Arguments to find a PodUploadLink
+     * @example
+     * // Get one PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PodUploadLinkFindUniqueArgs>(args: SelectSubset<T, PodUploadLinkFindUniqueArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PodUploadLink that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PodUploadLinkFindUniqueOrThrowArgs} args - Arguments to find a PodUploadLink
+     * @example
+     * // Get one PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PodUploadLinkFindUniqueOrThrowArgs>(args: SelectSubset<T, PodUploadLinkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodUploadLink that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkFindFirstArgs} args - Arguments to find a PodUploadLink
+     * @example
+     * // Get one PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PodUploadLinkFindFirstArgs>(args?: SelectSubset<T, PodUploadLinkFindFirstArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodUploadLink that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkFindFirstOrThrowArgs} args - Arguments to find a PodUploadLink
+     * @example
+     * // Get one PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PodUploadLinkFindFirstOrThrowArgs>(args?: SelectSubset<T, PodUploadLinkFindFirstOrThrowArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PodUploadLinks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PodUploadLinks
+     * const podUploadLinks = await prisma.podUploadLink.findMany()
+     * 
+     * // Get first 10 PodUploadLinks
+     * const podUploadLinks = await prisma.podUploadLink.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const podUploadLinkWithIdOnly = await prisma.podUploadLink.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PodUploadLinkFindManyArgs>(args?: SelectSubset<T, PodUploadLinkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PodUploadLink.
+     * @param {PodUploadLinkCreateArgs} args - Arguments to create a PodUploadLink.
+     * @example
+     * // Create one PodUploadLink
+     * const PodUploadLink = await prisma.podUploadLink.create({
+     *   data: {
+     *     // ... data to create a PodUploadLink
+     *   }
+     * })
+     * 
+     */
+    create<T extends PodUploadLinkCreateArgs>(args: SelectSubset<T, PodUploadLinkCreateArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PodUploadLinks.
+     * @param {PodUploadLinkCreateManyArgs} args - Arguments to create many PodUploadLinks.
+     * @example
+     * // Create many PodUploadLinks
+     * const podUploadLink = await prisma.podUploadLink.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PodUploadLinkCreateManyArgs>(args?: SelectSubset<T, PodUploadLinkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PodUploadLinks and returns the data saved in the database.
+     * @param {PodUploadLinkCreateManyAndReturnArgs} args - Arguments to create many PodUploadLinks.
+     * @example
+     * // Create many PodUploadLinks
+     * const podUploadLink = await prisma.podUploadLink.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PodUploadLinks and only return the `id`
+     * const podUploadLinkWithIdOnly = await prisma.podUploadLink.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PodUploadLinkCreateManyAndReturnArgs>(args?: SelectSubset<T, PodUploadLinkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PodUploadLink.
+     * @param {PodUploadLinkDeleteArgs} args - Arguments to delete one PodUploadLink.
+     * @example
+     * // Delete one PodUploadLink
+     * const PodUploadLink = await prisma.podUploadLink.delete({
+     *   where: {
+     *     // ... filter to delete one PodUploadLink
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PodUploadLinkDeleteArgs>(args: SelectSubset<T, PodUploadLinkDeleteArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PodUploadLink.
+     * @param {PodUploadLinkUpdateArgs} args - Arguments to update one PodUploadLink.
+     * @example
+     * // Update one PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PodUploadLinkUpdateArgs>(args: SelectSubset<T, PodUploadLinkUpdateArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PodUploadLinks.
+     * @param {PodUploadLinkDeleteManyArgs} args - Arguments to filter PodUploadLinks to delete.
+     * @example
+     * // Delete a few PodUploadLinks
+     * const { count } = await prisma.podUploadLink.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PodUploadLinkDeleteManyArgs>(args?: SelectSubset<T, PodUploadLinkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodUploadLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PodUploadLinks
+     * const podUploadLink = await prisma.podUploadLink.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PodUploadLinkUpdateManyArgs>(args: SelectSubset<T, PodUploadLinkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodUploadLinks and returns the data updated in the database.
+     * @param {PodUploadLinkUpdateManyAndReturnArgs} args - Arguments to update many PodUploadLinks.
+     * @example
+     * // Update many PodUploadLinks
+     * const podUploadLink = await prisma.podUploadLink.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PodUploadLinks and only return the `id`
+     * const podUploadLinkWithIdOnly = await prisma.podUploadLink.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PodUploadLinkUpdateManyAndReturnArgs>(args: SelectSubset<T, PodUploadLinkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PodUploadLink.
+     * @param {PodUploadLinkUpsertArgs} args - Arguments to update or create a PodUploadLink.
+     * @example
+     * // Update or create a PodUploadLink
+     * const podUploadLink = await prisma.podUploadLink.upsert({
+     *   create: {
+     *     // ... data to create a PodUploadLink
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PodUploadLink we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PodUploadLinkUpsertArgs>(args: SelectSubset<T, PodUploadLinkUpsertArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PodUploadLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkCountArgs} args - Arguments to filter PodUploadLinks to count.
+     * @example
+     * // Count the number of PodUploadLinks
+     * const count = await prisma.podUploadLink.count({
+     *   where: {
+     *     // ... the filter for the PodUploadLinks we want to count
+     *   }
+     * })
+    **/
+    count<T extends PodUploadLinkCountArgs>(
+      args?: Subset<T, PodUploadLinkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PodUploadLinkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PodUploadLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PodUploadLinkAggregateArgs>(args: Subset<T, PodUploadLinkAggregateArgs>): Prisma.PrismaPromise<GetPodUploadLinkAggregateType<T>>
+
+    /**
+     * Group by PodUploadLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadLinkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PodUploadLinkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PodUploadLinkGroupByArgs['orderBy'] }
+        : { orderBy?: PodUploadLinkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PodUploadLinkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPodUploadLinkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PodUploadLink model
+   */
+  readonly fields: PodUploadLinkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PodUploadLink.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PodUploadLinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PodUploadLink model
+   */
+  interface PodUploadLinkFieldRefs {
+    readonly id: FieldRef<"PodUploadLink", 'String'>
+    readonly organizationId: FieldRef<"PodUploadLink", 'String'>
+    readonly orderId: FieldRef<"PodUploadLink", 'String'>
+    readonly tokenHash: FieldRef<"PodUploadLink", 'String'>
+    readonly expiresAt: FieldRef<"PodUploadLink", 'DateTime'>
+    readonly useBudget: FieldRef<"PodUploadLink", 'Int'>
+    readonly useCount: FieldRef<"PodUploadLink", 'Int'>
+    readonly lastUsedAt: FieldRef<"PodUploadLink", 'DateTime'>
+    readonly revokedAt: FieldRef<"PodUploadLink", 'DateTime'>
+    readonly createdById: FieldRef<"PodUploadLink", 'String'>
+    readonly createdAt: FieldRef<"PodUploadLink", 'DateTime'>
+    readonly updatedAt: FieldRef<"PodUploadLink", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PodUploadLink findUnique
+   */
+  export type PodUploadLinkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which PodUploadLink to fetch.
+     */
+    where: PodUploadLinkWhereUniqueInput
+  }
+
+  /**
+   * PodUploadLink findUniqueOrThrow
+   */
+  export type PodUploadLinkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which PodUploadLink to fetch.
+     */
+    where: PodUploadLinkWhereUniqueInput
+  }
+
+  /**
+   * PodUploadLink findFirst
+   */
+  export type PodUploadLinkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which PodUploadLink to fetch.
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadLinks to fetch.
+     */
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodUploadLinks.
+     */
+    cursor?: PodUploadLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodUploadLinks.
+     */
+    distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadLink findFirstOrThrow
+   */
+  export type PodUploadLinkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which PodUploadLink to fetch.
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadLinks to fetch.
+     */
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodUploadLinks.
+     */
+    cursor?: PodUploadLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodUploadLinks.
+     */
+    distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadLink findMany
+   */
+  export type PodUploadLinkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which PodUploadLinks to fetch.
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadLinks to fetch.
+     */
+    orderBy?: PodUploadLinkOrderByWithRelationInput | PodUploadLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PodUploadLinks.
+     */
+    cursor?: PodUploadLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadLinks.
+     */
+    skip?: number
+    distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadLink create
+   */
+  export type PodUploadLinkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PodUploadLink.
+     */
+    data: XOR<PodUploadLinkCreateInput, PodUploadLinkUncheckedCreateInput>
+  }
+
+  /**
+   * PodUploadLink createMany
+   */
+  export type PodUploadLinkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PodUploadLinks.
+     */
+    data: PodUploadLinkCreateManyInput | PodUploadLinkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PodUploadLink createManyAndReturn
+   */
+  export type PodUploadLinkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * The data used to create many PodUploadLinks.
+     */
+    data: PodUploadLinkCreateManyInput | PodUploadLinkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodUploadLink update
+   */
+  export type PodUploadLinkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PodUploadLink.
+     */
+    data: XOR<PodUploadLinkUpdateInput, PodUploadLinkUncheckedUpdateInput>
+    /**
+     * Choose, which PodUploadLink to update.
+     */
+    where: PodUploadLinkWhereUniqueInput
+  }
+
+  /**
+   * PodUploadLink updateMany
+   */
+  export type PodUploadLinkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PodUploadLinks.
+     */
+    data: XOR<PodUploadLinkUpdateManyMutationInput, PodUploadLinkUncheckedUpdateManyInput>
+    /**
+     * Filter which PodUploadLinks to update
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * Limit how many PodUploadLinks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodUploadLink updateManyAndReturn
+   */
+  export type PodUploadLinkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * The data used to update PodUploadLinks.
+     */
+    data: XOR<PodUploadLinkUpdateManyMutationInput, PodUploadLinkUncheckedUpdateManyInput>
+    /**
+     * Filter which PodUploadLinks to update
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * Limit how many PodUploadLinks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodUploadLink upsert
+   */
+  export type PodUploadLinkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PodUploadLink to update in case it exists.
+     */
+    where: PodUploadLinkWhereUniqueInput
+    /**
+     * In case the PodUploadLink found by the `where` argument doesn't exist, create a new PodUploadLink with this data.
+     */
+    create: XOR<PodUploadLinkCreateInput, PodUploadLinkUncheckedCreateInput>
+    /**
+     * In case the PodUploadLink was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PodUploadLinkUpdateInput, PodUploadLinkUncheckedUpdateInput>
+  }
+
+  /**
+   * PodUploadLink delete
+   */
+  export type PodUploadLinkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+    /**
+     * Filter which PodUploadLink to delete.
+     */
+    where: PodUploadLinkWhereUniqueInput
+  }
+
+  /**
+   * PodUploadLink deleteMany
+   */
+  export type PodUploadLinkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodUploadLinks to delete
+     */
+    where?: PodUploadLinkWhereInput
+    /**
+     * Limit how many PodUploadLinks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodUploadLink without action
+   */
+  export type PodUploadLinkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLink
+     */
+    select?: PodUploadLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadLink
+     */
+    omit?: PodUploadLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodUploadLinkInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PodUploadThrottle
+   */
+
+  export type AggregatePodUploadThrottle = {
+    _count: PodUploadThrottleCountAggregateOutputType | null
+    _avg: PodUploadThrottleAvgAggregateOutputType | null
+    _sum: PodUploadThrottleSumAggregateOutputType | null
+    _min: PodUploadThrottleMinAggregateOutputType | null
+    _max: PodUploadThrottleMaxAggregateOutputType | null
+  }
+
+  export type PodUploadThrottleAvgAggregateOutputType = {
+    count: number | null
+  }
+
+  export type PodUploadThrottleSumAggregateOutputType = {
+    count: number | null
+  }
+
+  export type PodUploadThrottleMinAggregateOutputType = {
+    bucket: string | null
+    windowStartedAt: Date | null
+    count: number | null
+    updatedAt: Date | null
+  }
+
+  export type PodUploadThrottleMaxAggregateOutputType = {
+    bucket: string | null
+    windowStartedAt: Date | null
+    count: number | null
+    updatedAt: Date | null
+  }
+
+  export type PodUploadThrottleCountAggregateOutputType = {
+    bucket: number
+    windowStartedAt: number
+    count: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PodUploadThrottleAvgAggregateInputType = {
+    count?: true
+  }
+
+  export type PodUploadThrottleSumAggregateInputType = {
+    count?: true
+  }
+
+  export type PodUploadThrottleMinAggregateInputType = {
+    bucket?: true
+    windowStartedAt?: true
+    count?: true
+    updatedAt?: true
+  }
+
+  export type PodUploadThrottleMaxAggregateInputType = {
+    bucket?: true
+    windowStartedAt?: true
+    count?: true
+    updatedAt?: true
+  }
+
+  export type PodUploadThrottleCountAggregateInputType = {
+    bucket?: true
+    windowStartedAt?: true
+    count?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PodUploadThrottleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodUploadThrottle to aggregate.
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadThrottles to fetch.
+     */
+    orderBy?: PodUploadThrottleOrderByWithRelationInput | PodUploadThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PodUploadThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PodUploadThrottles
+    **/
+    _count?: true | PodUploadThrottleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PodUploadThrottleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PodUploadThrottleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PodUploadThrottleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PodUploadThrottleMaxAggregateInputType
+  }
+
+  export type GetPodUploadThrottleAggregateType<T extends PodUploadThrottleAggregateArgs> = {
+        [P in keyof T & keyof AggregatePodUploadThrottle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePodUploadThrottle[P]>
+      : GetScalarType<T[P], AggregatePodUploadThrottle[P]>
+  }
+
+
+
+
+  export type PodUploadThrottleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodUploadThrottleWhereInput
+    orderBy?: PodUploadThrottleOrderByWithAggregationInput | PodUploadThrottleOrderByWithAggregationInput[]
+    by: PodUploadThrottleScalarFieldEnum[] | PodUploadThrottleScalarFieldEnum
+    having?: PodUploadThrottleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PodUploadThrottleCountAggregateInputType | true
+    _avg?: PodUploadThrottleAvgAggregateInputType
+    _sum?: PodUploadThrottleSumAggregateInputType
+    _min?: PodUploadThrottleMinAggregateInputType
+    _max?: PodUploadThrottleMaxAggregateInputType
+  }
+
+  export type PodUploadThrottleGroupByOutputType = {
+    bucket: string
+    windowStartedAt: Date
+    count: number
+    updatedAt: Date
+    _count: PodUploadThrottleCountAggregateOutputType | null
+    _avg: PodUploadThrottleAvgAggregateOutputType | null
+    _sum: PodUploadThrottleSumAggregateOutputType | null
+    _min: PodUploadThrottleMinAggregateOutputType | null
+    _max: PodUploadThrottleMaxAggregateOutputType | null
+  }
+
+  type GetPodUploadThrottleGroupByPayload<T extends PodUploadThrottleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PodUploadThrottleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PodUploadThrottleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PodUploadThrottleGroupByOutputType[P]>
+            : GetScalarType<T[P], PodUploadThrottleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PodUploadThrottleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bucket?: boolean
+    windowStartedAt?: boolean
+    count?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["podUploadThrottle"]>
+
+  export type PodUploadThrottleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bucket?: boolean
+    windowStartedAt?: boolean
+    count?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["podUploadThrottle"]>
+
+  export type PodUploadThrottleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    bucket?: boolean
+    windowStartedAt?: boolean
+    count?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["podUploadThrottle"]>
+
+  export type PodUploadThrottleSelectScalar = {
+    bucket?: boolean
+    windowStartedAt?: boolean
+    count?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PodUploadThrottleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"bucket" | "windowStartedAt" | "count" | "updatedAt", ExtArgs["result"]["podUploadThrottle"]>
+
+  export type $PodUploadThrottlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PodUploadThrottle"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      bucket: string
+      windowStartedAt: Date
+      count: number
+      updatedAt: Date
+    }, ExtArgs["result"]["podUploadThrottle"]>
+    composites: {}
+  }
+
+  type PodUploadThrottleGetPayload<S extends boolean | null | undefined | PodUploadThrottleDefaultArgs> = $Result.GetResult<Prisma.$PodUploadThrottlePayload, S>
+
+  type PodUploadThrottleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PodUploadThrottleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PodUploadThrottleCountAggregateInputType | true
+    }
+
+  export interface PodUploadThrottleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PodUploadThrottle'], meta: { name: 'PodUploadThrottle' } }
+    /**
+     * Find zero or one PodUploadThrottle that matches the filter.
+     * @param {PodUploadThrottleFindUniqueArgs} args - Arguments to find a PodUploadThrottle
+     * @example
+     * // Get one PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PodUploadThrottleFindUniqueArgs>(args: SelectSubset<T, PodUploadThrottleFindUniqueArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PodUploadThrottle that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PodUploadThrottleFindUniqueOrThrowArgs} args - Arguments to find a PodUploadThrottle
+     * @example
+     * // Get one PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PodUploadThrottleFindUniqueOrThrowArgs>(args: SelectSubset<T, PodUploadThrottleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodUploadThrottle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleFindFirstArgs} args - Arguments to find a PodUploadThrottle
+     * @example
+     * // Get one PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PodUploadThrottleFindFirstArgs>(args?: SelectSubset<T, PodUploadThrottleFindFirstArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodUploadThrottle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleFindFirstOrThrowArgs} args - Arguments to find a PodUploadThrottle
+     * @example
+     * // Get one PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PodUploadThrottleFindFirstOrThrowArgs>(args?: SelectSubset<T, PodUploadThrottleFindFirstOrThrowArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PodUploadThrottles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PodUploadThrottles
+     * const podUploadThrottles = await prisma.podUploadThrottle.findMany()
+     * 
+     * // Get first 10 PodUploadThrottles
+     * const podUploadThrottles = await prisma.podUploadThrottle.findMany({ take: 10 })
+     * 
+     * // Only select the `bucket`
+     * const podUploadThrottleWithBucketOnly = await prisma.podUploadThrottle.findMany({ select: { bucket: true } })
+     * 
+     */
+    findMany<T extends PodUploadThrottleFindManyArgs>(args?: SelectSubset<T, PodUploadThrottleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PodUploadThrottle.
+     * @param {PodUploadThrottleCreateArgs} args - Arguments to create a PodUploadThrottle.
+     * @example
+     * // Create one PodUploadThrottle
+     * const PodUploadThrottle = await prisma.podUploadThrottle.create({
+     *   data: {
+     *     // ... data to create a PodUploadThrottle
+     *   }
+     * })
+     * 
+     */
+    create<T extends PodUploadThrottleCreateArgs>(args: SelectSubset<T, PodUploadThrottleCreateArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PodUploadThrottles.
+     * @param {PodUploadThrottleCreateManyArgs} args - Arguments to create many PodUploadThrottles.
+     * @example
+     * // Create many PodUploadThrottles
+     * const podUploadThrottle = await prisma.podUploadThrottle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PodUploadThrottleCreateManyArgs>(args?: SelectSubset<T, PodUploadThrottleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PodUploadThrottles and returns the data saved in the database.
+     * @param {PodUploadThrottleCreateManyAndReturnArgs} args - Arguments to create many PodUploadThrottles.
+     * @example
+     * // Create many PodUploadThrottles
+     * const podUploadThrottle = await prisma.podUploadThrottle.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PodUploadThrottles and only return the `bucket`
+     * const podUploadThrottleWithBucketOnly = await prisma.podUploadThrottle.createManyAndReturn({
+     *   select: { bucket: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PodUploadThrottleCreateManyAndReturnArgs>(args?: SelectSubset<T, PodUploadThrottleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PodUploadThrottle.
+     * @param {PodUploadThrottleDeleteArgs} args - Arguments to delete one PodUploadThrottle.
+     * @example
+     * // Delete one PodUploadThrottle
+     * const PodUploadThrottle = await prisma.podUploadThrottle.delete({
+     *   where: {
+     *     // ... filter to delete one PodUploadThrottle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PodUploadThrottleDeleteArgs>(args: SelectSubset<T, PodUploadThrottleDeleteArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PodUploadThrottle.
+     * @param {PodUploadThrottleUpdateArgs} args - Arguments to update one PodUploadThrottle.
+     * @example
+     * // Update one PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PodUploadThrottleUpdateArgs>(args: SelectSubset<T, PodUploadThrottleUpdateArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PodUploadThrottles.
+     * @param {PodUploadThrottleDeleteManyArgs} args - Arguments to filter PodUploadThrottles to delete.
+     * @example
+     * // Delete a few PodUploadThrottles
+     * const { count } = await prisma.podUploadThrottle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PodUploadThrottleDeleteManyArgs>(args?: SelectSubset<T, PodUploadThrottleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodUploadThrottles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PodUploadThrottles
+     * const podUploadThrottle = await prisma.podUploadThrottle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PodUploadThrottleUpdateManyArgs>(args: SelectSubset<T, PodUploadThrottleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodUploadThrottles and returns the data updated in the database.
+     * @param {PodUploadThrottleUpdateManyAndReturnArgs} args - Arguments to update many PodUploadThrottles.
+     * @example
+     * // Update many PodUploadThrottles
+     * const podUploadThrottle = await prisma.podUploadThrottle.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PodUploadThrottles and only return the `bucket`
+     * const podUploadThrottleWithBucketOnly = await prisma.podUploadThrottle.updateManyAndReturn({
+     *   select: { bucket: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PodUploadThrottleUpdateManyAndReturnArgs>(args: SelectSubset<T, PodUploadThrottleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PodUploadThrottle.
+     * @param {PodUploadThrottleUpsertArgs} args - Arguments to update or create a PodUploadThrottle.
+     * @example
+     * // Update or create a PodUploadThrottle
+     * const podUploadThrottle = await prisma.podUploadThrottle.upsert({
+     *   create: {
+     *     // ... data to create a PodUploadThrottle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PodUploadThrottle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PodUploadThrottleUpsertArgs>(args: SelectSubset<T, PodUploadThrottleUpsertArgs<ExtArgs>>): Prisma__PodUploadThrottleClient<$Result.GetResult<Prisma.$PodUploadThrottlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PodUploadThrottles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleCountArgs} args - Arguments to filter PodUploadThrottles to count.
+     * @example
+     * // Count the number of PodUploadThrottles
+     * const count = await prisma.podUploadThrottle.count({
+     *   where: {
+     *     // ... the filter for the PodUploadThrottles we want to count
+     *   }
+     * })
+    **/
+    count<T extends PodUploadThrottleCountArgs>(
+      args?: Subset<T, PodUploadThrottleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PodUploadThrottleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PodUploadThrottle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PodUploadThrottleAggregateArgs>(args: Subset<T, PodUploadThrottleAggregateArgs>): Prisma.PrismaPromise<GetPodUploadThrottleAggregateType<T>>
+
+    /**
+     * Group by PodUploadThrottle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodUploadThrottleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PodUploadThrottleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PodUploadThrottleGroupByArgs['orderBy'] }
+        : { orderBy?: PodUploadThrottleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PodUploadThrottleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPodUploadThrottleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PodUploadThrottle model
+   */
+  readonly fields: PodUploadThrottleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PodUploadThrottle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PodUploadThrottleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PodUploadThrottle model
+   */
+  interface PodUploadThrottleFieldRefs {
+    readonly bucket: FieldRef<"PodUploadThrottle", 'String'>
+    readonly windowStartedAt: FieldRef<"PodUploadThrottle", 'DateTime'>
+    readonly count: FieldRef<"PodUploadThrottle", 'Int'>
+    readonly updatedAt: FieldRef<"PodUploadThrottle", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PodUploadThrottle findUnique
+   */
+  export type PodUploadThrottleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which PodUploadThrottle to fetch.
+     */
+    where: PodUploadThrottleWhereUniqueInput
+  }
+
+  /**
+   * PodUploadThrottle findUniqueOrThrow
+   */
+  export type PodUploadThrottleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which PodUploadThrottle to fetch.
+     */
+    where: PodUploadThrottleWhereUniqueInput
+  }
+
+  /**
+   * PodUploadThrottle findFirst
+   */
+  export type PodUploadThrottleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which PodUploadThrottle to fetch.
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadThrottles to fetch.
+     */
+    orderBy?: PodUploadThrottleOrderByWithRelationInput | PodUploadThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodUploadThrottles.
+     */
+    cursor?: PodUploadThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodUploadThrottles.
+     */
+    distinct?: PodUploadThrottleScalarFieldEnum | PodUploadThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadThrottle findFirstOrThrow
+   */
+  export type PodUploadThrottleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which PodUploadThrottle to fetch.
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadThrottles to fetch.
+     */
+    orderBy?: PodUploadThrottleOrderByWithRelationInput | PodUploadThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodUploadThrottles.
+     */
+    cursor?: PodUploadThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodUploadThrottles.
+     */
+    distinct?: PodUploadThrottleScalarFieldEnum | PodUploadThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadThrottle findMany
+   */
+  export type PodUploadThrottleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which PodUploadThrottles to fetch.
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodUploadThrottles to fetch.
+     */
+    orderBy?: PodUploadThrottleOrderByWithRelationInput | PodUploadThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PodUploadThrottles.
+     */
+    cursor?: PodUploadThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodUploadThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodUploadThrottles.
+     */
+    skip?: number
+    distinct?: PodUploadThrottleScalarFieldEnum | PodUploadThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * PodUploadThrottle create
+   */
+  export type PodUploadThrottleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PodUploadThrottle.
+     */
+    data: XOR<PodUploadThrottleCreateInput, PodUploadThrottleUncheckedCreateInput>
+  }
+
+  /**
+   * PodUploadThrottle createMany
+   */
+  export type PodUploadThrottleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PodUploadThrottles.
+     */
+    data: PodUploadThrottleCreateManyInput | PodUploadThrottleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PodUploadThrottle createManyAndReturn
+   */
+  export type PodUploadThrottleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * The data used to create many PodUploadThrottles.
+     */
+    data: PodUploadThrottleCreateManyInput | PodUploadThrottleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PodUploadThrottle update
+   */
+  export type PodUploadThrottleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PodUploadThrottle.
+     */
+    data: XOR<PodUploadThrottleUpdateInput, PodUploadThrottleUncheckedUpdateInput>
+    /**
+     * Choose, which PodUploadThrottle to update.
+     */
+    where: PodUploadThrottleWhereUniqueInput
+  }
+
+  /**
+   * PodUploadThrottle updateMany
+   */
+  export type PodUploadThrottleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PodUploadThrottles.
+     */
+    data: XOR<PodUploadThrottleUpdateManyMutationInput, PodUploadThrottleUncheckedUpdateManyInput>
+    /**
+     * Filter which PodUploadThrottles to update
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * Limit how many PodUploadThrottles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodUploadThrottle updateManyAndReturn
+   */
+  export type PodUploadThrottleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * The data used to update PodUploadThrottles.
+     */
+    data: XOR<PodUploadThrottleUpdateManyMutationInput, PodUploadThrottleUncheckedUpdateManyInput>
+    /**
+     * Filter which PodUploadThrottles to update
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * Limit how many PodUploadThrottles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodUploadThrottle upsert
+   */
+  export type PodUploadThrottleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PodUploadThrottle to update in case it exists.
+     */
+    where: PodUploadThrottleWhereUniqueInput
+    /**
+     * In case the PodUploadThrottle found by the `where` argument doesn't exist, create a new PodUploadThrottle with this data.
+     */
+    create: XOR<PodUploadThrottleCreateInput, PodUploadThrottleUncheckedCreateInput>
+    /**
+     * In case the PodUploadThrottle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PodUploadThrottleUpdateInput, PodUploadThrottleUncheckedUpdateInput>
+  }
+
+  /**
+   * PodUploadThrottle delete
+   */
+  export type PodUploadThrottleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+    /**
+     * Filter which PodUploadThrottle to delete.
+     */
+    where: PodUploadThrottleWhereUniqueInput
+  }
+
+  /**
+   * PodUploadThrottle deleteMany
+   */
+  export type PodUploadThrottleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodUploadThrottles to delete
+     */
+    where?: PodUploadThrottleWhereInput
+    /**
+     * Limit how many PodUploadThrottles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodUploadThrottle without action
+   */
+  export type PodUploadThrottleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadThrottle
+     */
+    select?: PodUploadThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodUploadThrottle
+     */
+    omit?: PodUploadThrottleOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -26518,6 +29037,34 @@ export namespace Prisma {
   export type HistoricalInvoiceScalarFieldEnum = (typeof HistoricalInvoiceScalarFieldEnum)[keyof typeof HistoricalInvoiceScalarFieldEnum]
 
 
+  export const PodUploadLinkScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    orderId: 'orderId',
+    tokenHash: 'tokenHash',
+    expiresAt: 'expiresAt',
+    useBudget: 'useBudget',
+    useCount: 'useCount',
+    lastUsedAt: 'lastUsedAt',
+    revokedAt: 'revokedAt',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PodUploadLinkScalarFieldEnum = (typeof PodUploadLinkScalarFieldEnum)[keyof typeof PodUploadLinkScalarFieldEnum]
+
+
+  export const PodUploadThrottleScalarFieldEnum: {
+    bucket: 'bucket',
+    windowStartedAt: 'windowStartedAt',
+    count: 'count',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PodUploadThrottleScalarFieldEnum = (typeof PodUploadThrottleScalarFieldEnum)[keyof typeof PodUploadThrottleScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -26816,6 +29363,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceListRelationFilter
     messageLogs?: MessageLogListRelationFilter
     channelConnections?: ChannelConnectionListRelationFilter
+    podUploadLinks?: PodUploadLinkListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -26840,6 +29388,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceOrderByRelationAggregateInput
     messageLogs?: MessageLogOrderByRelationAggregateInput
     channelConnections?: ChannelConnectionOrderByRelationAggregateInput
+    podUploadLinks?: PodUploadLinkOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -26867,6 +29416,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceListRelationFilter
     messageLogs?: MessageLogListRelationFilter
     channelConnections?: ChannelConnectionListRelationFilter
+    podUploadLinks?: PodUploadLinkListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -28111,6 +30661,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
     driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
+    podUploadLinks?: PodUploadLinkListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -28133,6 +30684,7 @@ export namespace Prisma {
     organization?: OrganizationOrderByWithRelationInput
     shipper?: ShipperOrderByWithRelationInput
     driver?: DriverOrderByWithRelationInput
+    podUploadLinks?: PodUploadLinkOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -28159,6 +30711,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
     driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
+    podUploadLinks?: PodUploadLinkListRelationFilter
   }, "id" | "organizationId_nomorSuratJalan">
 
   export type OrderOrderByWithAggregationInput = {
@@ -28378,6 +30931,150 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"HistoricalInvoice"> | Date | string
   }
 
+  export type PodUploadLinkWhereInput = {
+    AND?: PodUploadLinkWhereInput | PodUploadLinkWhereInput[]
+    OR?: PodUploadLinkWhereInput[]
+    NOT?: PodUploadLinkWhereInput | PodUploadLinkWhereInput[]
+    id?: StringFilter<"PodUploadLink"> | string
+    organizationId?: StringFilter<"PodUploadLink"> | string
+    orderId?: StringFilter<"PodUploadLink"> | string
+    tokenHash?: StringFilter<"PodUploadLink"> | string
+    expiresAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    useBudget?: IntFilter<"PodUploadLink"> | number
+    useCount?: IntFilter<"PodUploadLink"> | number
+    lastUsedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    createdById?: StringNullableFilter<"PodUploadLink"> | string | null
+    createdAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type PodUploadLinkOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    useBudget?: SortOrder
+    useCount?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type PodUploadLinkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tokenHash?: string
+    AND?: PodUploadLinkWhereInput | PodUploadLinkWhereInput[]
+    OR?: PodUploadLinkWhereInput[]
+    NOT?: PodUploadLinkWhereInput | PodUploadLinkWhereInput[]
+    organizationId?: StringFilter<"PodUploadLink"> | string
+    orderId?: StringFilter<"PodUploadLink"> | string
+    expiresAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    useBudget?: IntFilter<"PodUploadLink"> | number
+    useCount?: IntFilter<"PodUploadLink"> | number
+    lastUsedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    createdById?: StringNullableFilter<"PodUploadLink"> | string | null
+    createdAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "id" | "tokenHash">
+
+  export type PodUploadLinkOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    useBudget?: SortOrder
+    useCount?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PodUploadLinkCountOrderByAggregateInput
+    _avg?: PodUploadLinkAvgOrderByAggregateInput
+    _max?: PodUploadLinkMaxOrderByAggregateInput
+    _min?: PodUploadLinkMinOrderByAggregateInput
+    _sum?: PodUploadLinkSumOrderByAggregateInput
+  }
+
+  export type PodUploadLinkScalarWhereWithAggregatesInput = {
+    AND?: PodUploadLinkScalarWhereWithAggregatesInput | PodUploadLinkScalarWhereWithAggregatesInput[]
+    OR?: PodUploadLinkScalarWhereWithAggregatesInput[]
+    NOT?: PodUploadLinkScalarWhereWithAggregatesInput | PodUploadLinkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PodUploadLink"> | string
+    organizationId?: StringWithAggregatesFilter<"PodUploadLink"> | string
+    orderId?: StringWithAggregatesFilter<"PodUploadLink"> | string
+    tokenHash?: StringWithAggregatesFilter<"PodUploadLink"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"PodUploadLink"> | Date | string
+    useBudget?: IntWithAggregatesFilter<"PodUploadLink"> | number
+    useCount?: IntWithAggregatesFilter<"PodUploadLink"> | number
+    lastUsedAt?: DateTimeNullableWithAggregatesFilter<"PodUploadLink"> | Date | string | null
+    revokedAt?: DateTimeNullableWithAggregatesFilter<"PodUploadLink"> | Date | string | null
+    createdById?: StringNullableWithAggregatesFilter<"PodUploadLink"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PodUploadLink"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PodUploadLink"> | Date | string
+  }
+
+  export type PodUploadThrottleWhereInput = {
+    AND?: PodUploadThrottleWhereInput | PodUploadThrottleWhereInput[]
+    OR?: PodUploadThrottleWhereInput[]
+    NOT?: PodUploadThrottleWhereInput | PodUploadThrottleWhereInput[]
+    bucket?: StringFilter<"PodUploadThrottle"> | string
+    windowStartedAt?: DateTimeFilter<"PodUploadThrottle"> | Date | string
+    count?: IntFilter<"PodUploadThrottle"> | number
+    updatedAt?: DateTimeFilter<"PodUploadThrottle"> | Date | string
+  }
+
+  export type PodUploadThrottleOrderByWithRelationInput = {
+    bucket?: SortOrder
+    windowStartedAt?: SortOrder
+    count?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadThrottleWhereUniqueInput = Prisma.AtLeast<{
+    bucket?: string
+    AND?: PodUploadThrottleWhereInput | PodUploadThrottleWhereInput[]
+    OR?: PodUploadThrottleWhereInput[]
+    NOT?: PodUploadThrottleWhereInput | PodUploadThrottleWhereInput[]
+    windowStartedAt?: DateTimeFilter<"PodUploadThrottle"> | Date | string
+    count?: IntFilter<"PodUploadThrottle"> | number
+    updatedAt?: DateTimeFilter<"PodUploadThrottle"> | Date | string
+  }, "bucket">
+
+  export type PodUploadThrottleOrderByWithAggregationInput = {
+    bucket?: SortOrder
+    windowStartedAt?: SortOrder
+    count?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PodUploadThrottleCountOrderByAggregateInput
+    _avg?: PodUploadThrottleAvgOrderByAggregateInput
+    _max?: PodUploadThrottleMaxOrderByAggregateInput
+    _min?: PodUploadThrottleMinOrderByAggregateInput
+    _sum?: PodUploadThrottleSumOrderByAggregateInput
+  }
+
+  export type PodUploadThrottleScalarWhereWithAggregatesInput = {
+    AND?: PodUploadThrottleScalarWhereWithAggregatesInput | PodUploadThrottleScalarWhereWithAggregatesInput[]
+    OR?: PodUploadThrottleScalarWhereWithAggregatesInput[]
+    NOT?: PodUploadThrottleScalarWhereWithAggregatesInput | PodUploadThrottleScalarWhereWithAggregatesInput[]
+    bucket?: StringWithAggregatesFilter<"PodUploadThrottle"> | string
+    windowStartedAt?: DateTimeWithAggregatesFilter<"PodUploadThrottle"> | Date | string
+    count?: IntWithAggregatesFilter<"PodUploadThrottle"> | number
+    updatedAt?: DateTimeWithAggregatesFilter<"PodUploadThrottle"> | Date | string
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -28400,6 +31097,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -28424,6 +31122,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -28448,6 +31147,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -28472,6 +31172,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -29797,6 +32498,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -29816,6 +32518,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -29835,6 +32538,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -29854,6 +32558,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -30097,6 +32802,158 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PodUploadLinkCreateInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodUploadLinksInput
+    order: OrderCreateNestedOneWithoutPodUploadLinksInput
+  }
+
+  export type PodUploadLinkUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput
+    order?: OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput
+  }
+
+  export type PodUploadLinkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkCreateManyInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadThrottleCreateInput = {
+    bucket: string
+    windowStartedAt: Date | string
+    count: number
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadThrottleUncheckedCreateInput = {
+    bucket: string
+    windowStartedAt: Date | string
+    count: number
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadThrottleUpdateInput = {
+    bucket?: StringFieldUpdateOperationsInput | string
+    windowStartedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadThrottleUncheckedUpdateInput = {
+    bucket?: StringFieldUpdateOperationsInput | string
+    windowStartedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadThrottleCreateManyInput = {
+    bucket: string
+    windowStartedAt: Date | string
+    count: number
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadThrottleUpdateManyMutationInput = {
+    bucket?: StringFieldUpdateOperationsInput | string
+    windowStartedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadThrottleUncheckedUpdateManyInput = {
+    bucket?: StringFieldUpdateOperationsInput | string
+    windowStartedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -30225,6 +33082,12 @@ export namespace Prisma {
     none?: ChannelConnectionWhereInput
   }
 
+  export type PodUploadLinkListRelationFilter = {
+    every?: PodUploadLinkWhereInput
+    some?: PodUploadLinkWhereInput
+    none?: PodUploadLinkWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -30283,6 +33146,10 @@ export namespace Prisma {
   }
 
   export type ChannelConnectionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PodUploadLinkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -31675,6 +34542,95 @@ export namespace Prisma {
     amountRupiah?: SortOrder
   }
 
+  export type OrderScalarRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
+  }
+
+  export type PodUploadLinkCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    useBudget?: SortOrder
+    useCount?: SortOrder
+    lastUsedAt?: SortOrder
+    revokedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadLinkAvgOrderByAggregateInput = {
+    useBudget?: SortOrder
+    useCount?: SortOrder
+  }
+
+  export type PodUploadLinkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    useBudget?: SortOrder
+    useCount?: SortOrder
+    lastUsedAt?: SortOrder
+    revokedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadLinkMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    useBudget?: SortOrder
+    useCount?: SortOrder
+    lastUsedAt?: SortOrder
+    revokedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadLinkSumOrderByAggregateInput = {
+    useBudget?: SortOrder
+    useCount?: SortOrder
+  }
+
+  export type PodUploadThrottleCountOrderByAggregateInput = {
+    bucket?: SortOrder
+    windowStartedAt?: SortOrder
+    count?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadThrottleAvgOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type PodUploadThrottleMaxOrderByAggregateInput = {
+    bucket?: SortOrder
+    windowStartedAt?: SortOrder
+    count?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadThrottleMinOrderByAggregateInput = {
+    bucket?: SortOrder
+    windowStartedAt?: SortOrder
+    count?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PodUploadThrottleSumOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -31773,6 +34729,13 @@ export namespace Prisma {
     connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
   }
 
+  export type PodUploadLinkCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput> | PodUploadLinkCreateWithoutOrganizationInput[] | PodUploadLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrganizationInput | PodUploadLinkCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodUploadLinkCreateManyOrganizationInputEnvelope
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -31869,6 +34832,13 @@ export namespace Prisma {
     connectOrCreate?: ChannelConnectionCreateOrConnectWithoutOrganizationInput | ChannelConnectionCreateOrConnectWithoutOrganizationInput[]
     createMany?: ChannelConnectionCreateManyOrganizationInputEnvelope
     connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+  }
+
+  export type PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput> | PodUploadLinkCreateWithoutOrganizationInput[] | PodUploadLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrganizationInput | PodUploadLinkCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodUploadLinkCreateManyOrganizationInputEnvelope
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -32087,6 +35057,20 @@ export namespace Prisma {
     deleteMany?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
   }
 
+  export type PodUploadLinkUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput> | PodUploadLinkCreateWithoutOrganizationInput[] | PodUploadLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrganizationInput | PodUploadLinkCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodUploadLinkUpsertWithWhereUniqueWithoutOrganizationInput | PodUploadLinkUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodUploadLinkCreateManyOrganizationInputEnvelope
+    set?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    disconnect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    delete?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput | PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -32281,6 +35265,20 @@ export namespace Prisma {
     update?: ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput | ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput | ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
+  }
+
+  export type PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput> | PodUploadLinkCreateWithoutOrganizationInput[] | PodUploadLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrganizationInput | PodUploadLinkCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodUploadLinkUpsertWithWhereUniqueWithoutOrganizationInput | PodUploadLinkUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodUploadLinkCreateManyOrganizationInputEnvelope
+    set?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    disconnect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    delete?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput | PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -32871,6 +35869,20 @@ export namespace Prisma {
     connect?: DriverWhereUniqueInput
   }
 
+  export type PodUploadLinkCreateNestedManyWithoutOrderInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
+    createMany?: PodUploadLinkCreateManyOrderInputEnvelope
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+  }
+
+  export type PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
+    createMany?: PodUploadLinkCreateManyOrderInputEnvelope
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+  }
+
   export type NullableBigIntFieldUpdateOperationsInput = {
     set?: bigint | number | null
     increment?: bigint | number
@@ -32909,6 +35921,34 @@ export namespace Prisma {
     update?: XOR<XOR<DriverUpdateToOneWithWhereWithoutOrdersInput, DriverUpdateWithoutOrdersInput>, DriverUncheckedUpdateWithoutOrdersInput>
   }
 
+  export type PodUploadLinkUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
+    upsert?: PodUploadLinkUpsertWithWhereUniqueWithoutOrderInput | PodUploadLinkUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: PodUploadLinkCreateManyOrderInputEnvelope
+    set?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    disconnect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    delete?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrderInput | PodUploadLinkUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+  }
+
+  export type PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
+    upsert?: PodUploadLinkUpsertWithWhereUniqueWithoutOrderInput | PodUploadLinkUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: PodUploadLinkCreateManyOrderInputEnvelope
+    set?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    disconnect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    delete?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+    update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrderInput | PodUploadLinkUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+  }
+
   export type OrganizationCreateNestedOneWithoutDsoBaselinesInput = {
     create?: XOR<OrganizationCreateWithoutDsoBaselinesInput, OrganizationUncheckedCreateWithoutDsoBaselinesInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutDsoBaselinesInput
@@ -32943,6 +35983,34 @@ export namespace Prisma {
     upsert?: OrganizationUpsertWithoutHistoricalInvoicesInput
     connect?: OrganizationWhereUniqueInput
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutHistoricalInvoicesInput, OrganizationUpdateWithoutHistoricalInvoicesInput>, OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutPodUploadLinksInput = {
+    create?: XOR<OrganizationCreateWithoutPodUploadLinksInput, OrganizationUncheckedCreateWithoutPodUploadLinksInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodUploadLinksInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutPodUploadLinksInput = {
+    create?: XOR<OrderCreateWithoutPodUploadLinksInput, OrderUncheckedCreateWithoutPodUploadLinksInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPodUploadLinksInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput = {
+    create?: XOR<OrganizationCreateWithoutPodUploadLinksInput, OrganizationUncheckedCreateWithoutPodUploadLinksInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodUploadLinksInput
+    upsert?: OrganizationUpsertWithoutPodUploadLinksInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutPodUploadLinksInput, OrganizationUpdateWithoutPodUploadLinksInput>, OrganizationUncheckedUpdateWithoutPodUploadLinksInput>
+  }
+
+  export type OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput = {
+    create?: XOR<OrderCreateWithoutPodUploadLinksInput, OrderUncheckedCreateWithoutPodUploadLinksInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPodUploadLinksInput
+    upsert?: OrderUpsertWithoutPodUploadLinksInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPodUploadLinksInput, OrderUpdateWithoutPodUploadLinksInput>, OrderUncheckedUpdateWithoutPodUploadLinksInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -33726,6 +36794,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrganizationInput = {
@@ -33744,6 +36813,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrganizationInput = {
@@ -33891,6 +36961,44 @@ export namespace Prisma {
 
   export type ChannelConnectionCreateManyOrganizationInputEnvelope = {
     data: ChannelConnectionCreateManyOrganizationInput | ChannelConnectionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PodUploadLinkCreateWithoutOrganizationInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutPodUploadLinksInput
+  }
+
+  export type PodUploadLinkUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkCreateOrConnectWithoutOrganizationInput = {
+    where: PodUploadLinkWhereUniqueInput
+    create: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodUploadLinkCreateManyOrganizationInputEnvelope = {
+    data: PodUploadLinkCreateManyOrganizationInput | PodUploadLinkCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -34342,6 +37450,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ChannelConnection"> | Date | string
   }
 
+  export type PodUploadLinkUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: PodUploadLinkWhereUniqueInput
+    update: XOR<PodUploadLinkUpdateWithoutOrganizationInput, PodUploadLinkUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<PodUploadLinkCreateWithoutOrganizationInput, PodUploadLinkUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: PodUploadLinkWhereUniqueInput
+    data: XOR<PodUploadLinkUpdateWithoutOrganizationInput, PodUploadLinkUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput = {
+    where: PodUploadLinkScalarWhereInput
+    data: XOR<PodUploadLinkUpdateManyMutationInput, PodUploadLinkUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type PodUploadLinkScalarWhereInput = {
+    AND?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+    OR?: PodUploadLinkScalarWhereInput[]
+    NOT?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+    id?: StringFilter<"PodUploadLink"> | string
+    organizationId?: StringFilter<"PodUploadLink"> | string
+    orderId?: StringFilter<"PodUploadLink"> | string
+    tokenHash?: StringFilter<"PodUploadLink"> | string
+    expiresAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    useBudget?: IntFilter<"PodUploadLink"> | number
+    useCount?: IntFilter<"PodUploadLink"> | number
+    lastUsedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    revokedAt?: DateTimeNullableFilter<"PodUploadLink"> | Date | string | null
+    createdById?: StringNullableFilter<"PodUploadLink"> | string | null
+    createdAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+    updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
+  }
+
   export type UserCreateWithoutPostsInput = {
     id?: string
     name?: string | null
@@ -34783,6 +37925,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -34806,6 +37949,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -34878,6 +38022,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -34901,6 +38046,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -34924,6 +38070,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -34947,6 +38094,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -34986,6 +38134,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -35009,6 +38158,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -35032,6 +38182,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -35055,6 +38206,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -35094,6 +38246,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -35117,6 +38270,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -35140,6 +38294,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -35163,6 +38318,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -35202,6 +38358,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -35225,6 +38382,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -35248,6 +38406,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -35271,6 +38430,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -35310,6 +38470,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -35333,6 +38494,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -35356,6 +38518,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -35379,6 +38542,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -35418,6 +38582,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -35441,6 +38606,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutMessageLogsInput = {
@@ -35464,6 +38630,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMessageLogsInput = {
@@ -35487,6 +38654,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMessageLogsInput = {
@@ -35526,6 +38694,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMessageLogsInput = {
@@ -35549,6 +38718,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutChannelConnectionsInput = {
@@ -35572,6 +38742,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutChannelConnectionsInput = {
@@ -35595,6 +38766,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutChannelConnectionsInput = {
@@ -35634,6 +38806,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutChannelConnectionsInput = {
@@ -35657,6 +38830,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutShippersInput = {
@@ -35680,6 +38854,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutShippersInput = {
@@ -35703,6 +38878,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutShippersInput = {
@@ -35758,6 +38934,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutShipperInput = {
@@ -35776,6 +38953,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutShipperInput = {
@@ -35820,6 +38998,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutShippersInput = {
@@ -35843,6 +39022,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
@@ -35898,6 +39078,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
@@ -35921,6 +39102,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
@@ -35993,6 +39175,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -36016,6 +39199,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutRequirementProfilesInput = {
@@ -36078,6 +39262,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDriversInput = {
@@ -36101,6 +39286,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDriversInput = {
@@ -36124,6 +39310,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     shipper: ShipperCreateNestedOneWithoutOrdersInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutDriverInput = {
@@ -36142,6 +39329,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutDriverInput = {
@@ -36186,6 +39374,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDriversInput = {
@@ -36209,6 +39398,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutDriverInput = {
@@ -36248,6 +39438,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOrdersInput = {
@@ -36271,6 +39462,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOrdersInput = {
@@ -36338,6 +39530,44 @@ export namespace Prisma {
     create: XOR<DriverCreateWithoutOrdersInput, DriverUncheckedCreateWithoutOrdersInput>
   }
 
+  export type PodUploadLinkCreateWithoutOrderInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodUploadLinksInput
+  }
+
+  export type PodUploadLinkUncheckedCreateWithoutOrderInput = {
+    id?: string
+    organizationId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkCreateOrConnectWithoutOrderInput = {
+    where: PodUploadLinkWhereUniqueInput
+    create: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput>
+  }
+
+  export type PodUploadLinkCreateManyOrderInputEnvelope = {
+    data: PodUploadLinkCreateManyOrderInput | PodUploadLinkCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutOrdersInput = {
     update: XOR<OrganizationUpdateWithoutOrdersInput, OrganizationUncheckedUpdateWithoutOrdersInput>
     create: XOR<OrganizationCreateWithoutOrdersInput, OrganizationUncheckedCreateWithoutOrdersInput>
@@ -36370,6 +39600,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOrdersInput = {
@@ -36393,6 +39624,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutOrdersInput = {
@@ -36467,6 +39699,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PodUploadLinkUpsertWithWhereUniqueWithoutOrderInput = {
+    where: PodUploadLinkWhereUniqueInput
+    update: XOR<PodUploadLinkUpdateWithoutOrderInput, PodUploadLinkUncheckedUpdateWithoutOrderInput>
+    create: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput>
+  }
+
+  export type PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput = {
+    where: PodUploadLinkWhereUniqueInput
+    data: XOR<PodUploadLinkUpdateWithoutOrderInput, PodUploadLinkUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type PodUploadLinkUpdateManyWithWhereWithoutOrderInput = {
+    where: PodUploadLinkScalarWhereInput
+    data: XOR<PodUploadLinkUpdateManyMutationInput, PodUploadLinkUncheckedUpdateManyWithoutOrderInput>
+  }
+
   export type OrganizationCreateWithoutDsoBaselinesInput = {
     id?: string
     name: string
@@ -36488,6 +39736,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDsoBaselinesInput = {
@@ -36511,6 +39760,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDsoBaselinesInput = {
@@ -36550,6 +39800,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDsoBaselinesInput = {
@@ -36573,6 +39824,7 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHistoricalInvoicesInput = {
@@ -36596,6 +39848,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHistoricalInvoicesInput = {
@@ -36619,6 +39872,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHistoricalInvoicesInput = {
@@ -36658,6 +39912,7 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput = {
@@ -36681,6 +39936,211 @@ export namespace Prisma {
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutPodUploadLinksInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutPodUploadLinksInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutPodUploadLinksInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutPodUploadLinksInput, OrganizationUncheckedCreateWithoutPodUploadLinksInput>
+  }
+
+  export type OrderCreateWithoutPodUploadLinksInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrdersInput
+    shipper: ShipperCreateNestedOneWithoutOrdersInput
+    driver?: DriverCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutPodUploadLinksInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutPodUploadLinksInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutPodUploadLinksInput, OrderUncheckedCreateWithoutPodUploadLinksInput>
+  }
+
+  export type OrganizationUpsertWithoutPodUploadLinksInput = {
+    update: XOR<OrganizationUpdateWithoutPodUploadLinksInput, OrganizationUncheckedUpdateWithoutPodUploadLinksInput>
+    create: XOR<OrganizationCreateWithoutPodUploadLinksInput, OrganizationUncheckedCreateWithoutPodUploadLinksInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutPodUploadLinksInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutPodUploadLinksInput, OrganizationUncheckedUpdateWithoutPodUploadLinksInput>
+  }
+
+  export type OrganizationUpdateWithoutPodUploadLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutPodUploadLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrderUpsertWithoutPodUploadLinksInput = {
+    update: XOR<OrderUpdateWithoutPodUploadLinksInput, OrderUncheckedUpdateWithoutPodUploadLinksInput>
+    create: XOR<OrderCreateWithoutPodUploadLinksInput, OrderUncheckedCreateWithoutPodUploadLinksInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutPodUploadLinksInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutPodUploadLinksInput, OrderUncheckedUpdateWithoutPodUploadLinksInput>
+  }
+
+  export type OrderUpdateWithoutPodUploadLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
+    shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+    driver?: DriverUpdateOneWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutPodUploadLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -36847,6 +40307,20 @@ export namespace Prisma {
     authState?: NullableJsonNullValueInput | InputJsonValue
     authStateVersion?: number
     lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkCreateManyOrganizationInput = {
+    id?: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37176,6 +40650,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrganizationInput = {
@@ -37194,6 +40669,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutOrganizationInput = {
@@ -37357,6 +40833,48 @@ export namespace Prisma {
     authState?: NullableJsonNullValueInput | InputJsonValue
     authStateVersion?: IntFieldUpdateOperationsInput | number
     lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput
+  }
+
+  export type PodUploadLinkUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37578,6 +41096,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutShipperInput = {
@@ -37596,6 +41115,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutShipperInput = {
@@ -37650,6 +41170,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutDriverInput = {
@@ -37668,6 +41189,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutDriverInput = {
@@ -37684,6 +41206,62 @@ export namespace Prisma {
     weightGram?: NullableIntFieldUpdateOperationsInput | number | null
     nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkCreateManyOrderInput = {
+    id?: string
+    organizationId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput
+  }
+
+  export type PodUploadLinkUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodUploadLinkUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

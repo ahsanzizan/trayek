@@ -11,6 +11,13 @@ export default defineConfig({
       "~": path.resolve(sourceDirectory),
     },
   },
+  // `tsconfig.json` sets `jsx: "preserve"` for Next.js, which leaves the
+  // transform emitting JSX the test runner cannot execute. Overriding it here
+  // is what lets a Server Component be rendered in a unit test; it changes
+  // nothing about how Next.js builds the app.
+  oxc: {
+    jsx: { runtime: "automatic" },
+  },
   test: {
     include: ["tests/**/*.test.{ts,tsx}"],
     testTimeout: 15_000,

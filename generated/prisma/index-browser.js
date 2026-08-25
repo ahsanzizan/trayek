@@ -358,6 +358,28 @@ exports.Prisma.HistoricalInvoiceScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PodUploadLinkScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  orderId: 'orderId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  useBudget: 'useBudget',
+  useCount: 'useCount',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PodUploadThrottleScalarFieldEnum = {
+  bucket: 'bucket',
+  windowStartedAt: 'windowStartedAt',
+  count: 'count',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -466,7 +488,9 @@ exports.Prisma.ModelName = {
   Driver: 'Driver',
   Order: 'Order',
   DsoBaseline: 'DsoBaseline',
-  HistoricalInvoice: 'HistoricalInvoice'
+  HistoricalInvoice: 'HistoricalInvoice',
+  PodUploadLink: 'PodUploadLink',
+  PodUploadThrottle: 'PodUploadThrottle'
 };
 
 /**
