@@ -3,6 +3,15 @@ import { UploadThingError } from "uploadthing/server";
 import { z } from "zod";
 
 import { auth } from "~/server/auth";
+import { db } from "~/server/db";
+import {
+  consumeUploadLinkUse,
+  resolveUploadLink,
+} from "~/server/pod-link/resolve";
+import {
+  openPodSubmission,
+  recordPodSubmissionPage,
+} from "~/server/pod-link/submission";
 import {
   createObservabilityContext,
   getObservabilityContext,
@@ -13,10 +22,16 @@ import { reporter } from "~/server/observability/reporter";
 
 const f = createUploadthing();
 
+/**
+ * A driver POD upload carries its upload token and nothing else (TRK-030).
+ *
+ * `organizationId` and `loadId` used to arrive here from the client, with the
+ * driver token optional and never checked — which meant any caller could
+ * upload against any organization. Both are now derived from the token, so
+ * the client no longer names the tenant it is writing to.
+ */
 export const podUploadInput = z.object({
-  organizationId: z.string().min(1),
-  loadId: z.string().min(1),
-  driverToken: z.string().min(1).optional(),
+  token: z.string().min(1).max(64),
 });
 
 export const invoiceUploadInput = z.object({
@@ -72,6 +87,96 @@ export function logUploadError(
   );
 }
 
+/**
+ * The client address as seen through a proxy, for the per-IP throttle the
+ * upload shares with link resolution (TRK-024).
+ */
+function clientAddress(request: Request | undefined): string | null {
+  if (!request) {
+    return null;
+  }
+
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const first = forwardedFor?.split(",")[0]?.trim();
+
+  return first ?? request.headers.get("x-real-ip");
+}
+
+/**
+ * Authorizes a driver POD upload against its link, and opens the submission
+ * the photographs will attach to (TRK-030).
+ *
+ * The token is resolved server-side, so the organization and the order come
+ * from the link rather than from the request body. A token that is expired,
+ * revoked, exhausted, unknown, or throttled never reaches storage.
+ */
+export async function authorizePodUpload({
+  input,
+  files,
+  req,
+}: {
+  input: z.infer<typeof podUploadInput>;
+  files: readonly { name: string }[];
+  req?: Request;
+}): Promise<{
+  organizationId: string;
+  orderId: string;
+  podUploadLinkId: string;
+  podSubmissionId: string;
+  pageIndexByName: Record<string, number>;
+}> {
+  const resolved = await resolveUploadLink({
+    db,
+    token: input.token,
+    ipAddress: clientAddress(req),
+  });
+
+  if (!resolved.ok) {
+    // The driver already sees the Indonesian reason on his screen; this
+    // message is for the network tab, and it deliberately says nothing about
+    // which links exist.
+    return rejectUploadThingError("Tautan unggah tidak berlaku");
+  }
+
+  const { link } = resolved;
+
+  // Spending the use here rather than on completion: the budget exists to cap
+  // what a leaked link can do, and a link that has started six uploads has
+  // already spent them whether or not the bytes arrive.
+  const spent = await consumeUploadLinkUse({
+    db,
+    linkId: link.linkId,
+    useBudget: link.remainingUses + 1,
+  });
+
+  if (!spent) {
+    return rejectUploadThingError("Tautan unggah tidak berlaku");
+  }
+
+  const podSubmissionId = await openPodSubmission({
+    db,
+    organizationId: link.organizationId,
+    orderId: link.orderId,
+    podUploadLinkId: link.linkId,
+  });
+
+  // The batch is the only place capture order is visible: UploadThing calls
+  // `onUploadComplete` once per file, in whatever order they land.
+  const pageIndexByName: Record<string, number> = {};
+
+  files.forEach((file, index) => {
+    pageIndexByName[file.name] ??= index;
+  });
+
+  return {
+    organizationId: link.organizationId,
+    orderId: link.orderId,
+    podUploadLinkId: link.linkId,
+    podSubmissionId,
+    pageIndexByName,
+  };
+}
+
 export async function authorizeInvoiceUpload({
   input,
 }: {
@@ -103,38 +208,43 @@ export const uploadRouter = {
   podUploader: f({
     image: {
       maxFileSize: "8MB",
-      maxFileCount: 1,
+      maxFileCount: 6,
       acl: "private",
     },
     pdf: {
       // UploadThing only accepts power-of-two route ceilings; middleware enforces 10MB.
       maxFileSize: "16MB",
-      maxFileCount: 1,
+      maxFileCount: 6,
       acl: "private",
     },
   })
     .input(podUploadInput)
-    .middleware(async ({ input, files }) => {
+    .middleware(async ({ input, files, req }) => {
       await validatePodFileSizes(files);
 
-      return {
-        organizationId: input.organizationId,
-        loadId: input.loadId,
-        uploadedBy: input.driverToken ? "driver" : "operations",
-      };
+      return authorizePodUpload({ input, files, req });
     })
     .onUploadError(({ error, fileKey, req }) => {
       logUploadError(fileKey, error, req);
     })
-    .onUploadComplete(async ({ metadata, file }) => ({
-      fileKey: file.key,
-      fileName: file.name,
-      fileSize: file.size,
-      ufsUrl: file.ufsUrl,
-      organizationId: metadata.organizationId,
-      loadId: metadata.loadId,
-      uploadedAt: new Date().toISOString(),
-    })),
+    .onUploadComplete(async ({ metadata, file }) => {
+      await recordPodSubmissionPage({
+        db,
+        organizationId: metadata.organizationId,
+        podSubmissionId: metadata.podSubmissionId,
+        storageKey: file.key,
+        fileName: file.name,
+        contentType: file.type,
+        sizeBytes: file.size,
+        pageIndex: metadata.pageIndexByName[file.name] ?? null,
+      });
+
+      return {
+        podSubmissionId: metadata.podSubmissionId,
+        orderId: metadata.orderId,
+        uploadedAt: new Date().toISOString(),
+      };
+    }),
 
   invoiceUploader: f({
     pdf: {

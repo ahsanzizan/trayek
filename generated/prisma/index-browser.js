@@ -380,6 +380,27 @@ exports.Prisma.PodUploadThrottleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PodSubmissionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  orderId: 'orderId',
+  podUploadLinkId: 'podUploadLinkId',
+  receivedAt: 'receivedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PodSubmissionPageScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  podSubmissionId: 'podSubmissionId',
+  pageIndex: 'pageIndex',
+  storageKey: 'storageKey',
+  fileName: 'fileName',
+  contentType: 'contentType',
+  sizeBytes: 'sizeBytes',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -490,7 +511,9 @@ exports.Prisma.ModelName = {
   DsoBaseline: 'DsoBaseline',
   HistoricalInvoice: 'HistoricalInvoice',
   PodUploadLink: 'PodUploadLink',
-  PodUploadThrottle: 'PodUploadThrottle'
+  PodUploadThrottle: 'PodUploadThrottle',
+  PodSubmission: 'PodSubmission',
+  PodSubmissionPage: 'PodSubmissionPage'
 };
 
 /**

@@ -172,6 +172,29 @@ export type PodUploadLink = $Result.DefaultSelection<Prisma.$PodUploadLinkPayloa
  * undo the point of hashing it on `PodUploadLink`.
  */
 export type PodUploadThrottle = $Result.DefaultSelection<Prisma.$PodUploadThrottlePayload>
+/**
+ * Model PodSubmission
+ * One POD as the driver submitted it (TRK-030).
+ * 
+ * A submission is the logical document, not the photograph: a `surat jalan`
+ * with a continuation sheet is one POD in two captures, and extraction
+ * (TRK-041) reads it as one. The photographs hang off `pages`.
+ * 
+ * Nothing here is ever overwritten. A driver who re-uploads because he was
+ * unsure creates a second submission, and that duplication is a fraud signal
+ * (TRK-060), not a row to reconcile away.
+ */
+export type PodSubmission = $Result.DefaultSelection<Prisma.$PodSubmissionPayload>
+/**
+ * Model PodSubmissionPage
+ * One photograph of a POD, in the order the driver captured it (TRK-030).
+ * 
+ * `storageKey` is the original bytes, untouched. Preprocessing (TRK-042)
+ * writes its derivative to its own key and never here: fraud forensics
+ * (TRK-061) reads EXIF off the original, and a rotated, recompressed copy
+ * has none left to read.
+ */
+export type PodSubmissionPage = $Result.DefaultSelection<Prisma.$PodSubmissionPagePayload>
 
 /**
  * Enums
@@ -637,6 +660,26 @@ export class PrismaClient<
     * ```
     */
   get podUploadThrottle(): Prisma.PodUploadThrottleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.podSubmission`: Exposes CRUD operations for the **PodSubmission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PodSubmissions
+    * const podSubmissions = await prisma.podSubmission.findMany()
+    * ```
+    */
+  get podSubmission(): Prisma.PodSubmissionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.podSubmissionPage`: Exposes CRUD operations for the **PodSubmissionPage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PodSubmissionPages
+    * const podSubmissionPages = await prisma.podSubmissionPage.findMany()
+    * ```
+    */
+  get podSubmissionPage(): Prisma.PodSubmissionPageDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1099,7 +1142,9 @@ export namespace Prisma {
     DsoBaseline: 'DsoBaseline',
     HistoricalInvoice: 'HistoricalInvoice',
     PodUploadLink: 'PodUploadLink',
-    PodUploadThrottle: 'PodUploadThrottle'
+    PodUploadThrottle: 'PodUploadThrottle',
+    PodSubmission: 'PodSubmission',
+    PodSubmissionPage: 'PodSubmissionPage'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1118,7 +1163,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "messageLog" | "channelConnection" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice" | "podUploadLink" | "podUploadThrottle"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "messageLog" | "channelConnection" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice" | "podUploadLink" | "podUploadThrottle" | "podSubmission" | "podSubmissionPage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2750,6 +2795,154 @@ export namespace Prisma {
           }
         }
       }
+      PodSubmission: {
+        payload: Prisma.$PodSubmissionPayload<ExtArgs>
+        fields: Prisma.PodSubmissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PodSubmissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PodSubmissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          findFirst: {
+            args: Prisma.PodSubmissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PodSubmissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          findMany: {
+            args: Prisma.PodSubmissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>[]
+          }
+          create: {
+            args: Prisma.PodSubmissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          createMany: {
+            args: Prisma.PodSubmissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PodSubmissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>[]
+          }
+          delete: {
+            args: Prisma.PodSubmissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          update: {
+            args: Prisma.PodSubmissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PodSubmissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PodSubmissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PodSubmissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PodSubmissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPayload>
+          }
+          aggregate: {
+            args: Prisma.PodSubmissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePodSubmission>
+          }
+          groupBy: {
+            args: Prisma.PodSubmissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PodSubmissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PodSubmissionCountArgs<ExtArgs>
+            result: $Utils.Optional<PodSubmissionCountAggregateOutputType> | number
+          }
+        }
+      }
+      PodSubmissionPage: {
+        payload: Prisma.$PodSubmissionPagePayload<ExtArgs>
+        fields: Prisma.PodSubmissionPageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PodSubmissionPageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PodSubmissionPageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          findFirst: {
+            args: Prisma.PodSubmissionPageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PodSubmissionPageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          findMany: {
+            args: Prisma.PodSubmissionPageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>[]
+          }
+          create: {
+            args: Prisma.PodSubmissionPageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          createMany: {
+            args: Prisma.PodSubmissionPageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PodSubmissionPageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>[]
+          }
+          delete: {
+            args: Prisma.PodSubmissionPageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          update: {
+            args: Prisma.PodSubmissionPageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          deleteMany: {
+            args: Prisma.PodSubmissionPageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PodSubmissionPageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PodSubmissionPageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>[]
+          }
+          upsert: {
+            args: Prisma.PodSubmissionPageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PodSubmissionPagePayload>
+          }
+          aggregate: {
+            args: Prisma.PodSubmissionPageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePodSubmissionPage>
+          }
+          groupBy: {
+            args: Prisma.PodSubmissionPageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PodSubmissionPageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PodSubmissionPageCountArgs<ExtArgs>
+            result: $Utils.Optional<PodSubmissionPageCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2868,6 +3061,8 @@ export namespace Prisma {
     historicalInvoice?: HistoricalInvoiceOmit
     podUploadLink?: PodUploadLinkOmit
     podUploadThrottle?: PodUploadThrottleOmit
+    podSubmission?: PodSubmissionOmit
+    podSubmissionPage?: PodSubmissionPageOmit
   }
 
   /* Types for Logging */
@@ -2963,6 +3158,8 @@ export namespace Prisma {
     messageLogs: number
     channelConnections: number
     podUploadLinks: number
+    podSubmissions: number
+    podSubmissionPages: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2981,6 +3178,8 @@ export namespace Prisma {
     messageLogs?: boolean | OrganizationCountOutputTypeCountMessageLogsArgs
     channelConnections?: boolean | OrganizationCountOutputTypeCountChannelConnectionsArgs
     podUploadLinks?: boolean | OrganizationCountOutputTypeCountPodUploadLinksArgs
+    podSubmissions?: boolean | OrganizationCountOutputTypeCountPodSubmissionsArgs
+    podSubmissionPages?: boolean | OrganizationCountOutputTypeCountPodSubmissionPagesArgs
   }
 
   // Custom InputTypes
@@ -3097,6 +3296,20 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountPodUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PodUploadLinkWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountPodSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountPodSubmissionPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionPageWhereInput
   }
 
 
@@ -3235,10 +3448,12 @@ export namespace Prisma {
 
   export type OrderCountOutputType = {
     podUploadLinks: number
+    podSubmissions: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     podUploadLinks?: boolean | OrderCountOutputTypeCountPodUploadLinksArgs
+    podSubmissions?: boolean | OrderCountOutputTypeCountPodSubmissionsArgs
   }
 
   // Custom InputTypes
@@ -3257,6 +3472,75 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountPodUploadLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PodUploadLinkWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountPodSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionWhereInput
+  }
+
+
+  /**
+   * Count Type PodUploadLinkCountOutputType
+   */
+
+  export type PodUploadLinkCountOutputType = {
+    submissions: number
+  }
+
+  export type PodUploadLinkCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    submissions?: boolean | PodUploadLinkCountOutputTypeCountSubmissionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PodUploadLinkCountOutputType without action
+   */
+  export type PodUploadLinkCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodUploadLinkCountOutputType
+     */
+    select?: PodUploadLinkCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PodUploadLinkCountOutputType without action
+   */
+  export type PodUploadLinkCountOutputTypeCountSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionWhereInput
+  }
+
+
+  /**
+   * Count Type PodSubmissionCountOutputType
+   */
+
+  export type PodSubmissionCountOutputType = {
+    pages: number
+  }
+
+  export type PodSubmissionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pages?: boolean | PodSubmissionCountOutputTypeCountPagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PodSubmissionCountOutputType without action
+   */
+  export type PodSubmissionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionCountOutputType
+     */
+    select?: PodSubmissionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PodSubmissionCountOutputType without action
+   */
+  export type PodSubmissionCountOutputTypeCountPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionPageWhereInput
   }
 
 
@@ -3497,6 +3781,8 @@ export namespace Prisma {
     messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
     channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
     podUploadLinks?: boolean | Organization$podUploadLinksArgs<ExtArgs>
+    podSubmissions?: boolean | Organization$podSubmissionsArgs<ExtArgs>
+    podSubmissionPages?: boolean | Organization$podSubmissionPagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -3547,6 +3833,8 @@ export namespace Prisma {
     messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
     channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
     podUploadLinks?: boolean | Organization$podUploadLinksArgs<ExtArgs>
+    podSubmissions?: boolean | Organization$podSubmissionsArgs<ExtArgs>
+    podSubmissionPages?: boolean | Organization$podSubmissionPagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3570,6 +3858,8 @@ export namespace Prisma {
       messageLogs: Prisma.$MessageLogPayload<ExtArgs>[]
       channelConnections: Prisma.$ChannelConnectionPayload<ExtArgs>[]
       podUploadLinks: Prisma.$PodUploadLinkPayload<ExtArgs>[]
+      podSubmissions: Prisma.$PodSubmissionPayload<ExtArgs>[]
+      podSubmissionPages: Prisma.$PodSubmissionPagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3988,6 +4278,8 @@ export namespace Prisma {
     messageLogs<T extends Organization$messageLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$messageLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     channelConnections<T extends Organization$channelConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$channelConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     podUploadLinks<T extends Organization$podUploadLinksArgs<ExtArgs> = {}>(args?: Subset<T, Organization$podUploadLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    podSubmissions<T extends Organization$podSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$podSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    podSubmissionPages<T extends Organization$podSubmissionPagesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$podSubmissionPagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4769,6 +5061,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.podSubmissions
+   */
+  export type Organization$podSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    where?: PodSubmissionWhereInput
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    cursor?: PodSubmissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.podSubmissionPages
+   */
+  export type Organization$podSubmissionPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    where?: PodSubmissionPageWhereInput
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    cursor?: PodSubmissionPageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodSubmissionPageScalarFieldEnum | PodSubmissionPageScalarFieldEnum[]
   }
 
   /**
@@ -23111,6 +23451,7 @@ export namespace Prisma {
     shipper?: boolean | ShipperDefaultArgs<ExtArgs>
     driver?: boolean | Order$driverArgs<ExtArgs>
     podUploadLinks?: boolean | Order$podUploadLinksArgs<ExtArgs>
+    podSubmissions?: boolean | Order$podSubmissionsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -23183,6 +23524,7 @@ export namespace Prisma {
     shipper?: boolean | ShipperDefaultArgs<ExtArgs>
     driver?: boolean | Order$driverArgs<ExtArgs>
     podUploadLinks?: boolean | Order$podUploadLinksArgs<ExtArgs>
+    podSubmissions?: boolean | Order$podSubmissionsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23203,6 +23545,7 @@ export namespace Prisma {
       shipper: Prisma.$ShipperPayload<ExtArgs>
       driver: Prisma.$DriverPayload<ExtArgs> | null
       podUploadLinks: Prisma.$PodUploadLinkPayload<ExtArgs>[]
+      podSubmissions: Prisma.$PodSubmissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23637,6 +23980,7 @@ export namespace Prisma {
     shipper<T extends ShipperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShipperDefaultArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     driver<T extends Order$driverArgs<ExtArgs> = {}>(args?: Subset<T, Order$driverArgs<ExtArgs>>): Prisma__DriverClient<$Result.GetResult<Prisma.$DriverPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     podUploadLinks<T extends Order$podUploadLinksArgs<ExtArgs> = {}>(args?: Subset<T, Order$podUploadLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    podSubmissions<T extends Order$podSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$podSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24118,6 +24462,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PodUploadLinkScalarFieldEnum | PodUploadLinkScalarFieldEnum[]
+  }
+
+  /**
+   * Order.podSubmissions
+   */
+  export type Order$podSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    where?: PodSubmissionWhereInput
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    cursor?: PodSubmissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
   }
 
   /**
@@ -26759,6 +27127,8 @@ export namespace Prisma {
     updatedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
+    submissions?: boolean | PodUploadLink$submissionsArgs<ExtArgs>
+    _count?: boolean | PodUploadLinkCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["podUploadLink"]>
 
   export type PodUploadLinkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -26814,6 +27184,8 @@ export namespace Prisma {
   export type PodUploadLinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
+    submissions?: boolean | PodUploadLink$submissionsArgs<ExtArgs>
+    _count?: boolean | PodUploadLinkCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PodUploadLinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -26829,6 +27201,7 @@ export namespace Prisma {
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       order: Prisma.$OrderPayload<ExtArgs>
+      submissions: Prisma.$PodSubmissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -27255,6 +27628,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    submissions<T extends PodUploadLink$submissionsArgs<ExtArgs> = {}>(args?: Subset<T, PodUploadLink$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27689,6 +28063,30 @@ export namespace Prisma {
      * Limit how many PodUploadLinks to delete.
      */
     limit?: number
+  }
+
+  /**
+   * PodUploadLink.submissions
+   */
+  export type PodUploadLink$submissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    where?: PodSubmissionWhereInput
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    cursor?: PodSubmissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
   }
 
   /**
@@ -28727,6 +29125,2295 @@ export namespace Prisma {
 
 
   /**
+   * Model PodSubmission
+   */
+
+  export type AggregatePodSubmission = {
+    _count: PodSubmissionCountAggregateOutputType | null
+    _min: PodSubmissionMinAggregateOutputType | null
+    _max: PodSubmissionMaxAggregateOutputType | null
+  }
+
+  export type PodSubmissionMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    orderId: string | null
+    podUploadLinkId: string | null
+    receivedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PodSubmissionMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    orderId: string | null
+    podUploadLinkId: string | null
+    receivedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PodSubmissionCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    orderId: number
+    podUploadLinkId: number
+    receivedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PodSubmissionMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    podUploadLinkId?: true
+    receivedAt?: true
+    createdAt?: true
+  }
+
+  export type PodSubmissionMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    podUploadLinkId?: true
+    receivedAt?: true
+    createdAt?: true
+  }
+
+  export type PodSubmissionCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    orderId?: true
+    podUploadLinkId?: true
+    receivedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PodSubmissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodSubmission to aggregate.
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissions to fetch.
+     */
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PodSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PodSubmissions
+    **/
+    _count?: true | PodSubmissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PodSubmissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PodSubmissionMaxAggregateInputType
+  }
+
+  export type GetPodSubmissionAggregateType<T extends PodSubmissionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePodSubmission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePodSubmission[P]>
+      : GetScalarType<T[P], AggregatePodSubmission[P]>
+  }
+
+
+
+
+  export type PodSubmissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionWhereInput
+    orderBy?: PodSubmissionOrderByWithAggregationInput | PodSubmissionOrderByWithAggregationInput[]
+    by: PodSubmissionScalarFieldEnum[] | PodSubmissionScalarFieldEnum
+    having?: PodSubmissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PodSubmissionCountAggregateInputType | true
+    _min?: PodSubmissionMinAggregateInputType
+    _max?: PodSubmissionMaxAggregateInputType
+  }
+
+  export type PodSubmissionGroupByOutputType = {
+    id: string
+    organizationId: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt: Date
+    createdAt: Date
+    _count: PodSubmissionCountAggregateOutputType | null
+    _min: PodSubmissionMinAggregateOutputType | null
+    _max: PodSubmissionMaxAggregateOutputType | null
+  }
+
+  type GetPodSubmissionGroupByPayload<T extends PodSubmissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PodSubmissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PodSubmissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PodSubmissionGroupByOutputType[P]>
+            : GetScalarType<T[P], PodSubmissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PodSubmissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    podUploadLinkId?: boolean
+    receivedAt?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+    pages?: boolean | PodSubmission$pagesArgs<ExtArgs>
+    _count?: boolean | PodSubmissionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmission"]>
+
+  export type PodSubmissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    podUploadLinkId?: boolean
+    receivedAt?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmission"]>
+
+  export type PodSubmissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    podUploadLinkId?: boolean
+    receivedAt?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmission"]>
+
+  export type PodSubmissionSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    orderId?: boolean
+    podUploadLinkId?: boolean
+    receivedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type PodSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "podUploadLinkId" | "receivedAt" | "createdAt", ExtArgs["result"]["podSubmission"]>
+  export type PodSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+    pages?: boolean | PodSubmission$pagesArgs<ExtArgs>
+    _count?: boolean | PodSubmissionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PodSubmissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+  }
+  export type PodSubmissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
+  }
+
+  export type $PodSubmissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PodSubmission"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      order: Prisma.$OrderPayload<ExtArgs>
+      podUploadLink: Prisma.$PodUploadLinkPayload<ExtArgs>
+      pages: Prisma.$PodSubmissionPagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      orderId: string
+      /**
+       * The link the driver came through. Kept so a submission can be traced
+       * back to who issued the link and when, which is the only identity a
+       * driver has (TRK-024).
+       */
+      podUploadLinkId: string
+      /**
+       * When the server accepted it. The client's own clock is captured
+       * separately by TRK-032, because the two disagreeing is itself a signal.
+       */
+      receivedAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["podSubmission"]>
+    composites: {}
+  }
+
+  type PodSubmissionGetPayload<S extends boolean | null | undefined | PodSubmissionDefaultArgs> = $Result.GetResult<Prisma.$PodSubmissionPayload, S>
+
+  type PodSubmissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PodSubmissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PodSubmissionCountAggregateInputType | true
+    }
+
+  export interface PodSubmissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PodSubmission'], meta: { name: 'PodSubmission' } }
+    /**
+     * Find zero or one PodSubmission that matches the filter.
+     * @param {PodSubmissionFindUniqueArgs} args - Arguments to find a PodSubmission
+     * @example
+     * // Get one PodSubmission
+     * const podSubmission = await prisma.podSubmission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PodSubmissionFindUniqueArgs>(args: SelectSubset<T, PodSubmissionFindUniqueArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PodSubmission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PodSubmissionFindUniqueOrThrowArgs} args - Arguments to find a PodSubmission
+     * @example
+     * // Get one PodSubmission
+     * const podSubmission = await prisma.podSubmission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PodSubmissionFindUniqueOrThrowArgs>(args: SelectSubset<T, PodSubmissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodSubmission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionFindFirstArgs} args - Arguments to find a PodSubmission
+     * @example
+     * // Get one PodSubmission
+     * const podSubmission = await prisma.podSubmission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PodSubmissionFindFirstArgs>(args?: SelectSubset<T, PodSubmissionFindFirstArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodSubmission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionFindFirstOrThrowArgs} args - Arguments to find a PodSubmission
+     * @example
+     * // Get one PodSubmission
+     * const podSubmission = await prisma.podSubmission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PodSubmissionFindFirstOrThrowArgs>(args?: SelectSubset<T, PodSubmissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PodSubmissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PodSubmissions
+     * const podSubmissions = await prisma.podSubmission.findMany()
+     * 
+     * // Get first 10 PodSubmissions
+     * const podSubmissions = await prisma.podSubmission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const podSubmissionWithIdOnly = await prisma.podSubmission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PodSubmissionFindManyArgs>(args?: SelectSubset<T, PodSubmissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PodSubmission.
+     * @param {PodSubmissionCreateArgs} args - Arguments to create a PodSubmission.
+     * @example
+     * // Create one PodSubmission
+     * const PodSubmission = await prisma.podSubmission.create({
+     *   data: {
+     *     // ... data to create a PodSubmission
+     *   }
+     * })
+     * 
+     */
+    create<T extends PodSubmissionCreateArgs>(args: SelectSubset<T, PodSubmissionCreateArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PodSubmissions.
+     * @param {PodSubmissionCreateManyArgs} args - Arguments to create many PodSubmissions.
+     * @example
+     * // Create many PodSubmissions
+     * const podSubmission = await prisma.podSubmission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PodSubmissionCreateManyArgs>(args?: SelectSubset<T, PodSubmissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PodSubmissions and returns the data saved in the database.
+     * @param {PodSubmissionCreateManyAndReturnArgs} args - Arguments to create many PodSubmissions.
+     * @example
+     * // Create many PodSubmissions
+     * const podSubmission = await prisma.podSubmission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PodSubmissions and only return the `id`
+     * const podSubmissionWithIdOnly = await prisma.podSubmission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PodSubmissionCreateManyAndReturnArgs>(args?: SelectSubset<T, PodSubmissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PodSubmission.
+     * @param {PodSubmissionDeleteArgs} args - Arguments to delete one PodSubmission.
+     * @example
+     * // Delete one PodSubmission
+     * const PodSubmission = await prisma.podSubmission.delete({
+     *   where: {
+     *     // ... filter to delete one PodSubmission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PodSubmissionDeleteArgs>(args: SelectSubset<T, PodSubmissionDeleteArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PodSubmission.
+     * @param {PodSubmissionUpdateArgs} args - Arguments to update one PodSubmission.
+     * @example
+     * // Update one PodSubmission
+     * const podSubmission = await prisma.podSubmission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PodSubmissionUpdateArgs>(args: SelectSubset<T, PodSubmissionUpdateArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PodSubmissions.
+     * @param {PodSubmissionDeleteManyArgs} args - Arguments to filter PodSubmissions to delete.
+     * @example
+     * // Delete a few PodSubmissions
+     * const { count } = await prisma.podSubmission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PodSubmissionDeleteManyArgs>(args?: SelectSubset<T, PodSubmissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodSubmissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PodSubmissions
+     * const podSubmission = await prisma.podSubmission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PodSubmissionUpdateManyArgs>(args: SelectSubset<T, PodSubmissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodSubmissions and returns the data updated in the database.
+     * @param {PodSubmissionUpdateManyAndReturnArgs} args - Arguments to update many PodSubmissions.
+     * @example
+     * // Update many PodSubmissions
+     * const podSubmission = await prisma.podSubmission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PodSubmissions and only return the `id`
+     * const podSubmissionWithIdOnly = await prisma.podSubmission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PodSubmissionUpdateManyAndReturnArgs>(args: SelectSubset<T, PodSubmissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PodSubmission.
+     * @param {PodSubmissionUpsertArgs} args - Arguments to update or create a PodSubmission.
+     * @example
+     * // Update or create a PodSubmission
+     * const podSubmission = await prisma.podSubmission.upsert({
+     *   create: {
+     *     // ... data to create a PodSubmission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PodSubmission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PodSubmissionUpsertArgs>(args: SelectSubset<T, PodSubmissionUpsertArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PodSubmissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionCountArgs} args - Arguments to filter PodSubmissions to count.
+     * @example
+     * // Count the number of PodSubmissions
+     * const count = await prisma.podSubmission.count({
+     *   where: {
+     *     // ... the filter for the PodSubmissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PodSubmissionCountArgs>(
+      args?: Subset<T, PodSubmissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PodSubmissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PodSubmission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PodSubmissionAggregateArgs>(args: Subset<T, PodSubmissionAggregateArgs>): Prisma.PrismaPromise<GetPodSubmissionAggregateType<T>>
+
+    /**
+     * Group by PodSubmission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PodSubmissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PodSubmissionGroupByArgs['orderBy'] }
+        : { orderBy?: PodSubmissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PodSubmissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPodSubmissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PodSubmission model
+   */
+  readonly fields: PodSubmissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PodSubmission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PodSubmissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    podUploadLink<T extends PodUploadLinkDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PodUploadLinkDefaultArgs<ExtArgs>>): Prisma__PodUploadLinkClient<$Result.GetResult<Prisma.$PodUploadLinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    pages<T extends PodSubmission$pagesArgs<ExtArgs> = {}>(args?: Subset<T, PodSubmission$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PodSubmission model
+   */
+  interface PodSubmissionFieldRefs {
+    readonly id: FieldRef<"PodSubmission", 'String'>
+    readonly organizationId: FieldRef<"PodSubmission", 'String'>
+    readonly orderId: FieldRef<"PodSubmission", 'String'>
+    readonly podUploadLinkId: FieldRef<"PodSubmission", 'String'>
+    readonly receivedAt: FieldRef<"PodSubmission", 'DateTime'>
+    readonly createdAt: FieldRef<"PodSubmission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PodSubmission findUnique
+   */
+  export type PodSubmissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmission to fetch.
+     */
+    where: PodSubmissionWhereUniqueInput
+  }
+
+  /**
+   * PodSubmission findUniqueOrThrow
+   */
+  export type PodSubmissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmission to fetch.
+     */
+    where: PodSubmissionWhereUniqueInput
+  }
+
+  /**
+   * PodSubmission findFirst
+   */
+  export type PodSubmissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmission to fetch.
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissions to fetch.
+     */
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodSubmissions.
+     */
+    cursor?: PodSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodSubmissions.
+     */
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmission findFirstOrThrow
+   */
+  export type PodSubmissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmission to fetch.
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissions to fetch.
+     */
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodSubmissions.
+     */
+    cursor?: PodSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodSubmissions.
+     */
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmission findMany
+   */
+  export type PodSubmissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissions to fetch.
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissions to fetch.
+     */
+    orderBy?: PodSubmissionOrderByWithRelationInput | PodSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PodSubmissions.
+     */
+    cursor?: PodSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissions.
+     */
+    skip?: number
+    distinct?: PodSubmissionScalarFieldEnum | PodSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmission create
+   */
+  export type PodSubmissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PodSubmission.
+     */
+    data: XOR<PodSubmissionCreateInput, PodSubmissionUncheckedCreateInput>
+  }
+
+  /**
+   * PodSubmission createMany
+   */
+  export type PodSubmissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PodSubmissions.
+     */
+    data: PodSubmissionCreateManyInput | PodSubmissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PodSubmission createManyAndReturn
+   */
+  export type PodSubmissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PodSubmissions.
+     */
+    data: PodSubmissionCreateManyInput | PodSubmissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodSubmission update
+   */
+  export type PodSubmissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PodSubmission.
+     */
+    data: XOR<PodSubmissionUpdateInput, PodSubmissionUncheckedUpdateInput>
+    /**
+     * Choose, which PodSubmission to update.
+     */
+    where: PodSubmissionWhereUniqueInput
+  }
+
+  /**
+   * PodSubmission updateMany
+   */
+  export type PodSubmissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PodSubmissions.
+     */
+    data: XOR<PodSubmissionUpdateManyMutationInput, PodSubmissionUncheckedUpdateManyInput>
+    /**
+     * Filter which PodSubmissions to update
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * Limit how many PodSubmissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodSubmission updateManyAndReturn
+   */
+  export type PodSubmissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * The data used to update PodSubmissions.
+     */
+    data: XOR<PodSubmissionUpdateManyMutationInput, PodSubmissionUncheckedUpdateManyInput>
+    /**
+     * Filter which PodSubmissions to update
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * Limit how many PodSubmissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodSubmission upsert
+   */
+  export type PodSubmissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PodSubmission to update in case it exists.
+     */
+    where: PodSubmissionWhereUniqueInput
+    /**
+     * In case the PodSubmission found by the `where` argument doesn't exist, create a new PodSubmission with this data.
+     */
+    create: XOR<PodSubmissionCreateInput, PodSubmissionUncheckedCreateInput>
+    /**
+     * In case the PodSubmission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PodSubmissionUpdateInput, PodSubmissionUncheckedUpdateInput>
+  }
+
+  /**
+   * PodSubmission delete
+   */
+  export type PodSubmissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter which PodSubmission to delete.
+     */
+    where: PodSubmissionWhereUniqueInput
+  }
+
+  /**
+   * PodSubmission deleteMany
+   */
+  export type PodSubmissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodSubmissions to delete
+     */
+    where?: PodSubmissionWhereInput
+    /**
+     * Limit how many PodSubmissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodSubmission.pages
+   */
+  export type PodSubmission$pagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    where?: PodSubmissionPageWhereInput
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    cursor?: PodSubmissionPageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PodSubmissionPageScalarFieldEnum | PodSubmissionPageScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmission without action
+   */
+  export type PodSubmissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmission
+     */
+    select?: PodSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmission
+     */
+    omit?: PodSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PodSubmissionPage
+   */
+
+  export type AggregatePodSubmissionPage = {
+    _count: PodSubmissionPageCountAggregateOutputType | null
+    _avg: PodSubmissionPageAvgAggregateOutputType | null
+    _sum: PodSubmissionPageSumAggregateOutputType | null
+    _min: PodSubmissionPageMinAggregateOutputType | null
+    _max: PodSubmissionPageMaxAggregateOutputType | null
+  }
+
+  export type PodSubmissionPageAvgAggregateOutputType = {
+    pageIndex: number | null
+    sizeBytes: number | null
+  }
+
+  export type PodSubmissionPageSumAggregateOutputType = {
+    pageIndex: number | null
+    sizeBytes: number | null
+  }
+
+  export type PodSubmissionPageMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    podSubmissionId: string | null
+    pageIndex: number | null
+    storageKey: string | null
+    fileName: string | null
+    contentType: string | null
+    sizeBytes: number | null
+    createdAt: Date | null
+  }
+
+  export type PodSubmissionPageMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    podSubmissionId: string | null
+    pageIndex: number | null
+    storageKey: string | null
+    fileName: string | null
+    contentType: string | null
+    sizeBytes: number | null
+    createdAt: Date | null
+  }
+
+  export type PodSubmissionPageCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    podSubmissionId: number
+    pageIndex: number
+    storageKey: number
+    fileName: number
+    contentType: number
+    sizeBytes: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PodSubmissionPageAvgAggregateInputType = {
+    pageIndex?: true
+    sizeBytes?: true
+  }
+
+  export type PodSubmissionPageSumAggregateInputType = {
+    pageIndex?: true
+    sizeBytes?: true
+  }
+
+  export type PodSubmissionPageMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    podSubmissionId?: true
+    pageIndex?: true
+    storageKey?: true
+    fileName?: true
+    contentType?: true
+    sizeBytes?: true
+    createdAt?: true
+  }
+
+  export type PodSubmissionPageMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    podSubmissionId?: true
+    pageIndex?: true
+    storageKey?: true
+    fileName?: true
+    contentType?: true
+    sizeBytes?: true
+    createdAt?: true
+  }
+
+  export type PodSubmissionPageCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    podSubmissionId?: true
+    pageIndex?: true
+    storageKey?: true
+    fileName?: true
+    contentType?: true
+    sizeBytes?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PodSubmissionPageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodSubmissionPage to aggregate.
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissionPages to fetch.
+     */
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PodSubmissionPageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissionPages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissionPages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PodSubmissionPages
+    **/
+    _count?: true | PodSubmissionPageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PodSubmissionPageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PodSubmissionPageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PodSubmissionPageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PodSubmissionPageMaxAggregateInputType
+  }
+
+  export type GetPodSubmissionPageAggregateType<T extends PodSubmissionPageAggregateArgs> = {
+        [P in keyof T & keyof AggregatePodSubmissionPage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePodSubmissionPage[P]>
+      : GetScalarType<T[P], AggregatePodSubmissionPage[P]>
+  }
+
+
+
+
+  export type PodSubmissionPageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PodSubmissionPageWhereInput
+    orderBy?: PodSubmissionPageOrderByWithAggregationInput | PodSubmissionPageOrderByWithAggregationInput[]
+    by: PodSubmissionPageScalarFieldEnum[] | PodSubmissionPageScalarFieldEnum
+    having?: PodSubmissionPageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PodSubmissionPageCountAggregateInputType | true
+    _avg?: PodSubmissionPageAvgAggregateInputType
+    _sum?: PodSubmissionPageSumAggregateInputType
+    _min?: PodSubmissionPageMinAggregateInputType
+    _max?: PodSubmissionPageMaxAggregateInputType
+  }
+
+  export type PodSubmissionPageGroupByOutputType = {
+    id: string
+    organizationId: string
+    podSubmissionId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt: Date
+    _count: PodSubmissionPageCountAggregateOutputType | null
+    _avg: PodSubmissionPageAvgAggregateOutputType | null
+    _sum: PodSubmissionPageSumAggregateOutputType | null
+    _min: PodSubmissionPageMinAggregateOutputType | null
+    _max: PodSubmissionPageMaxAggregateOutputType | null
+  }
+
+  type GetPodSubmissionPageGroupByPayload<T extends PodSubmissionPageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PodSubmissionPageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PodSubmissionPageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PodSubmissionPageGroupByOutputType[P]>
+            : GetScalarType<T[P], PodSubmissionPageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PodSubmissionPageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    podSubmissionId?: boolean
+    pageIndex?: boolean
+    storageKey?: boolean
+    fileName?: boolean
+    contentType?: boolean
+    sizeBytes?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmissionPage"]>
+
+  export type PodSubmissionPageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    podSubmissionId?: boolean
+    pageIndex?: boolean
+    storageKey?: boolean
+    fileName?: boolean
+    contentType?: boolean
+    sizeBytes?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmissionPage"]>
+
+  export type PodSubmissionPageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    podSubmissionId?: boolean
+    pageIndex?: boolean
+    storageKey?: boolean
+    fileName?: boolean
+    contentType?: boolean
+    sizeBytes?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["podSubmissionPage"]>
+
+  export type PodSubmissionPageSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    podSubmissionId?: boolean
+    pageIndex?: boolean
+    storageKey?: boolean
+    fileName?: boolean
+    contentType?: boolean
+    sizeBytes?: boolean
+    createdAt?: boolean
+  }
+
+  export type PodSubmissionPageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "podSubmissionId" | "pageIndex" | "storageKey" | "fileName" | "contentType" | "sizeBytes" | "createdAt", ExtArgs["result"]["podSubmissionPage"]>
+  export type PodSubmissionPageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }
+  export type PodSubmissionPageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }
+  export type PodSubmissionPageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
+  }
+
+  export type $PodSubmissionPagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PodSubmissionPage"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      podSubmission: Prisma.$PodSubmissionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      podSubmissionId: string
+      /**
+       * Zero-based, the order the driver took them in.
+       */
+      pageIndex: number
+      /**
+       * Opaque storage key. Never logged, never put in a URL that outlives its
+       * purpose: a POD carries a signature, which is personal data under UU PDP.
+       */
+      storageKey: string
+      fileName: string
+      contentType: string
+      sizeBytes: number
+      createdAt: Date
+    }, ExtArgs["result"]["podSubmissionPage"]>
+    composites: {}
+  }
+
+  type PodSubmissionPageGetPayload<S extends boolean | null | undefined | PodSubmissionPageDefaultArgs> = $Result.GetResult<Prisma.$PodSubmissionPagePayload, S>
+
+  type PodSubmissionPageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PodSubmissionPageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PodSubmissionPageCountAggregateInputType | true
+    }
+
+  export interface PodSubmissionPageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PodSubmissionPage'], meta: { name: 'PodSubmissionPage' } }
+    /**
+     * Find zero or one PodSubmissionPage that matches the filter.
+     * @param {PodSubmissionPageFindUniqueArgs} args - Arguments to find a PodSubmissionPage
+     * @example
+     * // Get one PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PodSubmissionPageFindUniqueArgs>(args: SelectSubset<T, PodSubmissionPageFindUniqueArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PodSubmissionPage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PodSubmissionPageFindUniqueOrThrowArgs} args - Arguments to find a PodSubmissionPage
+     * @example
+     * // Get one PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PodSubmissionPageFindUniqueOrThrowArgs>(args: SelectSubset<T, PodSubmissionPageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodSubmissionPage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageFindFirstArgs} args - Arguments to find a PodSubmissionPage
+     * @example
+     * // Get one PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PodSubmissionPageFindFirstArgs>(args?: SelectSubset<T, PodSubmissionPageFindFirstArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PodSubmissionPage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageFindFirstOrThrowArgs} args - Arguments to find a PodSubmissionPage
+     * @example
+     * // Get one PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PodSubmissionPageFindFirstOrThrowArgs>(args?: SelectSubset<T, PodSubmissionPageFindFirstOrThrowArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PodSubmissionPages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PodSubmissionPages
+     * const podSubmissionPages = await prisma.podSubmissionPage.findMany()
+     * 
+     * // Get first 10 PodSubmissionPages
+     * const podSubmissionPages = await prisma.podSubmissionPage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const podSubmissionPageWithIdOnly = await prisma.podSubmissionPage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PodSubmissionPageFindManyArgs>(args?: SelectSubset<T, PodSubmissionPageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PodSubmissionPage.
+     * @param {PodSubmissionPageCreateArgs} args - Arguments to create a PodSubmissionPage.
+     * @example
+     * // Create one PodSubmissionPage
+     * const PodSubmissionPage = await prisma.podSubmissionPage.create({
+     *   data: {
+     *     // ... data to create a PodSubmissionPage
+     *   }
+     * })
+     * 
+     */
+    create<T extends PodSubmissionPageCreateArgs>(args: SelectSubset<T, PodSubmissionPageCreateArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PodSubmissionPages.
+     * @param {PodSubmissionPageCreateManyArgs} args - Arguments to create many PodSubmissionPages.
+     * @example
+     * // Create many PodSubmissionPages
+     * const podSubmissionPage = await prisma.podSubmissionPage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PodSubmissionPageCreateManyArgs>(args?: SelectSubset<T, PodSubmissionPageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PodSubmissionPages and returns the data saved in the database.
+     * @param {PodSubmissionPageCreateManyAndReturnArgs} args - Arguments to create many PodSubmissionPages.
+     * @example
+     * // Create many PodSubmissionPages
+     * const podSubmissionPage = await prisma.podSubmissionPage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PodSubmissionPages and only return the `id`
+     * const podSubmissionPageWithIdOnly = await prisma.podSubmissionPage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PodSubmissionPageCreateManyAndReturnArgs>(args?: SelectSubset<T, PodSubmissionPageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PodSubmissionPage.
+     * @param {PodSubmissionPageDeleteArgs} args - Arguments to delete one PodSubmissionPage.
+     * @example
+     * // Delete one PodSubmissionPage
+     * const PodSubmissionPage = await prisma.podSubmissionPage.delete({
+     *   where: {
+     *     // ... filter to delete one PodSubmissionPage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PodSubmissionPageDeleteArgs>(args: SelectSubset<T, PodSubmissionPageDeleteArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PodSubmissionPage.
+     * @param {PodSubmissionPageUpdateArgs} args - Arguments to update one PodSubmissionPage.
+     * @example
+     * // Update one PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PodSubmissionPageUpdateArgs>(args: SelectSubset<T, PodSubmissionPageUpdateArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PodSubmissionPages.
+     * @param {PodSubmissionPageDeleteManyArgs} args - Arguments to filter PodSubmissionPages to delete.
+     * @example
+     * // Delete a few PodSubmissionPages
+     * const { count } = await prisma.podSubmissionPage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PodSubmissionPageDeleteManyArgs>(args?: SelectSubset<T, PodSubmissionPageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodSubmissionPages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PodSubmissionPages
+     * const podSubmissionPage = await prisma.podSubmissionPage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PodSubmissionPageUpdateManyArgs>(args: SelectSubset<T, PodSubmissionPageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PodSubmissionPages and returns the data updated in the database.
+     * @param {PodSubmissionPageUpdateManyAndReturnArgs} args - Arguments to update many PodSubmissionPages.
+     * @example
+     * // Update many PodSubmissionPages
+     * const podSubmissionPage = await prisma.podSubmissionPage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PodSubmissionPages and only return the `id`
+     * const podSubmissionPageWithIdOnly = await prisma.podSubmissionPage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PodSubmissionPageUpdateManyAndReturnArgs>(args: SelectSubset<T, PodSubmissionPageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PodSubmissionPage.
+     * @param {PodSubmissionPageUpsertArgs} args - Arguments to update or create a PodSubmissionPage.
+     * @example
+     * // Update or create a PodSubmissionPage
+     * const podSubmissionPage = await prisma.podSubmissionPage.upsert({
+     *   create: {
+     *     // ... data to create a PodSubmissionPage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PodSubmissionPage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PodSubmissionPageUpsertArgs>(args: SelectSubset<T, PodSubmissionPageUpsertArgs<ExtArgs>>): Prisma__PodSubmissionPageClient<$Result.GetResult<Prisma.$PodSubmissionPagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PodSubmissionPages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageCountArgs} args - Arguments to filter PodSubmissionPages to count.
+     * @example
+     * // Count the number of PodSubmissionPages
+     * const count = await prisma.podSubmissionPage.count({
+     *   where: {
+     *     // ... the filter for the PodSubmissionPages we want to count
+     *   }
+     * })
+    **/
+    count<T extends PodSubmissionPageCountArgs>(
+      args?: Subset<T, PodSubmissionPageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PodSubmissionPageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PodSubmissionPage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PodSubmissionPageAggregateArgs>(args: Subset<T, PodSubmissionPageAggregateArgs>): Prisma.PrismaPromise<GetPodSubmissionPageAggregateType<T>>
+
+    /**
+     * Group by PodSubmissionPage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PodSubmissionPageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PodSubmissionPageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PodSubmissionPageGroupByArgs['orderBy'] }
+        : { orderBy?: PodSubmissionPageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PodSubmissionPageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPodSubmissionPageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PodSubmissionPage model
+   */
+  readonly fields: PodSubmissionPageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PodSubmissionPage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PodSubmissionPageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    podSubmission<T extends PodSubmissionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PodSubmissionDefaultArgs<ExtArgs>>): Prisma__PodSubmissionClient<$Result.GetResult<Prisma.$PodSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PodSubmissionPage model
+   */
+  interface PodSubmissionPageFieldRefs {
+    readonly id: FieldRef<"PodSubmissionPage", 'String'>
+    readonly organizationId: FieldRef<"PodSubmissionPage", 'String'>
+    readonly podSubmissionId: FieldRef<"PodSubmissionPage", 'String'>
+    readonly pageIndex: FieldRef<"PodSubmissionPage", 'Int'>
+    readonly storageKey: FieldRef<"PodSubmissionPage", 'String'>
+    readonly fileName: FieldRef<"PodSubmissionPage", 'String'>
+    readonly contentType: FieldRef<"PodSubmissionPage", 'String'>
+    readonly sizeBytes: FieldRef<"PodSubmissionPage", 'Int'>
+    readonly createdAt: FieldRef<"PodSubmissionPage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PodSubmissionPage findUnique
+   */
+  export type PodSubmissionPageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissionPage to fetch.
+     */
+    where: PodSubmissionPageWhereUniqueInput
+  }
+
+  /**
+   * PodSubmissionPage findUniqueOrThrow
+   */
+  export type PodSubmissionPageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissionPage to fetch.
+     */
+    where: PodSubmissionPageWhereUniqueInput
+  }
+
+  /**
+   * PodSubmissionPage findFirst
+   */
+  export type PodSubmissionPageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissionPage to fetch.
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissionPages to fetch.
+     */
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodSubmissionPages.
+     */
+    cursor?: PodSubmissionPageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissionPages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissionPages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodSubmissionPages.
+     */
+    distinct?: PodSubmissionPageScalarFieldEnum | PodSubmissionPageScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmissionPage findFirstOrThrow
+   */
+  export type PodSubmissionPageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissionPage to fetch.
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissionPages to fetch.
+     */
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PodSubmissionPages.
+     */
+    cursor?: PodSubmissionPageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissionPages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissionPages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PodSubmissionPages.
+     */
+    distinct?: PodSubmissionPageScalarFieldEnum | PodSubmissionPageScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmissionPage findMany
+   */
+  export type PodSubmissionPageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter, which PodSubmissionPages to fetch.
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PodSubmissionPages to fetch.
+     */
+    orderBy?: PodSubmissionPageOrderByWithRelationInput | PodSubmissionPageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PodSubmissionPages.
+     */
+    cursor?: PodSubmissionPageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PodSubmissionPages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PodSubmissionPages.
+     */
+    skip?: number
+    distinct?: PodSubmissionPageScalarFieldEnum | PodSubmissionPageScalarFieldEnum[]
+  }
+
+  /**
+   * PodSubmissionPage create
+   */
+  export type PodSubmissionPageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PodSubmissionPage.
+     */
+    data: XOR<PodSubmissionPageCreateInput, PodSubmissionPageUncheckedCreateInput>
+  }
+
+  /**
+   * PodSubmissionPage createMany
+   */
+  export type PodSubmissionPageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PodSubmissionPages.
+     */
+    data: PodSubmissionPageCreateManyInput | PodSubmissionPageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PodSubmissionPage createManyAndReturn
+   */
+  export type PodSubmissionPageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * The data used to create many PodSubmissionPages.
+     */
+    data: PodSubmissionPageCreateManyInput | PodSubmissionPageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodSubmissionPage update
+   */
+  export type PodSubmissionPageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PodSubmissionPage.
+     */
+    data: XOR<PodSubmissionPageUpdateInput, PodSubmissionPageUncheckedUpdateInput>
+    /**
+     * Choose, which PodSubmissionPage to update.
+     */
+    where: PodSubmissionPageWhereUniqueInput
+  }
+
+  /**
+   * PodSubmissionPage updateMany
+   */
+  export type PodSubmissionPageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PodSubmissionPages.
+     */
+    data: XOR<PodSubmissionPageUpdateManyMutationInput, PodSubmissionPageUncheckedUpdateManyInput>
+    /**
+     * Filter which PodSubmissionPages to update
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * Limit how many PodSubmissionPages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodSubmissionPage updateManyAndReturn
+   */
+  export type PodSubmissionPageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * The data used to update PodSubmissionPages.
+     */
+    data: XOR<PodSubmissionPageUpdateManyMutationInput, PodSubmissionPageUncheckedUpdateManyInput>
+    /**
+     * Filter which PodSubmissionPages to update
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * Limit how many PodSubmissionPages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PodSubmissionPage upsert
+   */
+  export type PodSubmissionPageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PodSubmissionPage to update in case it exists.
+     */
+    where: PodSubmissionPageWhereUniqueInput
+    /**
+     * In case the PodSubmissionPage found by the `where` argument doesn't exist, create a new PodSubmissionPage with this data.
+     */
+    create: XOR<PodSubmissionPageCreateInput, PodSubmissionPageUncheckedCreateInput>
+    /**
+     * In case the PodSubmissionPage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PodSubmissionPageUpdateInput, PodSubmissionPageUncheckedUpdateInput>
+  }
+
+  /**
+   * PodSubmissionPage delete
+   */
+  export type PodSubmissionPageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+    /**
+     * Filter which PodSubmissionPage to delete.
+     */
+    where: PodSubmissionPageWhereUniqueInput
+  }
+
+  /**
+   * PodSubmissionPage deleteMany
+   */
+  export type PodSubmissionPageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PodSubmissionPages to delete
+     */
+    where?: PodSubmissionPageWhereInput
+    /**
+     * Limit how many PodSubmissionPages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PodSubmissionPage without action
+   */
+  export type PodSubmissionPageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PodSubmissionPage
+     */
+    select?: PodSubmissionPageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PodSubmissionPage
+     */
+    omit?: PodSubmissionPageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PodSubmissionPageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -29065,6 +31752,33 @@ export namespace Prisma {
   export type PodUploadThrottleScalarFieldEnum = (typeof PodUploadThrottleScalarFieldEnum)[keyof typeof PodUploadThrottleScalarFieldEnum]
 
 
+  export const PodSubmissionScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    orderId: 'orderId',
+    podUploadLinkId: 'podUploadLinkId',
+    receivedAt: 'receivedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type PodSubmissionScalarFieldEnum = (typeof PodSubmissionScalarFieldEnum)[keyof typeof PodSubmissionScalarFieldEnum]
+
+
+  export const PodSubmissionPageScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    podSubmissionId: 'podSubmissionId',
+    pageIndex: 'pageIndex',
+    storageKey: 'storageKey',
+    fileName: 'fileName',
+    contentType: 'contentType',
+    sizeBytes: 'sizeBytes',
+    createdAt: 'createdAt'
+  };
+
+  export type PodSubmissionPageScalarFieldEnum = (typeof PodSubmissionPageScalarFieldEnum)[keyof typeof PodSubmissionPageScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -29364,6 +32078,8 @@ export namespace Prisma {
     messageLogs?: MessageLogListRelationFilter
     channelConnections?: ChannelConnectionListRelationFilter
     podUploadLinks?: PodUploadLinkListRelationFilter
+    podSubmissions?: PodSubmissionListRelationFilter
+    podSubmissionPages?: PodSubmissionPageListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -29389,6 +32105,8 @@ export namespace Prisma {
     messageLogs?: MessageLogOrderByRelationAggregateInput
     channelConnections?: ChannelConnectionOrderByRelationAggregateInput
     podUploadLinks?: PodUploadLinkOrderByRelationAggregateInput
+    podSubmissions?: PodSubmissionOrderByRelationAggregateInput
+    podSubmissionPages?: PodSubmissionPageOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -29417,6 +32135,8 @@ export namespace Prisma {
     messageLogs?: MessageLogListRelationFilter
     channelConnections?: ChannelConnectionListRelationFilter
     podUploadLinks?: PodUploadLinkListRelationFilter
+    podSubmissions?: PodSubmissionListRelationFilter
+    podSubmissionPages?: PodSubmissionPageListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -30662,6 +33382,7 @@ export namespace Prisma {
     shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
     driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
     podUploadLinks?: PodUploadLinkListRelationFilter
+    podSubmissions?: PodSubmissionListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -30685,6 +33406,7 @@ export namespace Prisma {
     shipper?: ShipperOrderByWithRelationInput
     driver?: DriverOrderByWithRelationInput
     podUploadLinks?: PodUploadLinkOrderByRelationAggregateInput
+    podSubmissions?: PodSubmissionOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -30712,6 +33434,7 @@ export namespace Prisma {
     shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
     driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
     podUploadLinks?: PodUploadLinkListRelationFilter
+    podSubmissions?: PodSubmissionListRelationFilter
   }, "id" | "organizationId_nomorSuratJalan">
 
   export type OrderOrderByWithAggregationInput = {
@@ -30949,6 +33672,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    submissions?: PodSubmissionListRelationFilter
   }
 
   export type PodUploadLinkOrderByWithRelationInput = {
@@ -30966,6 +33690,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     order?: OrderOrderByWithRelationInput
+    submissions?: PodSubmissionOrderByRelationAggregateInput
   }
 
   export type PodUploadLinkWhereUniqueInput = Prisma.AtLeast<{
@@ -30986,6 +33711,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    submissions?: PodSubmissionListRelationFilter
   }, "id" | "tokenHash">
 
   export type PodUploadLinkOrderByWithAggregationInput = {
@@ -31075,6 +33801,156 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"PodUploadThrottle"> | Date | string
   }
 
+  export type PodSubmissionWhereInput = {
+    AND?: PodSubmissionWhereInput | PodSubmissionWhereInput[]
+    OR?: PodSubmissionWhereInput[]
+    NOT?: PodSubmissionWhereInput | PodSubmissionWhereInput[]
+    id?: StringFilter<"PodSubmission"> | string
+    organizationId?: StringFilter<"PodSubmission"> | string
+    orderId?: StringFilter<"PodSubmission"> | string
+    podUploadLinkId?: StringFilter<"PodSubmission"> | string
+    receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
+    pages?: PodSubmissionPageListRelationFilter
+  }
+
+  export type PodSubmissionOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    podUploadLinkId?: SortOrder
+    receivedAt?: SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+    podUploadLink?: PodUploadLinkOrderByWithRelationInput
+    pages?: PodSubmissionPageOrderByRelationAggregateInput
+  }
+
+  export type PodSubmissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PodSubmissionWhereInput | PodSubmissionWhereInput[]
+    OR?: PodSubmissionWhereInput[]
+    NOT?: PodSubmissionWhereInput | PodSubmissionWhereInput[]
+    organizationId?: StringFilter<"PodSubmission"> | string
+    orderId?: StringFilter<"PodSubmission"> | string
+    podUploadLinkId?: StringFilter<"PodSubmission"> | string
+    receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+    podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
+    pages?: PodSubmissionPageListRelationFilter
+  }, "id">
+
+  export type PodSubmissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    podUploadLinkId?: SortOrder
+    receivedAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: PodSubmissionCountOrderByAggregateInput
+    _max?: PodSubmissionMaxOrderByAggregateInput
+    _min?: PodSubmissionMinOrderByAggregateInput
+  }
+
+  export type PodSubmissionScalarWhereWithAggregatesInput = {
+    AND?: PodSubmissionScalarWhereWithAggregatesInput | PodSubmissionScalarWhereWithAggregatesInput[]
+    OR?: PodSubmissionScalarWhereWithAggregatesInput[]
+    NOT?: PodSubmissionScalarWhereWithAggregatesInput | PodSubmissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PodSubmission"> | string
+    organizationId?: StringWithAggregatesFilter<"PodSubmission"> | string
+    orderId?: StringWithAggregatesFilter<"PodSubmission"> | string
+    podUploadLinkId?: StringWithAggregatesFilter<"PodSubmission"> | string
+    receivedAt?: DateTimeWithAggregatesFilter<"PodSubmission"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"PodSubmission"> | Date | string
+  }
+
+  export type PodSubmissionPageWhereInput = {
+    AND?: PodSubmissionPageWhereInput | PodSubmissionPageWhereInput[]
+    OR?: PodSubmissionPageWhereInput[]
+    NOT?: PodSubmissionPageWhereInput | PodSubmissionPageWhereInput[]
+    id?: StringFilter<"PodSubmissionPage"> | string
+    organizationId?: StringFilter<"PodSubmissionPage"> | string
+    podSubmissionId?: StringFilter<"PodSubmissionPage"> | string
+    pageIndex?: IntFilter<"PodSubmissionPage"> | number
+    storageKey?: StringFilter<"PodSubmissionPage"> | string
+    fileName?: StringFilter<"PodSubmissionPage"> | string
+    contentType?: StringFilter<"PodSubmissionPage"> | string
+    sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    podSubmission?: XOR<PodSubmissionScalarRelationFilter, PodSubmissionWhereInput>
+  }
+
+  export type PodSubmissionPageOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    podSubmissionId?: SortOrder
+    pageIndex?: SortOrder
+    storageKey?: SortOrder
+    fileName?: SortOrder
+    contentType?: SortOrder
+    sizeBytes?: SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    podSubmission?: PodSubmissionOrderByWithRelationInput
+  }
+
+  export type PodSubmissionPageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    podSubmissionId_pageIndex?: PodSubmissionPagePodSubmissionIdPageIndexCompoundUniqueInput
+    AND?: PodSubmissionPageWhereInput | PodSubmissionPageWhereInput[]
+    OR?: PodSubmissionPageWhereInput[]
+    NOT?: PodSubmissionPageWhereInput | PodSubmissionPageWhereInput[]
+    organizationId?: StringFilter<"PodSubmissionPage"> | string
+    podSubmissionId?: StringFilter<"PodSubmissionPage"> | string
+    pageIndex?: IntFilter<"PodSubmissionPage"> | number
+    storageKey?: StringFilter<"PodSubmissionPage"> | string
+    fileName?: StringFilter<"PodSubmissionPage"> | string
+    contentType?: StringFilter<"PodSubmissionPage"> | string
+    sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    podSubmission?: XOR<PodSubmissionScalarRelationFilter, PodSubmissionWhereInput>
+  }, "id" | "podSubmissionId_pageIndex">
+
+  export type PodSubmissionPageOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    podSubmissionId?: SortOrder
+    pageIndex?: SortOrder
+    storageKey?: SortOrder
+    fileName?: SortOrder
+    contentType?: SortOrder
+    sizeBytes?: SortOrder
+    createdAt?: SortOrder
+    _count?: PodSubmissionPageCountOrderByAggregateInput
+    _avg?: PodSubmissionPageAvgOrderByAggregateInput
+    _max?: PodSubmissionPageMaxOrderByAggregateInput
+    _min?: PodSubmissionPageMinOrderByAggregateInput
+    _sum?: PodSubmissionPageSumOrderByAggregateInput
+  }
+
+  export type PodSubmissionPageScalarWhereWithAggregatesInput = {
+    AND?: PodSubmissionPageScalarWhereWithAggregatesInput | PodSubmissionPageScalarWhereWithAggregatesInput[]
+    OR?: PodSubmissionPageScalarWhereWithAggregatesInput[]
+    NOT?: PodSubmissionPageScalarWhereWithAggregatesInput | PodSubmissionPageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    organizationId?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    podSubmissionId?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    pageIndex?: IntWithAggregatesFilter<"PodSubmissionPage"> | number
+    storageKey?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    fileName?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    contentType?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
+    sizeBytes?: IntWithAggregatesFilter<"PodSubmissionPage"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PodSubmissionPage"> | Date | string
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -31098,6 +33974,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -31123,6 +34001,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -31148,6 +34028,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -31173,6 +34055,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -32499,6 +35383,7 @@ export namespace Prisma {
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -32519,6 +35404,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -32539,6 +35425,7 @@ export namespace Prisma {
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -32559,6 +35446,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -32815,6 +35703,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutPodUploadLinksInput
     order: OrderCreateNestedOneWithoutPodUploadLinksInput
+    submissions?: PodSubmissionCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkUncheckedCreateInput = {
@@ -32830,6 +35719,7 @@ export namespace Prisma {
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submissions?: PodSubmissionUncheckedCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkUpdateInput = {
@@ -32845,6 +35735,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput
     order?: OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput
+    submissions?: PodSubmissionUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkUncheckedUpdateInput = {
@@ -32860,6 +35751,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkCreateManyInput = {
@@ -32952,6 +35844,152 @@ export namespace Prisma {
     windowStartedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     count?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionCreateInput = {
+    id?: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
+    order: OrderCreateNestedOneWithoutPodSubmissionsInput
+    podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
+    pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
+    pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionCreateManyInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageCreateInput = {
+    id?: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionPagesInput
+    podSubmission: PodSubmissionCreateNestedOneWithoutPagesInput
+  }
+
+  export type PodSubmissionPageUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    podSubmissionId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionPagesNestedInput
+    podSubmission?: PodSubmissionUpdateOneRequiredWithoutPagesNestedInput
+  }
+
+  export type PodSubmissionPageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    podSubmissionId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageCreateManyInput = {
+    id?: string
+    organizationId: string
+    podSubmissionId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    podSubmissionId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -33088,6 +36126,18 @@ export namespace Prisma {
     none?: PodUploadLinkWhereInput
   }
 
+  export type PodSubmissionListRelationFilter = {
+    every?: PodSubmissionWhereInput
+    some?: PodSubmissionWhereInput
+    none?: PodSubmissionWhereInput
+  }
+
+  export type PodSubmissionPageListRelationFilter = {
+    every?: PodSubmissionPageWhereInput
+    some?: PodSubmissionPageWhereInput
+    none?: PodSubmissionPageWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -33150,6 +36200,14 @@ export namespace Prisma {
   }
 
   export type PodUploadLinkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PodSubmissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PodSubmissionPageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34631,6 +37689,94 @@ export namespace Prisma {
     count?: SortOrder
   }
 
+  export type PodUploadLinkScalarRelationFilter = {
+    is?: PodUploadLinkWhereInput
+    isNot?: PodUploadLinkWhereInput
+  }
+
+  export type PodSubmissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    podUploadLinkId?: SortOrder
+    receivedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    podUploadLinkId?: SortOrder
+    receivedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    orderId?: SortOrder
+    podUploadLinkId?: SortOrder
+    receivedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionScalarRelationFilter = {
+    is?: PodSubmissionWhereInput
+    isNot?: PodSubmissionWhereInput
+  }
+
+  export type PodSubmissionPagePodSubmissionIdPageIndexCompoundUniqueInput = {
+    podSubmissionId: string
+    pageIndex: number
+  }
+
+  export type PodSubmissionPageCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    podSubmissionId?: SortOrder
+    pageIndex?: SortOrder
+    storageKey?: SortOrder
+    fileName?: SortOrder
+    contentType?: SortOrder
+    sizeBytes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionPageAvgOrderByAggregateInput = {
+    pageIndex?: SortOrder
+    sizeBytes?: SortOrder
+  }
+
+  export type PodSubmissionPageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    podSubmissionId?: SortOrder
+    pageIndex?: SortOrder
+    storageKey?: SortOrder
+    fileName?: SortOrder
+    contentType?: SortOrder
+    sizeBytes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionPageMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    podSubmissionId?: SortOrder
+    pageIndex?: SortOrder
+    storageKey?: SortOrder
+    fileName?: SortOrder
+    contentType?: SortOrder
+    sizeBytes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PodSubmissionPageSumOrderByAggregateInput = {
+    pageIndex?: SortOrder
+    sizeBytes?: SortOrder
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -34736,6 +37882,20 @@ export namespace Prisma {
     connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
   }
 
+  export type PodSubmissionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput> | PodSubmissionCreateWithoutOrganizationInput[] | PodSubmissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrganizationInput | PodSubmissionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodSubmissionCreateManyOrganizationInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+  }
+
+  export type PodSubmissionPageCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput> | PodSubmissionPageCreateWithoutOrganizationInput[] | PodSubmissionPageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutOrganizationInput | PodSubmissionPageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodSubmissionPageCreateManyOrganizationInputEnvelope
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -34839,6 +37999,20 @@ export namespace Prisma {
     connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrganizationInput | PodUploadLinkCreateOrConnectWithoutOrganizationInput[]
     createMany?: PodUploadLinkCreateManyOrganizationInputEnvelope
     connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+  }
+
+  export type PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput> | PodSubmissionCreateWithoutOrganizationInput[] | PodSubmissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrganizationInput | PodSubmissionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodSubmissionCreateManyOrganizationInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+  }
+
+  export type PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput> | PodSubmissionPageCreateWithoutOrganizationInput[] | PodSubmissionPageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutOrganizationInput | PodSubmissionPageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: PodSubmissionPageCreateManyOrganizationInputEnvelope
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -35071,6 +38245,34 @@ export namespace Prisma {
     deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
   }
 
+  export type PodSubmissionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput> | PodSubmissionCreateWithoutOrganizationInput[] | PodSubmissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrganizationInput | PodSubmissionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutOrganizationInput | PodSubmissionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodSubmissionCreateManyOrganizationInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutOrganizationInput | PodSubmissionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutOrganizationInput | PodSubmissionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+  }
+
+  export type PodSubmissionPageUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput> | PodSubmissionPageCreateWithoutOrganizationInput[] | PodSubmissionPageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutOrganizationInput | PodSubmissionPageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput | PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodSubmissionPageCreateManyOrganizationInputEnvelope
+    set?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    disconnect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    delete?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    update?: PodSubmissionPageUpdateWithWhereUniqueWithoutOrganizationInput | PodSubmissionPageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodSubmissionPageUpdateManyWithWhereWithoutOrganizationInput | PodSubmissionPageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -35279,6 +38481,34 @@ export namespace Prisma {
     update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput | PodUploadLinkUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput> | PodSubmissionCreateWithoutOrganizationInput[] | PodSubmissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrganizationInput | PodSubmissionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutOrganizationInput | PodSubmissionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodSubmissionCreateManyOrganizationInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutOrganizationInput | PodSubmissionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutOrganizationInput | PodSubmissionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+  }
+
+  export type PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput> | PodSubmissionPageCreateWithoutOrganizationInput[] | PodSubmissionPageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutOrganizationInput | PodSubmissionPageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput | PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: PodSubmissionPageCreateManyOrganizationInputEnvelope
+    set?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    disconnect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    delete?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    update?: PodSubmissionPageUpdateWithWhereUniqueWithoutOrganizationInput | PodSubmissionPageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: PodSubmissionPageUpdateManyWithWhereWithoutOrganizationInput | PodSubmissionPageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -35876,11 +39106,25 @@ export namespace Prisma {
     connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
   }
 
+  export type PodSubmissionCreateNestedManyWithoutOrderInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput> | PodSubmissionCreateWithoutOrderInput[] | PodSubmissionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrderInput | PodSubmissionCreateOrConnectWithoutOrderInput[]
+    createMany?: PodSubmissionCreateManyOrderInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+  }
+
   export type PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
     createMany?: PodUploadLinkCreateManyOrderInputEnvelope
     connect?: PodUploadLinkWhereUniqueInput | PodUploadLinkWhereUniqueInput[]
+  }
+
+  export type PodSubmissionUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput> | PodSubmissionCreateWithoutOrderInput[] | PodSubmissionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrderInput | PodSubmissionCreateOrConnectWithoutOrderInput[]
+    createMany?: PodSubmissionCreateManyOrderInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
   }
 
   export type NullableBigIntFieldUpdateOperationsInput = {
@@ -35935,6 +39179,20 @@ export namespace Prisma {
     deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
   }
 
+  export type PodSubmissionUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput> | PodSubmissionCreateWithoutOrderInput[] | PodSubmissionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrderInput | PodSubmissionCreateOrConnectWithoutOrderInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutOrderInput | PodSubmissionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: PodSubmissionCreateManyOrderInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutOrderInput | PodSubmissionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutOrderInput | PodSubmissionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+  }
+
   export type PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<PodUploadLinkCreateWithoutOrderInput, PodUploadLinkUncheckedCreateWithoutOrderInput> | PodUploadLinkCreateWithoutOrderInput[] | PodUploadLinkUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: PodUploadLinkCreateOrConnectWithoutOrderInput | PodUploadLinkCreateOrConnectWithoutOrderInput[]
@@ -35947,6 +39205,20 @@ export namespace Prisma {
     update?: PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput | PodUploadLinkUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: PodUploadLinkUpdateManyWithWhereWithoutOrderInput | PodUploadLinkUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: PodUploadLinkScalarWhereInput | PodUploadLinkScalarWhereInput[]
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput> | PodSubmissionCreateWithoutOrderInput[] | PodSubmissionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutOrderInput | PodSubmissionCreateOrConnectWithoutOrderInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutOrderInput | PodSubmissionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: PodSubmissionCreateManyOrderInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutOrderInput | PodSubmissionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutOrderInput | PodSubmissionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutDsoBaselinesInput = {
@@ -35997,6 +39269,20 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput
   }
 
+  export type PodSubmissionCreateNestedManyWithoutPodUploadLinkInput = {
+    create?: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput> | PodSubmissionCreateWithoutPodUploadLinkInput[] | PodSubmissionUncheckedCreateWithoutPodUploadLinkInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPodUploadLinkInput | PodSubmissionCreateOrConnectWithoutPodUploadLinkInput[]
+    createMany?: PodSubmissionCreateManyPodUploadLinkInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+  }
+
+  export type PodSubmissionUncheckedCreateNestedManyWithoutPodUploadLinkInput = {
+    create?: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput> | PodSubmissionCreateWithoutPodUploadLinkInput[] | PodSubmissionUncheckedCreateWithoutPodUploadLinkInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPodUploadLinkInput | PodSubmissionCreateOrConnectWithoutPodUploadLinkInput[]
+    createMany?: PodSubmissionCreateManyPodUploadLinkInputEnvelope
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+  }
+
   export type OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput = {
     create?: XOR<OrganizationCreateWithoutPodUploadLinksInput, OrganizationUncheckedCreateWithoutPodUploadLinksInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutPodUploadLinksInput
@@ -36011,6 +39297,146 @@ export namespace Prisma {
     upsert?: OrderUpsertWithoutPodUploadLinksInput
     connect?: OrderWhereUniqueInput
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPodUploadLinksInput, OrderUpdateWithoutPodUploadLinksInput>, OrderUncheckedUpdateWithoutPodUploadLinksInput>
+  }
+
+  export type PodSubmissionUpdateManyWithoutPodUploadLinkNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput> | PodSubmissionCreateWithoutPodUploadLinkInput[] | PodSubmissionUncheckedCreateWithoutPodUploadLinkInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPodUploadLinkInput | PodSubmissionCreateOrConnectWithoutPodUploadLinkInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutPodUploadLinkInput | PodSubmissionUpsertWithWhereUniqueWithoutPodUploadLinkInput[]
+    createMany?: PodSubmissionCreateManyPodUploadLinkInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutPodUploadLinkInput | PodSubmissionUpdateWithWhereUniqueWithoutPodUploadLinkInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutPodUploadLinkInput | PodSubmissionUpdateManyWithWhereWithoutPodUploadLinkInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput> | PodSubmissionCreateWithoutPodUploadLinkInput[] | PodSubmissionUncheckedCreateWithoutPodUploadLinkInput[]
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPodUploadLinkInput | PodSubmissionCreateOrConnectWithoutPodUploadLinkInput[]
+    upsert?: PodSubmissionUpsertWithWhereUniqueWithoutPodUploadLinkInput | PodSubmissionUpsertWithWhereUniqueWithoutPodUploadLinkInput[]
+    createMany?: PodSubmissionCreateManyPodUploadLinkInputEnvelope
+    set?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    disconnect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    delete?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    connect?: PodSubmissionWhereUniqueInput | PodSubmissionWhereUniqueInput[]
+    update?: PodSubmissionUpdateWithWhereUniqueWithoutPodUploadLinkInput | PodSubmissionUpdateWithWhereUniqueWithoutPodUploadLinkInput[]
+    updateMany?: PodSubmissionUpdateManyWithWhereWithoutPodUploadLinkInput | PodSubmissionUpdateManyWithWhereWithoutPodUploadLinkInput[]
+    deleteMany?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutPodSubmissionsInput = {
+    create?: XOR<OrganizationCreateWithoutPodSubmissionsInput, OrganizationUncheckedCreateWithoutPodSubmissionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodSubmissionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutPodSubmissionsInput = {
+    create?: XOR<OrderCreateWithoutPodSubmissionsInput, OrderUncheckedCreateWithoutPodSubmissionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPodSubmissionsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type PodUploadLinkCreateNestedOneWithoutSubmissionsInput = {
+    create?: XOR<PodUploadLinkCreateWithoutSubmissionsInput, PodUploadLinkUncheckedCreateWithoutSubmissionsInput>
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutSubmissionsInput
+    connect?: PodUploadLinkWhereUniqueInput
+  }
+
+  export type PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput> | PodSubmissionPageCreateWithoutPodSubmissionInput[] | PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput | PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput[]
+    createMany?: PodSubmissionPageCreateManyPodSubmissionInputEnvelope
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+  }
+
+  export type PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput> | PodSubmissionPageCreateWithoutPodSubmissionInput[] | PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput | PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput[]
+    createMany?: PodSubmissionPageCreateManyPodSubmissionInputEnvelope
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutPodSubmissionsInput, OrganizationUncheckedCreateWithoutPodSubmissionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodSubmissionsInput
+    upsert?: OrganizationUpsertWithoutPodSubmissionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutPodSubmissionsInput, OrganizationUpdateWithoutPodSubmissionsInput>, OrganizationUncheckedUpdateWithoutPodSubmissionsInput>
+  }
+
+  export type OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput = {
+    create?: XOR<OrderCreateWithoutPodSubmissionsInput, OrderUncheckedCreateWithoutPodSubmissionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPodSubmissionsInput
+    upsert?: OrderUpsertWithoutPodSubmissionsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPodSubmissionsInput, OrderUpdateWithoutPodSubmissionsInput>, OrderUncheckedUpdateWithoutPodSubmissionsInput>
+  }
+
+  export type PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput = {
+    create?: XOR<PodUploadLinkCreateWithoutSubmissionsInput, PodUploadLinkUncheckedCreateWithoutSubmissionsInput>
+    connectOrCreate?: PodUploadLinkCreateOrConnectWithoutSubmissionsInput
+    upsert?: PodUploadLinkUpsertWithoutSubmissionsInput
+    connect?: PodUploadLinkWhereUniqueInput
+    update?: XOR<XOR<PodUploadLinkUpdateToOneWithWhereWithoutSubmissionsInput, PodUploadLinkUpdateWithoutSubmissionsInput>, PodUploadLinkUncheckedUpdateWithoutSubmissionsInput>
+  }
+
+  export type PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput> | PodSubmissionPageCreateWithoutPodSubmissionInput[] | PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput | PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput[]
+    upsert?: PodSubmissionPageUpsertWithWhereUniqueWithoutPodSubmissionInput | PodSubmissionPageUpsertWithWhereUniqueWithoutPodSubmissionInput[]
+    createMany?: PodSubmissionPageCreateManyPodSubmissionInputEnvelope
+    set?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    disconnect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    delete?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    update?: PodSubmissionPageUpdateWithWhereUniqueWithoutPodSubmissionInput | PodSubmissionPageUpdateWithWhereUniqueWithoutPodSubmissionInput[]
+    updateMany?: PodSubmissionPageUpdateManyWithWhereWithoutPodSubmissionInput | PodSubmissionPageUpdateManyWithWhereWithoutPodSubmissionInput[]
+    deleteMany?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
+  }
+
+  export type PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput = {
+    create?: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput> | PodSubmissionPageCreateWithoutPodSubmissionInput[] | PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput[]
+    connectOrCreate?: PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput | PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput[]
+    upsert?: PodSubmissionPageUpsertWithWhereUniqueWithoutPodSubmissionInput | PodSubmissionPageUpsertWithWhereUniqueWithoutPodSubmissionInput[]
+    createMany?: PodSubmissionPageCreateManyPodSubmissionInputEnvelope
+    set?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    disconnect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    delete?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
+    update?: PodSubmissionPageUpdateWithWhereUniqueWithoutPodSubmissionInput | PodSubmissionPageUpdateWithWhereUniqueWithoutPodSubmissionInput[]
+    updateMany?: PodSubmissionPageUpdateManyWithWhereWithoutPodSubmissionInput | PodSubmissionPageUpdateManyWithWhereWithoutPodSubmissionInput[]
+    deleteMany?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutPodSubmissionPagesInput = {
+    create?: XOR<OrganizationCreateWithoutPodSubmissionPagesInput, OrganizationUncheckedCreateWithoutPodSubmissionPagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodSubmissionPagesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type PodSubmissionCreateNestedOneWithoutPagesInput = {
+    create?: XOR<PodSubmissionCreateWithoutPagesInput, PodSubmissionUncheckedCreateWithoutPagesInput>
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPagesInput
+    connect?: PodSubmissionWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutPodSubmissionPagesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutPodSubmissionPagesInput, OrganizationUncheckedCreateWithoutPodSubmissionPagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutPodSubmissionPagesInput
+    upsert?: OrganizationUpsertWithoutPodSubmissionPagesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutPodSubmissionPagesInput, OrganizationUpdateWithoutPodSubmissionPagesInput>, OrganizationUncheckedUpdateWithoutPodSubmissionPagesInput>
+  }
+
+  export type PodSubmissionUpdateOneRequiredWithoutPagesNestedInput = {
+    create?: XOR<PodSubmissionCreateWithoutPagesInput, PodSubmissionUncheckedCreateWithoutPagesInput>
+    connectOrCreate?: PodSubmissionCreateOrConnectWithoutPagesInput
+    upsert?: PodSubmissionUpsertWithoutPagesInput
+    connect?: PodSubmissionWhereUniqueInput
+    update?: XOR<XOR<PodSubmissionUpdateToOneWithWhereWithoutPagesInput, PodSubmissionUpdateWithoutPagesInput>, PodSubmissionUncheckedUpdateWithoutPagesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -36795,6 +40221,7 @@ export namespace Prisma {
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrganizationInput = {
@@ -36814,6 +40241,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrganizationInput = {
@@ -36976,6 +40404,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutPodUploadLinksInput
+    submissions?: PodSubmissionCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkUncheckedCreateWithoutOrganizationInput = {
@@ -36990,6 +40419,7 @@ export namespace Prisma {
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submissions?: PodSubmissionUncheckedCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkCreateOrConnectWithoutOrganizationInput = {
@@ -36999,6 +40429,66 @@ export namespace Prisma {
 
   export type PodUploadLinkCreateManyOrganizationInputEnvelope = {
     data: PodUploadLinkCreateManyOrganizationInput | PodUploadLinkCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PodSubmissionCreateWithoutOrganizationInput = {
+    id?: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutPodSubmissionsInput
+    podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
+    pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionCreateOrConnectWithoutOrganizationInput = {
+    where: PodSubmissionWhereUniqueInput
+    create: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionCreateManyOrganizationInputEnvelope = {
+    data: PodSubmissionCreateManyOrganizationInput | PodSubmissionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PodSubmissionPageCreateWithoutOrganizationInput = {
+    id?: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+    podSubmission: PodSubmissionCreateNestedOneWithoutPagesInput
+  }
+
+  export type PodSubmissionPageUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    podSubmissionId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageCreateOrConnectWithoutOrganizationInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    create: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionPageCreateManyOrganizationInputEnvelope = {
+    data: PodSubmissionPageCreateManyOrganizationInput | PodSubmissionPageCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -37484,6 +40974,65 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"PodUploadLink"> | Date | string
   }
 
+  export type PodSubmissionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: PodSubmissionWhereUniqueInput
+    update: XOR<PodSubmissionUpdateWithoutOrganizationInput, PodSubmissionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<PodSubmissionCreateWithoutOrganizationInput, PodSubmissionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: PodSubmissionWhereUniqueInput
+    data: XOR<PodSubmissionUpdateWithoutOrganizationInput, PodSubmissionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: PodSubmissionScalarWhereInput
+    data: XOR<PodSubmissionUpdateManyMutationInput, PodSubmissionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionScalarWhereInput = {
+    AND?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+    OR?: PodSubmissionScalarWhereInput[]
+    NOT?: PodSubmissionScalarWhereInput | PodSubmissionScalarWhereInput[]
+    id?: StringFilter<"PodSubmission"> | string
+    organizationId?: StringFilter<"PodSubmission"> | string
+    orderId?: StringFilter<"PodSubmission"> | string
+    podUploadLinkId?: StringFilter<"PodSubmission"> | string
+    receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+  }
+
+  export type PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    update: XOR<PodSubmissionPageUpdateWithoutOrganizationInput, PodSubmissionPageUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<PodSubmissionPageCreateWithoutOrganizationInput, PodSubmissionPageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionPageUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    data: XOR<PodSubmissionPageUpdateWithoutOrganizationInput, PodSubmissionPageUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionPageUpdateManyWithWhereWithoutOrganizationInput = {
+    where: PodSubmissionPageScalarWhereInput
+    data: XOR<PodSubmissionPageUpdateManyMutationInput, PodSubmissionPageUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type PodSubmissionPageScalarWhereInput = {
+    AND?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
+    OR?: PodSubmissionPageScalarWhereInput[]
+    NOT?: PodSubmissionPageScalarWhereInput | PodSubmissionPageScalarWhereInput[]
+    id?: StringFilter<"PodSubmissionPage"> | string
+    organizationId?: StringFilter<"PodSubmissionPage"> | string
+    podSubmissionId?: StringFilter<"PodSubmissionPage"> | string
+    pageIndex?: IntFilter<"PodSubmissionPage"> | number
+    storageKey?: StringFilter<"PodSubmissionPage"> | string
+    fileName?: StringFilter<"PodSubmissionPage"> | string
+    contentType?: StringFilter<"PodSubmissionPage"> | string
+    sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
+  }
+
   export type UserCreateWithoutPostsInput = {
     id?: string
     name?: string | null
@@ -37926,6 +41475,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -37950,6 +41501,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -38023,6 +41576,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -38047,6 +41602,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -38071,6 +41628,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -38095,6 +41654,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -38135,6 +41696,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -38159,6 +41722,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -38183,6 +41748,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -38207,6 +41774,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -38247,6 +41816,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -38271,6 +41842,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -38295,6 +41868,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -38319,6 +41894,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -38359,6 +41936,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -38383,6 +41962,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -38407,6 +41988,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -38431,6 +42014,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -38471,6 +42056,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -38495,6 +42082,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -38519,6 +42108,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -38543,6 +42134,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -38583,6 +42176,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -38607,6 +42202,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutMessageLogsInput = {
@@ -38631,6 +42228,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMessageLogsInput = {
@@ -38655,6 +42254,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMessageLogsInput = {
@@ -38695,6 +42296,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMessageLogsInput = {
@@ -38719,6 +42322,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutChannelConnectionsInput = {
@@ -38743,6 +42348,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutChannelConnectionsInput = {
@@ -38767,6 +42374,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutChannelConnectionsInput = {
@@ -38807,6 +42416,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutChannelConnectionsInput = {
@@ -38831,6 +42442,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutShippersInput = {
@@ -38855,6 +42468,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutShippersInput = {
@@ -38879,6 +42494,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutShippersInput = {
@@ -38935,6 +42552,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutShipperInput = {
@@ -38954,6 +42572,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutShipperInput = {
@@ -38999,6 +42618,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutShippersInput = {
@@ -39023,6 +42644,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
@@ -39079,6 +42702,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
@@ -39103,6 +42728,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
@@ -39176,6 +42803,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -39200,6 +42829,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutRequirementProfilesInput = {
@@ -39263,6 +42894,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDriversInput = {
@@ -39287,6 +42920,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDriversInput = {
@@ -39311,6 +42946,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutDriverInput = {
@@ -39330,6 +42966,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutDriverInput = {
@@ -39375,6 +43012,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDriversInput = {
@@ -39399,6 +43038,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutDriverInput = {
@@ -39439,6 +43080,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOrdersInput = {
@@ -39463,6 +43106,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOrdersInput = {
@@ -39542,6 +43187,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutPodUploadLinksInput
+    submissions?: PodSubmissionCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkUncheckedCreateWithoutOrderInput = {
@@ -39556,6 +43202,7 @@ export namespace Prisma {
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    submissions?: PodSubmissionUncheckedCreateNestedManyWithoutPodUploadLinkInput
   }
 
   export type PodUploadLinkCreateOrConnectWithoutOrderInput = {
@@ -39565,6 +43212,34 @@ export namespace Prisma {
 
   export type PodUploadLinkCreateManyOrderInputEnvelope = {
     data: PodUploadLinkCreateManyOrderInput | PodUploadLinkCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PodSubmissionCreateWithoutOrderInput = {
+    id?: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
+    podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
+    pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionUncheckedCreateWithoutOrderInput = {
+    id?: string
+    organizationId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionCreateOrConnectWithoutOrderInput = {
+    where: PodSubmissionWhereUniqueInput
+    create: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type PodSubmissionCreateManyOrderInputEnvelope = {
+    data: PodSubmissionCreateManyOrderInput | PodSubmissionCreateManyOrderInput[]
     skipDuplicates?: boolean
   }
 
@@ -39601,6 +43276,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOrdersInput = {
@@ -39625,6 +43302,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutOrdersInput = {
@@ -39715,6 +43394,22 @@ export namespace Prisma {
     data: XOR<PodUploadLinkUpdateManyMutationInput, PodUploadLinkUncheckedUpdateManyWithoutOrderInput>
   }
 
+  export type PodSubmissionUpsertWithWhereUniqueWithoutOrderInput = {
+    where: PodSubmissionWhereUniqueInput
+    update: XOR<PodSubmissionUpdateWithoutOrderInput, PodSubmissionUncheckedUpdateWithoutOrderInput>
+    create: XOR<PodSubmissionCreateWithoutOrderInput, PodSubmissionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type PodSubmissionUpdateWithWhereUniqueWithoutOrderInput = {
+    where: PodSubmissionWhereUniqueInput
+    data: XOR<PodSubmissionUpdateWithoutOrderInput, PodSubmissionUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type PodSubmissionUpdateManyWithWhereWithoutOrderInput = {
+    where: PodSubmissionScalarWhereInput
+    data: XOR<PodSubmissionUpdateManyMutationInput, PodSubmissionUncheckedUpdateManyWithoutOrderInput>
+  }
+
   export type OrganizationCreateWithoutDsoBaselinesInput = {
     id?: string
     name: string
@@ -39737,6 +43432,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDsoBaselinesInput = {
@@ -39761,6 +43458,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDsoBaselinesInput = {
@@ -39801,6 +43500,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDsoBaselinesInput = {
@@ -39825,6 +43526,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHistoricalInvoicesInput = {
@@ -39849,6 +43552,8 @@ export namespace Prisma {
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHistoricalInvoicesInput = {
@@ -39873,6 +43578,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
     podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHistoricalInvoicesInput = {
@@ -39913,6 +43620,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput = {
@@ -39937,6 +43646,8 @@ export namespace Prisma {
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutPodUploadLinksInput = {
@@ -39961,6 +43672,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutPodUploadLinksInput = {
@@ -39985,6 +43698,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
     channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutPodUploadLinksInput = {
@@ -40009,6 +43724,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutOrdersInput
     shipper: ShipperCreateNestedOneWithoutOrdersInput
     driver?: DriverCreateNestedOneWithoutOrdersInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutPodUploadLinksInput = {
@@ -40028,11 +43744,40 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutPodUploadLinksInput = {
     where: OrderWhereUniqueInput
     create: XOR<OrderCreateWithoutPodUploadLinksInput, OrderUncheckedCreateWithoutPodUploadLinksInput>
+  }
+
+  export type PodSubmissionCreateWithoutPodUploadLinkInput = {
+    id?: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
+    order: OrderCreateNestedOneWithoutPodSubmissionsInput
+    pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionUncheckedCreateWithoutPodUploadLinkInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
+  }
+
+  export type PodSubmissionCreateOrConnectWithoutPodUploadLinkInput = {
+    where: PodSubmissionWhereUniqueInput
+    create: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput>
+  }
+
+  export type PodSubmissionCreateManyPodUploadLinkInputEnvelope = {
+    data: PodSubmissionCreateManyPodUploadLinkInput | PodSubmissionCreateManyPodUploadLinkInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrganizationUpsertWithoutPodUploadLinksInput = {
@@ -40068,6 +43813,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutPodUploadLinksInput = {
@@ -40092,6 +43839,8 @@ export namespace Prisma {
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
     channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrderUpsertWithoutPodUploadLinksInput = {
@@ -40122,6 +43871,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutPodUploadLinksInput = {
@@ -40141,6 +43891,535 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type PodSubmissionUpsertWithWhereUniqueWithoutPodUploadLinkInput = {
+    where: PodSubmissionWhereUniqueInput
+    update: XOR<PodSubmissionUpdateWithoutPodUploadLinkInput, PodSubmissionUncheckedUpdateWithoutPodUploadLinkInput>
+    create: XOR<PodSubmissionCreateWithoutPodUploadLinkInput, PodSubmissionUncheckedCreateWithoutPodUploadLinkInput>
+  }
+
+  export type PodSubmissionUpdateWithWhereUniqueWithoutPodUploadLinkInput = {
+    where: PodSubmissionWhereUniqueInput
+    data: XOR<PodSubmissionUpdateWithoutPodUploadLinkInput, PodSubmissionUncheckedUpdateWithoutPodUploadLinkInput>
+  }
+
+  export type PodSubmissionUpdateManyWithWhereWithoutPodUploadLinkInput = {
+    where: PodSubmissionScalarWhereInput
+    data: XOR<PodSubmissionUpdateManyMutationInput, PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkInput>
+  }
+
+  export type OrganizationCreateWithoutPodSubmissionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutPodSubmissionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissionPages?: PodSubmissionPageUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutPodSubmissionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutPodSubmissionsInput, OrganizationUncheckedCreateWithoutPodSubmissionsInput>
+  }
+
+  export type OrderCreateWithoutPodSubmissionsInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrdersInput
+    shipper: ShipperCreateNestedOneWithoutOrdersInput
+    driver?: DriverCreateNestedOneWithoutOrdersInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutPodSubmissionsInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutPodSubmissionsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutPodSubmissionsInput, OrderUncheckedCreateWithoutPodSubmissionsInput>
+  }
+
+  export type PodUploadLinkCreateWithoutSubmissionsInput = {
+    id?: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodUploadLinksInput
+    order: OrderCreateNestedOneWithoutPodUploadLinksInput
+  }
+
+  export type PodUploadLinkUncheckedCreateWithoutSubmissionsInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    tokenHash: string
+    expiresAt: Date | string
+    useBudget: number
+    useCount?: number
+    lastUsedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PodUploadLinkCreateOrConnectWithoutSubmissionsInput = {
+    where: PodUploadLinkWhereUniqueInput
+    create: XOR<PodUploadLinkCreateWithoutSubmissionsInput, PodUploadLinkUncheckedCreateWithoutSubmissionsInput>
+  }
+
+  export type PodSubmissionPageCreateWithoutPodSubmissionInput = {
+    id?: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionPagesInput
+  }
+
+  export type PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput = {
+    id?: string
+    organizationId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageCreateOrConnectWithoutPodSubmissionInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    create: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput>
+  }
+
+  export type PodSubmissionPageCreateManyPodSubmissionInputEnvelope = {
+    data: PodSubmissionPageCreateManyPodSubmissionInput | PodSubmissionPageCreateManyPodSubmissionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationUpsertWithoutPodSubmissionsInput = {
+    update: XOR<OrganizationUpdateWithoutPodSubmissionsInput, OrganizationUncheckedUpdateWithoutPodSubmissionsInput>
+    create: XOR<OrganizationCreateWithoutPodSubmissionsInput, OrganizationUncheckedCreateWithoutPodSubmissionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutPodSubmissionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutPodSubmissionsInput, OrganizationUncheckedUpdateWithoutPodSubmissionsInput>
+  }
+
+  export type OrganizationUpdateWithoutPodSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutPodSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissionPages?: PodSubmissionPageUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrderUpsertWithoutPodSubmissionsInput = {
+    update: XOR<OrderUpdateWithoutPodSubmissionsInput, OrderUncheckedUpdateWithoutPodSubmissionsInput>
+    create: XOR<OrderCreateWithoutPodSubmissionsInput, OrderUncheckedCreateWithoutPodSubmissionsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutPodSubmissionsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutPodSubmissionsInput, OrderUncheckedUpdateWithoutPodSubmissionsInput>
+  }
+
+  export type OrderUpdateWithoutPodSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
+    shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+    driver?: DriverUpdateOneWithoutOrdersNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutPodSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type PodUploadLinkUpsertWithoutSubmissionsInput = {
+    update: XOR<PodUploadLinkUpdateWithoutSubmissionsInput, PodUploadLinkUncheckedUpdateWithoutSubmissionsInput>
+    create: XOR<PodUploadLinkCreateWithoutSubmissionsInput, PodUploadLinkUncheckedCreateWithoutSubmissionsInput>
+    where?: PodUploadLinkWhereInput
+  }
+
+  export type PodUploadLinkUpdateToOneWithWhereWithoutSubmissionsInput = {
+    where?: PodUploadLinkWhereInput
+    data: XOR<PodUploadLinkUpdateWithoutSubmissionsInput, PodUploadLinkUncheckedUpdateWithoutSubmissionsInput>
+  }
+
+  export type PodUploadLinkUpdateWithoutSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput
+    order?: OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput
+  }
+
+  export type PodUploadLinkUncheckedUpdateWithoutSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    useBudget?: IntFieldUpdateOperationsInput | number
+    useCount?: IntFieldUpdateOperationsInput | number
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageUpsertWithWhereUniqueWithoutPodSubmissionInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    update: XOR<PodSubmissionPageUpdateWithoutPodSubmissionInput, PodSubmissionPageUncheckedUpdateWithoutPodSubmissionInput>
+    create: XOR<PodSubmissionPageCreateWithoutPodSubmissionInput, PodSubmissionPageUncheckedCreateWithoutPodSubmissionInput>
+  }
+
+  export type PodSubmissionPageUpdateWithWhereUniqueWithoutPodSubmissionInput = {
+    where: PodSubmissionPageWhereUniqueInput
+    data: XOR<PodSubmissionPageUpdateWithoutPodSubmissionInput, PodSubmissionPageUncheckedUpdateWithoutPodSubmissionInput>
+  }
+
+  export type PodSubmissionPageUpdateManyWithWhereWithoutPodSubmissionInput = {
+    where: PodSubmissionPageScalarWhereInput
+    data: XOR<PodSubmissionPageUpdateManyMutationInput, PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionInput>
+  }
+
+  export type OrganizationCreateWithoutPodSubmissionPagesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutPodSubmissionPagesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    podUploadLinks?: PodUploadLinkUncheckedCreateNestedManyWithoutOrganizationInput
+    podSubmissions?: PodSubmissionUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutPodSubmissionPagesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutPodSubmissionPagesInput, OrganizationUncheckedCreateWithoutPodSubmissionPagesInput>
+  }
+
+  export type PodSubmissionCreateWithoutPagesInput = {
+    id?: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
+    order: OrderCreateNestedOneWithoutPodSubmissionsInput
+    podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
+  }
+
+  export type PodSubmissionUncheckedCreateWithoutPagesInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionCreateOrConnectWithoutPagesInput = {
+    where: PodSubmissionWhereUniqueInput
+    create: XOR<PodSubmissionCreateWithoutPagesInput, PodSubmissionUncheckedCreateWithoutPagesInput>
+  }
+
+  export type OrganizationUpsertWithoutPodSubmissionPagesInput = {
+    update: XOR<OrganizationUpdateWithoutPodSubmissionPagesInput, OrganizationUncheckedUpdateWithoutPodSubmissionPagesInput>
+    create: XOR<OrganizationCreateWithoutPodSubmissionPagesInput, OrganizationUncheckedCreateWithoutPodSubmissionPagesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutPodSubmissionPagesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutPodSubmissionPagesInput, OrganizationUncheckedUpdateWithoutPodSubmissionPagesInput>
+  }
+
+  export type OrganizationUpdateWithoutPodSubmissionPagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutPodSubmissionPagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrganizationNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type PodSubmissionUpsertWithoutPagesInput = {
+    update: XOR<PodSubmissionUpdateWithoutPagesInput, PodSubmissionUncheckedUpdateWithoutPagesInput>
+    create: XOR<PodSubmissionCreateWithoutPagesInput, PodSubmissionUncheckedCreateWithoutPagesInput>
+    where?: PodSubmissionWhereInput
+  }
+
+  export type PodSubmissionUpdateToOneWithWhereWithoutPagesInput = {
+    where?: PodSubmissionWhereInput
+    data: XOR<PodSubmissionUpdateWithoutPagesInput, PodSubmissionUncheckedUpdateWithoutPagesInput>
+  }
+
+  export type PodSubmissionUpdateWithoutPagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateWithoutPagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -40323,6 +44602,25 @@ export namespace Prisma {
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type PodSubmissionCreateManyOrganizationInput = {
+    id?: string
+    orderId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageCreateManyOrganizationInput = {
+    id?: string
+    podSubmissionId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
   }
 
   export type MembershipUpdateWithoutOrganizationInput = {
@@ -40651,6 +44949,7 @@ export namespace Prisma {
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrganizationInput = {
@@ -40670,6 +44969,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutOrganizationInput = {
@@ -40849,6 +45149,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutPodUploadLinksNestedInput
+    submissions?: PodSubmissionUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkUncheckedUpdateWithoutOrganizationInput = {
@@ -40863,6 +45164,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkUncheckedUpdateManyWithoutOrganizationInput = {
@@ -40877,6 +45179,65 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
+    pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    podSubmission?: PodSubmissionUpdateOneRequiredWithoutPagesNestedInput
+  }
+
+  export type PodSubmissionPageUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    podSubmissionId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    podSubmissionId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountCreateManyUserInput = {
@@ -41097,6 +45458,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     driver?: DriverUpdateOneWithoutOrdersNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutShipperInput = {
@@ -41116,6 +45478,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutShipperInput = {
@@ -41171,6 +45534,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
     shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
     podUploadLinks?: PodUploadLinkUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutDriverInput = {
@@ -41190,6 +45554,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     podUploadLinks?: PodUploadLinkUncheckedUpdateManyWithoutOrderNestedInput
+    podSubmissions?: PodSubmissionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutDriverInput = {
@@ -41224,6 +45589,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PodSubmissionCreateManyOrderInput = {
+    id?: string
+    organizationId: string
+    podUploadLinkId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+  }
+
   export type PodUploadLinkUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
@@ -41236,6 +45609,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutPodUploadLinksNestedInput
+    submissions?: PodSubmissionUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkUncheckedUpdateWithoutOrderInput = {
@@ -41250,6 +45624,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkNestedInput
   }
 
   export type PodUploadLinkUncheckedUpdateManyWithoutOrderInput = {
@@ -41264,6 +45639,110 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
+    pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    podUploadLinkId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionCreateManyPodUploadLinkInput = {
+    id?: string
+    organizationId: string
+    orderId: string
+    receivedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionUpdateWithoutPodUploadLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
+    pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateWithoutPodUploadLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
+  }
+
+  export type PodSubmissionUncheckedUpdateManyWithoutPodUploadLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageCreateManyPodSubmissionInput = {
+    id?: string
+    organizationId: string
+    pageIndex: number
+    storageKey: string
+    fileName: string
+    contentType: string
+    sizeBytes: number
+    createdAt?: Date | string
+  }
+
+  export type PodSubmissionPageUpdateWithoutPodSubmissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionPagesNestedInput
+  }
+
+  export type PodSubmissionPageUncheckedUpdateWithoutPodSubmissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    pageIndex?: IntFieldUpdateOperationsInput | number
+    storageKey?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    contentType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

@@ -4,7 +4,9 @@ import { readSource } from "./read-source";
 
 describe("magic-link login surface", () => {
   it("uses the email-only magic-link flow and exposes recoverable states", async () => {
-    const source = await readSource("src/app/_components/login-form.tsx");
+    const source = await readSource(
+      "src/app/(console)/_components/login-form.tsx",
+    );
 
     expect(source).toContain('signIn("resend"');
     expect(source).toContain('aria-live="polite"');
@@ -18,8 +20,8 @@ describe("magic-link login surface", () => {
 
   it("uses the dark-first login shell and Indonesian document language", async () => {
     const [pageSource, layoutSource] = await Promise.all([
-      readSource("src/app/login/page.tsx"),
-      readSource("src/app/layout.tsx"),
+      readSource("src/app/(console)/login/page.tsx"),
+      readSource("src/app/(console)/layout.tsx"),
     ]);
 
     expect(pageSource).toContain('title: "Masuk — Trayek"');
@@ -31,10 +33,10 @@ describe("magic-link login surface", () => {
   it("keeps organization switching and sign-out available for the operations shell", async () => {
     const [layoutSource, utilitySource, switcherSource, signOutSource] =
       await Promise.all([
-        readSource("src/app/layout.tsx"),
-        readSource("src/app/_components/utility-bar.tsx"),
-        readSource("src/app/_components/org-switcher.tsx"),
-        readSource("src/app/_components/sign-out-form.tsx"),
+        readSource("src/app/(console)/layout.tsx"),
+        readSource("src/app/(console)/_components/utility-bar.tsx"),
+        readSource("src/app/(console)/_components/org-switcher.tsx"),
+        readSource("src/app/(console)/_components/sign-out-form.tsx"),
       ]);
 
     expect(layoutSource).not.toContain("UtilityBar");
@@ -48,8 +50,8 @@ describe("magic-link login surface", () => {
 
   it("renders a static landing page with the public dashboard route", async () => {
     const [homeSource, layoutSource] = await Promise.all([
-      readSource("src/app/page.tsx"),
-      readSource("src/app/layout.tsx"),
+      readSource("src/app/(console)/page.tsx"),
+      readSource("src/app/(console)/layout.tsx"),
     ]);
 
     expect(homeSource).toContain("export default function Home()");

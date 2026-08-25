@@ -1,5 +1,5 @@
-import { OrgSwitcher } from "~/app/_components/org-switcher";
-import { SignOutForm } from "~/app/_components/sign-out-form";
+import { OrgSwitcher } from "~/app/(console)/_components/org-switcher";
+import { SignOutForm } from "~/app/(console)/_components/sign-out-form";
 
 export function UtilityBar() {
   return (

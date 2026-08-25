@@ -21,6 +21,8 @@ export const TENANT_SCOPED_MODELS = new Set<string>([
   "MessageLog",
   "ChannelConnection",
   "PodUploadLink",
+  "PodSubmission",
+  "PodSubmissionPage",
 ]);
 /**
  * Models with no organization column. `PodUploadThrottle` is here on purpose:
