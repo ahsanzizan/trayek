@@ -158,6 +158,53 @@ describe("authorizing an upload", () => {
   });
 });
 
+describe("a link used more than once", () => {
+  it("authorizes every upload until the budget is actually spent", async () => {
+    // The defect this covers: the budget guard was handed `remainingUses + 1`
+    // and compared against the absolute `useCount`, so the arithmetic only
+    // held while `useCount` was 0. A link authorized its first upload and
+    // refused every one after it, with budget still left. Every earlier test
+    // used a fresh link, which is exactly why none of them caught it.
+    const token = tokenFor("REUSE");
+    const link = await createLink(token, { useBudget: 4 });
+
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      const metadata = await track(authorize(token, [`foto-${attempt}.jpg`]));
+
+      expect(
+        metadata.orderId,
+        `upload ${attempt} of 4 was refused with budget remaining`,
+      ).toBe(orderA.id);
+    }
+
+    const after = await db.podUploadLink.findUniqueOrThrow({
+      where: { id: link.id },
+      select: { useCount: true },
+    });
+
+    expect(after.useCount).toBe(4);
+  });
+
+  it("refuses only once the budget is genuinely exhausted", async () => {
+    const token = tokenFor("EXHAUST");
+    await createLink(token, { useBudget: 2 });
+
+    await track(authorize(token, ["satu.jpg"]));
+    await track(authorize(token, ["dua.jpg"]));
+
+    await expect(authorize(token, ["tiga.jpg"])).rejects.toThrow();
+  });
+
+  it("resumes correctly for a link that already had uses on it", async () => {
+    const token = tokenFor("PARTIAL");
+    await createLink(token, { useBudget: 10, useCount: 6 });
+
+    const metadata = await track(authorize(token));
+
+    expect(metadata.orderId).toBe(orderA.id);
+  });
+});
+
 describe("an upload that must not be authorized", () => {
   it("refuses an unknown token", async () => {
     await expect(authorize(tokenFor("NOSUCH"))).rejects.toThrow();
@@ -186,6 +233,17 @@ describe("an upload that must not be authorized", () => {
     await createLink(token, { useBudget: 1, useCount: 1 });
 
     await expect(authorize(token)).rejects.toThrow();
+  });
+
+  it("refuses as forbidden, not as too large", async () => {
+    // A dead link reported as HTTP 413 Payload Too Large sends whoever is
+    // debugging it looking at file sizes instead of the link.
+    const token = tokenFor("CODE");
+    await createLink(token, { revokedAt: new Date() });
+
+    await expect(authorize(token)).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
   });
 
   it("writes no submission when it refuses", async () => {
