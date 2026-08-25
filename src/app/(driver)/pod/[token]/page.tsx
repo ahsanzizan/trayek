@@ -1,9 +1,9 @@
-import { type Metadata } from "next";
 import { headers } from "next/headers";
 
 import { LINK_REFUSAL_MESSAGES } from "~/server/domain/pod-link/access";
 import { db } from "~/server/db";
 import { resolveUploadLink } from "~/server/pod-link/resolve";
+import { PodCapture } from "./_components/pod-capture";
 
 /**
  * The driver's entry point (TRK-024).
@@ -18,11 +18,6 @@ import { resolveUploadLink } from "~/server/pod-link/resolve";
  * confirmation that the link is live and points at the order the driver
  * expects — the part TRK-030 builds its screen on top of.
  */
-
-export const metadata: Metadata = {
-  title: "Unggah POD · Trayek",
-  robots: { index: false, follow: false },
-};
 
 /** The token makes every request unique; nothing here may be cached. */
 export const dynamic = "force-dynamic";
@@ -49,7 +44,7 @@ function clientAddress(requestHeaders: Headers): string | null {
 
 function RefusalScreen({ message }: { message: string }) {
   return (
-    <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-12 antialiased">
+    <main className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full max-w-[420px] text-center">
         <p className="text-muted-foreground font-mono text-xs tracking-[1.4px] uppercase">
           Trayek
@@ -86,7 +81,7 @@ export default async function PodUploadPage({
   const { link } = result;
 
   return (
-    <main className="bg-background text-foreground min-h-screen px-6 py-12 antialiased">
+    <main className="min-h-screen px-6 py-12">
       <div className="mx-auto w-full max-w-[420px]">
         <p className="text-muted-foreground font-mono text-xs tracking-[1.4px] uppercase">
           Trayek
@@ -116,14 +111,10 @@ export default async function PodUploadPage({
           </div>
         </dl>
 
-        <p className="text-muted-foreground mt-8 text-sm leading-6">
-          Sisa kesempatan unggah: {link.remainingUses}.
-        </p>
+        <PodCapture token={token} />
 
-        {/* TRK-030 replaces this with the camera capture screen. */}
-        <p className="text-muted-foreground mt-2 text-sm leading-6">
-          Halaman unggah foto sedang disiapkan. Jika Anda diminta mengirim POD
-          sekarang, hubungi admin Anda.
+        <p className="text-muted-foreground mt-6 text-sm leading-6">
+          Sisa kesempatan unggah: {link.remainingUses}.
         </p>
       </div>
     </main>

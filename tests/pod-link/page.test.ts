@@ -21,7 +21,8 @@ vi.mock("next/headers", () => ({
   headers: () => Promise.resolve(requestHeaders),
 }));
 
-const { default: PodUploadPage } = await import("~/app/pod/[token]/page");
+const { default: PodUploadPage } =
+  await import("~/app/(driver)/pod/[token]/page");
 
 const orderA = seedFixturesData.orders[0];
 

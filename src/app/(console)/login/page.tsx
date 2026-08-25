@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
-import { LoginForm } from "~/app/_components/login-form";
+import { LoginForm } from "~/app/(console)/_components/login-form";
 import {
   Card,
   CardContent,

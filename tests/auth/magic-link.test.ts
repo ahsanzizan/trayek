@@ -16,7 +16,9 @@ describe("magic-link authentication contract", () => {
   });
 
   it("uses one success message for every email submission result", async () => {
-    const source = await readSource("src/app/_components/login-form.tsx");
+    const source = await readSource(
+      "src/app/(console)/_components/login-form.tsx",
+    );
 
     expect(source).toContain("setSubmittedEmail(data.email)");
     expect(source).toContain("Cek email Anda");

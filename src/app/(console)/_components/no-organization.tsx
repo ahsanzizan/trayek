@@ -1,4 +1,4 @@
-import { SignOutForm } from "~/app/_components/sign-out-form";
+import { SignOutForm } from "~/app/(console)/_components/sign-out-form";
 
 export function NoOrganization() {
   return (
