@@ -242,6 +242,15 @@ export const DsoBaselineMethod: {
 export type DsoBaselineMethod = (typeof DsoBaselineMethod)[keyof typeof DsoBaselineMethod]
 
 
+export const GeolocationPermission: {
+  GRANTED: 'GRANTED',
+  DENIED: 'DENIED',
+  UNAVAILABLE: 'UNAVAILABLE'
+};
+
+export type GeolocationPermission = (typeof GeolocationPermission)[keyof typeof GeolocationPermission]
+
+
 export const AuditActorType: {
   USER: 'USER',
   AGENT: 'AGENT',
@@ -302,6 +311,10 @@ export const OrderStatus: typeof $Enums.OrderStatus
 export type DsoBaselineMethod = $Enums.DsoBaselineMethod
 
 export const DsoBaselineMethod: typeof $Enums.DsoBaselineMethod
+
+export type GeolocationPermission = $Enums.GeolocationPermission
+
+export const GeolocationPermission: typeof $Enums.GeolocationPermission
 
 export type AuditActorType = $Enums.AuditActorType
 
@@ -29138,10 +29151,16 @@ export namespace Prisma {
 
   export type PodSubmissionAvgAggregateOutputType = {
     lowestQualityScore: number | null
+    captureLatitude: number | null
+    captureLongitude: number | null
+    captureAccuracyMeters: number | null
   }
 
   export type PodSubmissionSumAggregateOutputType = {
     lowestQualityScore: number | null
+    captureLatitude: number | null
+    captureLongitude: number | null
+    captureAccuracyMeters: number | null
   }
 
   export type PodSubmissionMinAggregateOutputType = {
@@ -29153,6 +29172,11 @@ export namespace Prisma {
     createdAt: Date | null
     lowestQualityScore: number | null
     qualityOverridden: boolean | null
+    captureLatitude: number | null
+    captureLongitude: number | null
+    captureAccuracyMeters: number | null
+    capturedAt: Date | null
+    geolocationPermission: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionMaxAggregateOutputType = {
@@ -29164,6 +29188,11 @@ export namespace Prisma {
     createdAt: Date | null
     lowestQualityScore: number | null
     qualityOverridden: boolean | null
+    captureLatitude: number | null
+    captureLongitude: number | null
+    captureAccuracyMeters: number | null
+    capturedAt: Date | null
+    geolocationPermission: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionCountAggregateOutputType = {
@@ -29175,16 +29204,27 @@ export namespace Prisma {
     createdAt: number
     lowestQualityScore: number
     qualityOverridden: number
+    captureLatitude: number
+    captureLongitude: number
+    captureAccuracyMeters: number
+    capturedAt: number
+    geolocationPermission: number
     _all: number
   }
 
 
   export type PodSubmissionAvgAggregateInputType = {
     lowestQualityScore?: true
+    captureLatitude?: true
+    captureLongitude?: true
+    captureAccuracyMeters?: true
   }
 
   export type PodSubmissionSumAggregateInputType = {
     lowestQualityScore?: true
+    captureLatitude?: true
+    captureLongitude?: true
+    captureAccuracyMeters?: true
   }
 
   export type PodSubmissionMinAggregateInputType = {
@@ -29196,6 +29236,11 @@ export namespace Prisma {
     createdAt?: true
     lowestQualityScore?: true
     qualityOverridden?: true
+    captureLatitude?: true
+    captureLongitude?: true
+    captureAccuracyMeters?: true
+    capturedAt?: true
+    geolocationPermission?: true
   }
 
   export type PodSubmissionMaxAggregateInputType = {
@@ -29207,6 +29252,11 @@ export namespace Prisma {
     createdAt?: true
     lowestQualityScore?: true
     qualityOverridden?: true
+    captureLatitude?: true
+    captureLongitude?: true
+    captureAccuracyMeters?: true
+    capturedAt?: true
+    geolocationPermission?: true
   }
 
   export type PodSubmissionCountAggregateInputType = {
@@ -29218,6 +29268,11 @@ export namespace Prisma {
     createdAt?: true
     lowestQualityScore?: true
     qualityOverridden?: true
+    captureLatitude?: true
+    captureLongitude?: true
+    captureAccuracyMeters?: true
+    capturedAt?: true
+    geolocationPermission?: true
     _all?: true
   }
 
@@ -29316,6 +29371,11 @@ export namespace Prisma {
     createdAt: Date
     lowestQualityScore: number | null
     qualityOverridden: boolean
+    captureLatitude: number | null
+    captureLongitude: number | null
+    captureAccuracyMeters: number | null
+    capturedAt: Date | null
+    geolocationPermission: $Enums.GeolocationPermission | null
     _count: PodSubmissionCountAggregateOutputType | null
     _avg: PodSubmissionAvgAggregateOutputType | null
     _sum: PodSubmissionSumAggregateOutputType | null
@@ -29346,6 +29406,11 @@ export namespace Prisma {
     createdAt?: boolean
     lowestQualityScore?: boolean
     qualityOverridden?: boolean
+    captureLatitude?: boolean
+    captureLongitude?: boolean
+    captureAccuracyMeters?: boolean
+    capturedAt?: boolean
+    geolocationPermission?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29362,6 +29427,11 @@ export namespace Prisma {
     createdAt?: boolean
     lowestQualityScore?: boolean
     qualityOverridden?: boolean
+    captureLatitude?: boolean
+    captureLongitude?: boolean
+    captureAccuracyMeters?: boolean
+    capturedAt?: boolean
+    geolocationPermission?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29376,6 +29446,11 @@ export namespace Prisma {
     createdAt?: boolean
     lowestQualityScore?: boolean
     qualityOverridden?: boolean
+    captureLatitude?: boolean
+    captureLongitude?: boolean
+    captureAccuracyMeters?: boolean
+    capturedAt?: boolean
+    geolocationPermission?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29390,9 +29465,14 @@ export namespace Prisma {
     createdAt?: boolean
     lowestQualityScore?: boolean
     qualityOverridden?: boolean
+    captureLatitude?: boolean
+    captureLongitude?: boolean
+    captureAccuracyMeters?: boolean
+    capturedAt?: boolean
+    geolocationPermission?: boolean
   }
 
-  export type PodSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "podUploadLinkId" | "receivedAt" | "createdAt" | "lowestQualityScore" | "qualityOverridden", ExtArgs["result"]["podSubmission"]>
+  export type PodSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "podUploadLinkId" | "receivedAt" | "createdAt" | "lowestQualityScore" | "qualityOverridden" | "captureLatitude" | "captureLongitude" | "captureAccuracyMeters" | "capturedAt" | "geolocationPermission", ExtArgs["result"]["podSubmission"]>
   export type PodSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -29448,6 +29528,35 @@ export namespace Prisma {
        * correlation in TRK-044 separate warned uploads from clean ones.
        */
       qualityOverridden: boolean
+      /**
+       * Where the browser said the driver was, at capture time (TRK-032).
+       * 
+       * Captured independently of EXIF, which WhatsApp strips from forwarded
+       * images and which a browser upload can lose anyway. Feeds the geospatial
+       * plausibility check in TRK-062.
+       * 
+       * Personal data under UU PDP: collected against a consent prompt shown
+       * before the browser is asked, retained under the policy in TRK-140, and
+       * never written to a log line.
+       */
+      captureLatitude: number | null
+      captureLongitude: number | null
+      /**
+       * Radius of the reported position in metres, as the browser gave it. A
+       * 2000 m accuracy is a cell-tower fix, not a GPS one, and TRK-062 has to
+       * be able to tell the difference before calling anything implausible.
+       */
+      captureAccuracyMeters: number | null
+      /**
+       * The client's own clock at capture. Kept beside `receivedAt` rather than
+       * replacing it: the two disagreeing is itself a signal, and a phone clock
+       * is trivially wrong or deliberately set.
+       */
+      capturedAt: Date | null
+      /**
+       * Null only for submissions predating TRK-032.
+       */
+      geolocationPermission: $Enums.GeolocationPermission | null
     }, ExtArgs["result"]["podSubmission"]>
     composites: {}
   }
@@ -29883,6 +29992,11 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"PodSubmission", 'DateTime'>
     readonly lowestQualityScore: FieldRef<"PodSubmission", 'Int'>
     readonly qualityOverridden: FieldRef<"PodSubmission", 'Boolean'>
+    readonly captureLatitude: FieldRef<"PodSubmission", 'Float'>
+    readonly captureLongitude: FieldRef<"PodSubmission", 'Float'>
+    readonly captureAccuracyMeters: FieldRef<"PodSubmission", 'Float'>
+    readonly capturedAt: FieldRef<"PodSubmission", 'DateTime'>
+    readonly geolocationPermission: FieldRef<"PodSubmission", 'GeolocationPermission'>
   }
     
 
@@ -31886,7 +32000,12 @@ export namespace Prisma {
     receivedAt: 'receivedAt',
     createdAt: 'createdAt',
     lowestQualityScore: 'lowestQualityScore',
-    qualityOverridden: 'qualityOverridden'
+    qualityOverridden: 'qualityOverridden',
+    captureLatitude: 'captureLatitude',
+    captureLongitude: 'captureLongitude',
+    captureAccuracyMeters: 'captureAccuracyMeters',
+    capturedAt: 'capturedAt',
+    geolocationPermission: 'geolocationPermission'
   };
 
   export type PodSubmissionScalarFieldEnum = (typeof PodSubmissionScalarFieldEnum)[keyof typeof PodSubmissionScalarFieldEnum]
@@ -32177,6 +32296,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'GeolocationPermission'
+   */
+  export type EnumGeolocationPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GeolocationPermission'>
+    
+
+
+  /**
+   * Reference to a field of type 'GeolocationPermission[]'
+   */
+  export type ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GeolocationPermission[]'>
     
   /**
    * Deep Input Types
@@ -33944,6 +34077,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
     lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
     qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
+    captureLatitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureLongitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureAccuracyMeters?: FloatNullableFilter<"PodSubmission"> | number | null
+    capturedAt?: DateTimeNullableFilter<"PodSubmission"> | Date | string | null
+    geolocationPermission?: EnumGeolocationPermissionNullableFilter<"PodSubmission"> | $Enums.GeolocationPermission | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
@@ -33959,6 +34097,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     lowestQualityScore?: SortOrderInput | SortOrder
     qualityOverridden?: SortOrder
+    captureLatitude?: SortOrderInput | SortOrder
+    captureLongitude?: SortOrderInput | SortOrder
+    captureAccuracyMeters?: SortOrderInput | SortOrder
+    capturedAt?: SortOrderInput | SortOrder
+    geolocationPermission?: SortOrderInput | SortOrder
     organization?: OrganizationOrderByWithRelationInput
     order?: OrderOrderByWithRelationInput
     podUploadLink?: PodUploadLinkOrderByWithRelationInput
@@ -33977,6 +34120,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
     lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
     qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
+    captureLatitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureLongitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureAccuracyMeters?: FloatNullableFilter<"PodSubmission"> | number | null
+    capturedAt?: DateTimeNullableFilter<"PodSubmission"> | Date | string | null
+    geolocationPermission?: EnumGeolocationPermissionNullableFilter<"PodSubmission"> | $Enums.GeolocationPermission | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
@@ -33992,6 +34140,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     lowestQualityScore?: SortOrderInput | SortOrder
     qualityOverridden?: SortOrder
+    captureLatitude?: SortOrderInput | SortOrder
+    captureLongitude?: SortOrderInput | SortOrder
+    captureAccuracyMeters?: SortOrderInput | SortOrder
+    capturedAt?: SortOrderInput | SortOrder
+    geolocationPermission?: SortOrderInput | SortOrder
     _count?: PodSubmissionCountOrderByAggregateInput
     _avg?: PodSubmissionAvgOrderByAggregateInput
     _max?: PodSubmissionMaxOrderByAggregateInput
@@ -34011,6 +34164,11 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PodSubmission"> | Date | string
     lowestQualityScore?: IntNullableWithAggregatesFilter<"PodSubmission"> | number | null
     qualityOverridden?: BoolWithAggregatesFilter<"PodSubmission"> | boolean
+    captureLatitude?: FloatNullableWithAggregatesFilter<"PodSubmission"> | number | null
+    captureLongitude?: FloatNullableWithAggregatesFilter<"PodSubmission"> | number | null
+    captureAccuracyMeters?: FloatNullableWithAggregatesFilter<"PodSubmission"> | number | null
+    capturedAt?: DateTimeNullableWithAggregatesFilter<"PodSubmission"> | Date | string | null
+    geolocationPermission?: EnumGeolocationPermissionNullableWithAggregatesFilter<"PodSubmission"> | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageWhereInput = {
@@ -36010,6 +36168,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
@@ -36025,6 +36188,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -36034,6 +36202,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
@@ -36049,6 +36222,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -36061,6 +36239,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionUpdateManyMutationInput = {
@@ -36069,6 +36252,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionUncheckedUpdateManyInput = {
@@ -36080,6 +36268,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageCreateInput = {
@@ -37882,6 +38075,24 @@ export namespace Prisma {
     count?: SortOrder
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type EnumGeolocationPermissionNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.GeolocationPermission | EnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel> | $Enums.GeolocationPermission | null
+  }
+
   export type PodUploadLinkScalarRelationFilter = {
     is?: PodUploadLinkWhereInput
     isNot?: PodUploadLinkWhereInput
@@ -37896,10 +38107,18 @@ export namespace Prisma {
     createdAt?: SortOrder
     lowestQualityScore?: SortOrder
     qualityOverridden?: SortOrder
+    captureLatitude?: SortOrder
+    captureLongitude?: SortOrder
+    captureAccuracyMeters?: SortOrder
+    capturedAt?: SortOrder
+    geolocationPermission?: SortOrder
   }
 
   export type PodSubmissionAvgOrderByAggregateInput = {
     lowestQualityScore?: SortOrder
+    captureLatitude?: SortOrder
+    captureLongitude?: SortOrder
+    captureAccuracyMeters?: SortOrder
   }
 
   export type PodSubmissionMaxOrderByAggregateInput = {
@@ -37911,6 +38130,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     lowestQualityScore?: SortOrder
     qualityOverridden?: SortOrder
+    captureLatitude?: SortOrder
+    captureLongitude?: SortOrder
+    captureAccuracyMeters?: SortOrder
+    capturedAt?: SortOrder
+    geolocationPermission?: SortOrder
   }
 
   export type PodSubmissionMinOrderByAggregateInput = {
@@ -37922,10 +38146,44 @@ export namespace Prisma {
     createdAt?: SortOrder
     lowestQualityScore?: SortOrder
     qualityOverridden?: SortOrder
+    captureLatitude?: SortOrder
+    captureLongitude?: SortOrder
+    captureAccuracyMeters?: SortOrder
+    capturedAt?: SortOrder
+    geolocationPermission?: SortOrder
   }
 
   export type PodSubmissionSumOrderByAggregateInput = {
     lowestQualityScore?: SortOrder
+    captureLatitude?: SortOrder
+    captureLongitude?: SortOrder
+    captureAccuracyMeters?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type EnumGeolocationPermissionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.GeolocationPermission | EnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumGeolocationPermissionNullableWithAggregatesFilter<$PrismaModel> | $Enums.GeolocationPermission | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel>
+    _max?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel>
   }
 
   export type PodSubmissionScalarRelationFilter = {
@@ -39575,6 +39833,18 @@ export namespace Prisma {
     connect?: PodSubmissionPageWhereUniqueInput | PodSubmissionPageWhereUniqueInput[]
   }
 
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableEnumGeolocationPermissionFieldUpdateOperationsInput = {
+    set?: $Enums.GeolocationPermission | null
+  }
+
   export type OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput = {
     create?: XOR<OrganizationCreateWithoutPodSubmissionsInput, OrganizationUncheckedCreateWithoutPodSubmissionsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutPodSubmissionsInput
@@ -40122,6 +40392,39 @@ export namespace Prisma {
     _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumGeolocationPermissionNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.GeolocationPermission | EnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel> | $Enums.GeolocationPermission | null
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumGeolocationPermissionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.GeolocationPermission | EnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.GeolocationPermission[] | ListEnumGeolocationPermissionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumGeolocationPermissionNullableWithAggregatesFilter<$PrismaModel> | $Enums.GeolocationPermission | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel>
+    _max?: NestedEnumGeolocationPermissionNullableFilter<$PrismaModel>
+  }
+
   export type MembershipCreateWithoutOrganizationInput = {
     id?: string
     role: $Enums.MembershipRole
@@ -40654,6 +40957,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -40667,6 +40975,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -41228,6 +41541,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
     lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
     qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
+    captureLatitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureLongitude?: FloatNullableFilter<"PodSubmission"> | number | null
+    captureAccuracyMeters?: FloatNullableFilter<"PodSubmission"> | number | null
+    capturedAt?: DateTimeNullableFilter<"PodSubmission"> | Date | string | null
+    geolocationPermission?: EnumGeolocationPermissionNullableFilter<"PodSubmission"> | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -43452,6 +43770,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -43465,6 +43788,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -43993,6 +44321,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -44006,6 +44339,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -44558,6 +44896,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
@@ -44572,6 +44915,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionCreateOrConnectWithoutPagesInput = {
@@ -44659,6 +45007,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
@@ -44673,6 +45026,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -44865,6 +45223,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageCreateManyOrganizationInput = {
@@ -45445,6 +45808,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45458,6 +45826,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45469,6 +45842,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageUpdateWithoutOrganizationInput = {
@@ -45870,6 +46248,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
   }
 
   export type PodUploadLinkUpdateWithoutOrderInput = {
@@ -45922,6 +46305,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45935,6 +46323,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45946,6 +46339,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionCreateManyPodUploadLinkInput = {
@@ -45956,6 +46354,11 @@ export namespace Prisma {
     createdAt?: Date | string
     lowestQualityScore?: number | null
     qualityOverridden?: boolean
+    captureLatitude?: number | null
+    captureLongitude?: number | null
+    captureAccuracyMeters?: number | null
+    capturedAt?: Date | string | null
+    geolocationPermission?: $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionUpdateWithoutPodUploadLinkInput = {
@@ -45964,6 +46367,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45977,6 +46385,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45988,6 +46401,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
     qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
+    captureLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    captureAccuracyMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    capturedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    geolocationPermission?: NullableEnumGeolocationPermissionFieldUpdateOperationsInput | $Enums.GeolocationPermission | null
   }
 
   export type PodSubmissionPageCreateManyPodSubmissionInput = {

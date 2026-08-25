@@ -5,6 +5,11 @@ import { genUploader } from "uploadthing/client";
 
 import { type QualityReport } from "~/lib/pod-quality";
 import { type UploadRouter } from "~/server/storage/router";
+import {
+  captureLocation,
+  unavailableAttestation,
+  type CaptureAttestation,
+} from "./capture-location";
 import { measurePhoto } from "./measure-photo";
 
 /**
@@ -52,6 +57,14 @@ export function PodCapture({ token }: { token: string }) {
   const [phase, setPhase] = useState<Phase>("memilih");
   const [message, setMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  /**
+   * Where and when the driver photographed the POD (TRK-032). Requested once,
+   * on the first photograph, so the browser prompt appears immediately after
+   * the consent notice below rather than out of nowhere on send.
+   */
+  const [attestation, setAttestation] = useState<CaptureAttestation | null>(
+    null,
+  );
 
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
@@ -105,6 +118,13 @@ export function PodCapture({ token }: { token: string }) {
 
       added.forEach(measure);
 
+      // Asked once, and never awaited: a driver whose phone cannot get a fix
+      // inside a warehouse must not wait on it, and one who refuses must not
+      // be blocked by it.
+      if (current.length === 0 && added.length > 0) {
+        void captureLocation().then(setAttestation);
+      }
+
       return [...current, ...added];
     });
   }
@@ -135,6 +155,9 @@ export function PodCapture({ token }: { token: string }) {
         files: selected.map((item) => item.file),
         input: {
           token,
+          // Recorded whether or not a fix was obtained: the absence of a
+          // location is itself worth knowing, and TRK-062 reads both.
+          attestation: attestation ?? unavailableAttestation(),
           // Advisory only. The server stores this for the TRK-044 correlation
           // and must never let it decide whether a write is allowed.
           quality: selected.map((item) => ({
@@ -322,6 +345,16 @@ export function PodCapture({ token }: { token: string }) {
       <p className="text-muted-foreground mt-4 text-sm leading-6">
         Foto POD harus terlihat jelas: nomor surat jalan, tanda tangan, nama
         terang, dan stempel penerima.
+      </p>
+
+      {/* Shown before the browser is asked, never after. The prompt appears
+          when the first photograph is added, and a driver who has not read
+          why would simply refuse it. Wording pending review against the PDP
+          notice in TRK-140. */}
+      <p className="text-muted-foreground mt-4 text-xs leading-5">
+        Saat Anda menambahkan foto, aplikasi meminta izin lokasi untuk mencatat
+        tempat pengambilan foto sebagai bukti pengiriman. Anda boleh menolak,
+        dan foto tetap bisa dikirim seperti biasa.
       </p>
     </section>
   );
