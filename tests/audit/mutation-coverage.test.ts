@@ -21,6 +21,7 @@ const AUDITED = new Set<string>([
   "shipper.create",
   "shipper.update",
   "shipper.publishProfileVersion",
+  "driver.create",
 ]);
 
 /**

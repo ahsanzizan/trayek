@@ -275,6 +275,17 @@ exports.Prisma.RequirementProfileScalarFieldEnum = {
   supersededAt: 'supersededAt'
 };
 
+exports.Prisma.DriverScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  phone: 'phone',
+  vehiclePlate: 'vehiclePlate',
+  vendorId: 'vendorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -336,7 +347,8 @@ exports.Prisma.ModelName = {
   LlmCallLog: 'LlmCallLog',
   AuditLog: 'AuditLog',
   Shipper: 'Shipper',
-  RequirementProfile: 'RequirementProfile'
+  RequirementProfile: 'RequirementProfile',
+  Driver: 'Driver'
 };
 
 /**
