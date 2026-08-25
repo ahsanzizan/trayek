@@ -15,21 +15,45 @@ import {
   type SignalKeyStore,
 } from "@whiskeysockets/baileys";
 
-import { type Prisma, type PrismaClient } from "../../../../generated/prisma";
+import { type Prisma, type PrismaClient } from "~/generated/prisma";
+import {
+  ACTIVE_QR_KEY,
+  extractActiveQr,
+  QR_TTL_MS,
+  type QrPayload,
+} from "~/server/channels/qr-broker";
+import { reporter } from "~/server/observability/reporter";
 import {
   channelConnectionStatusValues,
   type ChannelConnectionStatus,
 } from "~/server/domain/ports/channel";
+import { isRecord } from "~/lib/guards";
 
 export { channelConnectionStatusValues, type ChannelConnectionStatus };
+export { ACTIVE_QR_KEY };
 
 export interface AuthStateBundle {
   files: Record<string, Prisma.JsonValue>;
 }
 
+interface AuthStateRow {
+  authState: Prisma.JsonValue | null;
+  authStateVersion: number;
+}
+
+function authStateRow(value: unknown): AuthStateRow {
+  if (!isRecord(value) || typeof value.authStateVersion !== "number") {
+    return { authState: null, authStateVersion: 0 };
+  }
+
+  const authState = isJsonValue(value.authState) ? value.authState : null;
+  return { authState, authStateVersion: value.authStateVersion };
+}
+
 export interface BaileysSessionRepository {
   loadAuthState(organizationId: string): Promise<AuthStateBundle | null>;
   saveAuthState(organizationId: string, bundle: AuthStateBundle): Promise<void>;
+  clearAuthState?(organizationId: string): Promise<void>;
 }
 
 export interface BaileysChannelRepository extends BaileysSessionRepository {
@@ -41,22 +65,26 @@ export interface BaileysChannelRepository extends BaileysSessionRepository {
     status: ChannelConnectionStatus,
     lastConnectedAt?: Date,
   ): Promise<void>;
+  saveActiveQr?(organizationId: string, qr: string): Promise<void>;
+  getActiveQr?(organizationId: string): Promise<QrPayload | null>;
+  clearActiveQr?(
+    organizationId: string,
+    expectedVersion: number,
+  ): Promise<void>;
+  listOrganizationIds?(): Promise<string[]>;
+  ensureChannelConnection?(organizationId: string): Promise<void>;
 }
 
 export interface BaileysSession {
   state: AuthenticationState;
   saveCreds(): Promise<void>;
-  dispose(): Promise<void>;
+  dispose(options?: { persist?: boolean }): Promise<void>;
 }
 
 export interface CreateBaileysSessionOptions {
   organizationId: string;
   repository: BaileysSessionRepository;
   authDirectory?: string;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function isJsonValue(value: unknown): value is Prisma.JsonValue {
@@ -137,15 +165,21 @@ async function readAuthState(directory: string): Promise<AuthStateBundle> {
       continue;
     }
 
-    const value: unknown = JSON.parse(
-      await readFile(join(directory, entry.name), "utf8"),
-    );
+    try {
+      const value: unknown = JSON.parse(
+        await readFile(join(directory, entry.name), "utf8"),
+      );
 
-    if (!isJsonValue(value)) {
-      throw new Error("INVALID_BAILEYS_AUTH_STATE");
+      if (!isJsonValue(value)) {
+        throw new Error("INVALID_BAILEYS_AUTH_STATE");
+      }
+
+      files[entry.name] = value;
+    } catch (error) {
+      throw new Error(`INVALID_BAILEYS_AUTH_STATE:${entry.name}`, {
+        cause: error,
+      });
     }
-
-    files[entry.name] = value;
   }
 
   return { files };
@@ -173,18 +207,24 @@ function wrapKeyStore(
   return wrapped;
 }
 
+const WHATSAPP_CHANNEL = "WHATSAPP_BAILEYS" as const;
+
+function whereFor(organizationId: string) {
+  return {
+    organizationId_channel: {
+      organizationId,
+      channel: WHATSAPP_CHANNEL,
+    },
+  };
+}
+
 export function createPrismaBaileysChannelRepository(
   database: Pick<PrismaClient, "channelConnection">,
 ): BaileysChannelRepository {
   return {
     async loadAuthState(organizationId) {
       const connection = await database.channelConnection.findUnique({
-        where: {
-          organizationId_channel: {
-            organizationId,
-            channel: "WHATSAPP_BAILEYS",
-          },
-        },
+        where: whereFor(organizationId),
         select: { authState: true },
       });
 
@@ -192,33 +232,66 @@ export function createPrismaBaileysChannelRepository(
     },
 
     async saveAuthState(organizationId, bundle) {
-      await database.channelConnection.upsert({
-        where: {
-          organizationId_channel: {
-            organizationId,
-            channel: "WHATSAPP_BAILEYS",
-          },
+      const existing = authStateRow(
+        await database.channelConnection.findUnique({
+          where: whereFor(organizationId),
+          select: { authState: true, authStateVersion: true },
+        }),
+      );
+
+      const existingState =
+        existing.authState && typeof existing.authState === "object"
+          ? (existing.authState as Record<string, unknown>)
+          : {};
+
+      const existingFiles =
+        existingState.files && typeof existingState.files === "object"
+          ? (existingState.files as Record<string, unknown>)
+          : {};
+
+      // Preserve the active pairing QR and merge credentials inside `files`:
+      // Baileys fires `creds.update` while "attempting registration", and
+      // overwriting the whole authState here would erase the QR the web
+      // surface is showing. The shape must stay `{ files, ... }` for
+      // `loadAuthState`/`restoreAuthState` to read it back.
+      const nextAuthState: Record<string, unknown> = {
+        ...existingState,
+        files: {
+          ...existingFiles,
+          ...bundle.files,
         },
+      };
+
+      await database.channelConnection.upsert({
+        where: whereFor(organizationId),
         create: {
           organizationId,
-          channel: "WHATSAPP_BAILEYS",
+          channel: WHATSAPP_CHANNEL,
           authState: toInputJsonValue(bundle),
         },
         update: {
-          authState: toInputJsonValue(bundle),
+          authState: nextAuthState as unknown as Prisma.InputJsonValue,
           authStateVersion: { increment: 1 },
         },
       });
     },
 
+    async ensureChannelConnection(organizationId) {
+      await database.channelConnection.upsert({
+        where: whereFor(organizationId),
+        create: {
+          organizationId,
+          channel: WHATSAPP_CHANNEL,
+          status: "NEEDS_PAIRING",
+          authState: {},
+        },
+        update: {},
+      });
+    },
+
     async getChannelStatus(organizationId) {
       const connection = await database.channelConnection.findUnique({
-        where: {
-          organizationId_channel: {
-            organizationId,
-            channel: "WHATSAPP_BAILEYS",
-          },
-        },
+        where: whereFor(organizationId),
         select: { status: true },
       });
 
@@ -227,15 +300,10 @@ export function createPrismaBaileysChannelRepository(
 
     async updateChannelStatus(organizationId, status, lastConnectedAt) {
       await database.channelConnection.upsert({
-        where: {
-          organizationId_channel: {
-            organizationId,
-            channel: "WHATSAPP_BAILEYS",
-          },
-        },
+        where: whereFor(organizationId),
         create: {
           organizationId,
-          channel: "WHATSAPP_BAILEYS",
+          channel: WHATSAPP_CHANNEL,
           status,
           ...(lastConnectedAt ? { lastConnectedAt } : {}),
         },
@@ -244,6 +312,157 @@ export function createPrismaBaileysChannelRepository(
           ...(lastConnectedAt ? { lastConnectedAt } : {}),
         },
       });
+    },
+
+    async saveActiveQr(organizationId, qr) {
+      const existing = authStateRow(
+        await database.channelConnection.findUnique({
+          where: whereFor(organizationId),
+          select: { authState: true, authStateVersion: true },
+        }),
+      );
+
+      const existingState =
+        existing.authState && typeof existing.authState === "object"
+          ? (existing.authState as Record<string, unknown>)
+          : {};
+
+      const nextAuthState: Record<string, unknown> = {
+        ...existingState,
+        [ACTIVE_QR_KEY]: { qr, createdAt: new Date().toISOString() },
+      };
+
+      await database.channelConnection.upsert({
+        where: whereFor(organizationId),
+        create: {
+          organizationId,
+          channel: WHATSAPP_CHANNEL,
+          status: "NEEDS_PAIRING",
+          authState: nextAuthState as unknown as Prisma.InputJsonValue,
+        },
+        update: {
+          status: "NEEDS_PAIRING",
+          authState: nextAuthState as unknown as Prisma.InputJsonValue,
+          authStateVersion: { increment: 1 },
+        },
+      });
+    },
+
+    async getActiveQr(organizationId) {
+      const row = authStateRow(
+        await database.channelConnection.findUnique({
+          where: whereFor(organizationId),
+          select: { authState: true, authStateVersion: true },
+        }),
+      );
+
+      const active = extractActiveQr(row.authState);
+
+      if (!active || Date.now() - active.createdAt.getTime() > QR_TTL_MS) {
+        return null;
+      }
+
+      return { ...active, version: row.authStateVersion };
+    },
+
+    async clearActiveQr(organizationId, expectedVersion) {
+      const existing = authStateRow(
+        await database.channelConnection.findUnique({
+          where: whereFor(organizationId),
+          select: { authState: true, authStateVersion: true },
+        }),
+      );
+
+      if (
+        existing.authStateVersion !== expectedVersion ||
+        existing.authState === null ||
+        typeof existing.authState !== "object"
+      ) {
+        return;
+      }
+
+      const nextAuthState = {
+        ...(existing.authState as Record<string, unknown>),
+      };
+      delete nextAuthState[ACTIVE_QR_KEY];
+
+      await database.channelConnection.update({
+        where: whereFor(organizationId),
+        data: {
+          authState: nextAuthState as unknown as Prisma.InputJsonValue,
+          authStateVersion: { increment: 1 },
+        },
+      });
+    },
+
+    async clearAuthState(organizationId) {
+      const emptyState = {} as Prisma.InputJsonValue;
+
+      await database.channelConnection.upsert({
+        where: whereFor(organizationId),
+        create: {
+          organizationId,
+          channel: WHATSAPP_CHANNEL,
+          status: "NEEDS_PAIRING",
+          authState: emptyState,
+        },
+        update: {
+          status: "NEEDS_PAIRING",
+          authState: emptyState,
+          authStateVersion: { increment: 1 },
+        },
+      });
+    },
+
+    async listOrganizationIds() {
+      const rows = await database.channelConnection.findMany({
+        where: { channel: WHATSAPP_CHANNEL },
+        select: { organizationId: true },
+      });
+      return rows.map((row) => row.organizationId);
+    },
+  };
+}
+
+export { extractActiveQr } from "~/server/channels/qr-broker";
+
+async function createTempAuthDir(authDirectory: string): Promise<string> {
+  await mkdir(authDirectory, { recursive: true });
+  return mkdtemp(join(authDirectory, "trayek-baileys-"));
+}
+
+function createPersistScheduler(
+  repository: BaileysSessionRepository,
+  organizationId: string,
+  directory: string,
+) {
+  let disposed = false;
+  let persistQueue = Promise.resolve();
+
+  const persist = (): Promise<void> => {
+    const next = persistQueue.then(async () => {
+      if (disposed) throw new Error("BAILEYS_SESSION_DISPOSED");
+      await repository.saveAuthState(
+        organizationId,
+        await readAuthState(directory),
+      );
+    });
+
+    persistQueue = next.catch((error: unknown) => {
+      reporter.reportError(error, "Baileys auth state persistence failed", {
+        organizationId,
+      });
+    });
+    return next;
+  };
+
+  return {
+    persist,
+    markDisposed() {
+      disposed = true;
+    },
+    get disposed() {
+      return disposed;
     },
   };
 }
@@ -253,52 +472,39 @@ export async function createBaileysSession({
   repository,
   authDirectory = tmpdir(),
 }: CreateBaileysSessionOptions): Promise<BaileysSession> {
-  await mkdir(authDirectory, { recursive: true });
-  const directory = await mkdtemp(join(authDirectory, "trayek-baileys-"));
+  const directory = await createTempAuthDir(authDirectory);
   const persisted = await repository.loadAuthState(organizationId);
 
   await restoreAuthState(directory, persisted);
 
   const { state, saveCreds: writeCreds } =
     await loadMultiFileAuthState(directory);
-  let disposed = false;
-  let persistQueue = Promise.resolve();
-
-  const persist = (): Promise<void> => {
-    const next = persistQueue.then(async () => {
-      if (disposed) {
-        throw new Error("BAILEYS_SESSION_DISPOSED");
-      }
-
-      await repository.saveAuthState(
-        organizationId,
-        await readAuthState(directory),
-      );
-    });
-
-    persistQueue = next.catch(() => undefined);
-    return next;
-  };
+  const scheduler = createPersistScheduler(
+    repository,
+    organizationId,
+    directory,
+  );
 
   return {
     state: {
       ...state,
-      keys: wrapKeyStore(state.keys, persist),
+      keys: wrapKeyStore(state.keys, scheduler.persist),
     },
 
     async saveCreds() {
       await writeCreds();
-      await persist();
+      await scheduler.persist();
     },
 
-    async dispose() {
-      if (disposed) {
-        return;
-      }
+    async dispose(options = { persist: true }) {
+      if (scheduler.disposed) return;
 
-      await persist();
-      disposed = true;
-      await rm(directory, { recursive: true, force: true });
+      try {
+        if (options.persist) await scheduler.persist();
+      } finally {
+        scheduler.markDisposed();
+        await rm(directory, { recursive: true, force: true });
+      }
     },
   };
 }

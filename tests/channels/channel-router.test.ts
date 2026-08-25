@@ -5,10 +5,12 @@ import { channelRouter } from "~/server/api/routers/channel";
 import { type db } from "~/server/db";
 
 function createCaller() {
-  const findUnique = vi.fn().mockResolvedValue({
+  const now = new Date();
+  const findFirst = vi.fn().mockResolvedValue({
     channel: "WHATSAPP_BAILEYS",
     status: "NEEDS_PAIRING",
     lastConnectedAt: null,
+    updatedAt: now,
   });
   const findMany = vi.fn().mockResolvedValue([]);
   let database = {} as typeof db;
@@ -20,7 +22,7 @@ function createCaller() {
         role: "VIEWER",
       }),
     },
-    channelConnection: { findUnique },
+    channelConnection: { findFirst },
     messageLog: { findMany },
     $extends: vi.fn(() => database),
   } as unknown as typeof db;
@@ -38,27 +40,26 @@ function createCaller() {
     }),
   );
 
-  return { caller, findUnique, findMany };
+  return { caller, findFirst, findMany };
 }
 
 describe("channel router tenant boundary", () => {
   it("reads the active organization's connection status", async () => {
-    const { caller, findUnique } = createCaller();
+    const { caller, findFirst } = createCaller();
 
     await expect(
       caller.status({ channel: "WHATSAPP_BAILEYS" }),
     ).resolves.toMatchObject({ status: "NEEDS_PAIRING" });
-    expect(findUnique).toHaveBeenCalledWith({
+    expect(findFirst).toHaveBeenCalledWith({
       where: {
-        organizationId_channel: {
-          organizationId: "org-a",
-          channel: "WHATSAPP_BAILEYS",
-        },
+        organizationId: "org-a",
+        channel: "WHATSAPP_BAILEYS",
       },
       select: {
         channel: true,
         status: true,
         lastConnectedAt: true,
+        updatedAt: true,
       },
     });
   });

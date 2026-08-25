@@ -3,9 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   channelTypeSchema,
   channelTypeValues,
-  fromE164,
-  toJid,
 } from "~/server/domain/ports/channel";
+import { fromE164, toJid } from "~/server/channels/whatsapp/jid";
 
 describe("channel type contract", () => {
   it("keeps the supported channel values in one ordered source", () => {
@@ -35,6 +34,11 @@ describe("WhatsApp JID helpers", () => {
 
   it("converts a user JID back to E.164", () => {
     expect(fromE164("628123456789@s.whatsapp.net")).toBe("+628123456789");
+  });
+
+  it("handles multi-device JID format with device suffixes", () => {
+    expect(fromE164("628123456789:12@s.whatsapp.net")).toBe("+628123456789");
+    expect(fromE164("628123456789:0@s.whatsapp.net")).toBe("+628123456789");
   });
 
   it("rejects invalid phone input instead of creating a malformed JID", () => {

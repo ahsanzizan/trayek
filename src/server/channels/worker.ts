@@ -1,6 +1,7 @@
 import { pathToFileURL } from "node:url";
 
 import {
+  Browsers,
   DisconnectReason,
   makeWASocket,
   type AuthenticationState,
@@ -33,10 +34,11 @@ import {
   type ObservabilityLogger,
 } from "~/server/observability/logger";
 import { db } from "~/server/db";
-import { normalizeIndonesianPhone } from "~/server/domain/driver/phone";
-import { MAX_MESSAGE_BODY_LENGTH } from "~/server/channels/message-log";
+import { truncateBody } from "~/server/channels/message-log";
 import { channelQrBroker } from "~/server/channels/qr-broker";
 import { resolveBaileysConfig } from "~/server/channels/config";
+import { isRecord } from "~/lib/guards";
+import { toJid } from "~/server/channels/whatsapp/jid";
 
 type WorkerEventName = "creds.update" | "connection.update" | "messages.upsert";
 
@@ -48,6 +50,8 @@ export interface BaileysWorkerSocket extends BaileysSocket {
   };
   end(error?: Error): Promise<void>;
   requestPairingCode(phoneNumber: string): Promise<string>;
+  /** True once `end()` has resolved; the socket is no longer usable. */
+  ended: boolean;
 }
 
 export interface BaileysQrEvent {
@@ -72,6 +76,12 @@ const DEFAULT_RETRY_POLICY: BaileysWorkerRetryPolicy = {
   maxAttempts: 5,
 };
 
+const HARD_MAX_CHANNEL_SOCKETS = 50;
+
+const CONNECTED_SOCKET_REFRESH_MS = 5_000;
+
+const PAIRING_SCAN_INTERVAL_MS = 30_000;
+
 export interface BaileysChannelWorkerOptions {
   repository: BaileysChannelRepository;
   messageLog: BaileysMessageLogStore;
@@ -87,6 +97,7 @@ export interface BaileysChannelWorkerOptions {
   onQr?: (event: BaileysQrEvent) => void;
   now?: () => Date;
   random?: () => number;
+  maxReconnectDelayMs?: number;
 }
 
 export interface BaileysChannelWorker {
@@ -103,16 +114,14 @@ interface WorkerEntry {
   socket: BaileysWorkerSocket;
   session: BaileysSession;
   adapter: ChannelAdapter;
+  /** Set when `connection.update` reports `open`; cleared on close. */
+  isOpen: boolean;
 }
 
 interface ConnectionUpdate {
   connection?: string;
   qr?: string;
   lastDisconnect?: unknown;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
 }
 
 function asConnectionUpdate(value: unknown): ConnectionUpdate {
@@ -135,25 +144,67 @@ function disconnectReason(value: unknown): number | undefined {
 
   const output = value.error.output;
 
-  if (!isRecord(output) || typeof output.statusCode !== "number") {
-    return undefined;
+  if (isRecord(output) && typeof output.statusCode === "number") {
+    return output.statusCode;
   }
 
-  return output.statusCode;
+  if (typeof value.error.statusCode === "number") {
+    return value.error.statusCode;
+  }
+
+  if (
+    typeof value.error.code === "string" &&
+    value.error.code in DisconnectReason
+  ) {
+    return DisconnectReason[value.error.code as keyof typeof DisconnectReason];
+  }
+
+  return undefined;
+}
+
+function isLoggedOut(reason: number | undefined): boolean {
+  return reason === DisconnectReason.loggedOut;
+}
+
+function isConnectionReplaced(reason: number | undefined): boolean {
+  return reason === DisconnectReason.connectionReplaced;
+}
+
+/** Reasons where retrying is pointless and the session must be re-paired. */
+function isTerminal(reason: number | undefined): reason is DisconnectReason {
+  return (
+    reason === DisconnectReason.badSession ||
+    reason === DisconnectReason.forbidden ||
+    reason === DisconnectReason.multideviceMismatch
+  );
+}
+
+/** Reasons that require an immediate socket restart without backoff. */
+function isRestartRequired(reason: number | undefined): boolean {
+  return reason === DisconnectReason.restartRequired;
 }
 
 function retryDelay(
   policy: BaileysWorkerRetryPolicy,
   attempt: number,
   random: () => number,
+  maxDelayMs: number,
 ): number {
   const base = Math.min(
-    policy.maxDelayMs,
+    maxDelayMs,
     policy.initialDelayMs * policy.factor ** Math.max(0, attempt - 1),
   );
   const jitter = base * policy.jitter * (random() * 2 - 1);
 
   return Math.max(0, Math.round(base + jitter));
+}
+
+function touchLru<K, V>(map: Map<K, V>, key: K): V | undefined {
+  const value = map.get(key);
+  if (value === undefined) return undefined;
+  map.delete(key);
+  map.set(key, value);
+  return value;
 }
 
 export function createBaileysChannelWorker({
@@ -169,9 +220,16 @@ export function createBaileysChannelWorker({
   onQr,
   now = () => new Date(),
   random = Math.random,
+  maxReconnectDelayMs = retryPolicy.maxDelayMs,
 }: BaileysChannelWorkerOptions): BaileysChannelWorker {
-  if (!Number.isInteger(maxChannelSockets) || maxChannelSockets < 1) {
-    throw new RangeError("maxChannelSockets must be a positive integer");
+  if (
+    !Number.isInteger(maxChannelSockets) ||
+    maxChannelSockets < 1 ||
+    maxChannelSockets > HARD_MAX_CHANNEL_SOCKETS
+  ) {
+    throw new RangeError(
+      `maxChannelSockets must be an integer between 1 and ${HARD_MAX_CHANNEL_SOCKETS}`,
+    );
   }
 
   const entries = new Map<string, WorkerEntry>();
@@ -180,6 +238,50 @@ export function createBaileysChannelWorker({
   const publishQr =
     onQr ?? ((event: BaileysQrEvent) => channelQrBroker.publish(event));
   let connectionQueue = Promise.resolve();
+
+  const heartbeatInterval = setInterval(() => {
+    for (const orgId of entries.keys()) {
+      const entry = entries.get(orgId);
+
+      if (!entry) {
+        continue;
+      }
+
+      if (entry.socket.ended || !entry.isOpen) {
+        continue;
+      }
+
+      void updateStatus(orgId, "CONNECTED", now()).catch((error: unknown) => {
+        reporter.reportError(error, "Baileys heartbeat status update failed", {
+          organizationId: orgId,
+        });
+      });
+    }
+  }, CONNECTED_SOCKET_REFRESH_MS);
+
+  // Lazy pairing: an organization whose row was just created on the web
+  // surface (no socket yet) must be picked up without a worker restart.
+  const pairingScanInterval = setInterval(() => {
+    void (async () => {
+      const orgIds = repository.listOrganizationIds
+        ? await repository.listOrganizationIds()
+        : [];
+
+      for (const orgId of orgIds) {
+        if (entries.has(orgId)) {
+          continue;
+        }
+
+        void connect(orgId).catch((error: unknown) => {
+          reporter.reportError(error, "Baileys pairing scan connect failed", {
+            organizationId: orgId,
+          });
+        });
+      }
+    })().catch((error: unknown) => {
+      reporter.reportError(error, "Baileys pairing scan failed");
+    });
+  }, PAIRING_SCAN_INTERVAL_MS);
 
   async function updateStatus(
     organizationId: string,
@@ -200,10 +302,12 @@ export function createBaileysChannelWorker({
   async function removeEntry(
     organizationId: string,
     status: ChannelConnectionStatus,
+    options: { persist?: boolean } = { persist: true },
   ): Promise<void> {
     const entry = entries.get(organizationId);
 
     if (!entry) {
+      await updateStatus(organizationId, status);
       return;
     }
 
@@ -212,19 +316,16 @@ export function createBaileysChannelWorker({
     try {
       await entry.socket.end(undefined);
     } finally {
-      await entry.session.dispose();
+      await entry.session.dispose(options);
       await updateStatus(organizationId, status);
     }
   }
 
-  async function emitConnectionFallback(
-    organizationId: string,
-    attempt: number,
-  ): Promise<void> {
+  async function emitConnectionFallback(organizationId: string): Promise<void> {
     await notifyHumanFallback({
       organizationId,
       source: "baileys",
-      dedupeKey: `${organizationId}:connection:${attempt}`,
+      dedupeKey: `${organizationId}:connection:terminal`,
       entityType: "ChannelConnection",
       entityId: organizationId,
       instruction:
@@ -233,18 +334,33 @@ export function createBaileysChannelWorker({
     });
   }
 
-  async function scheduleReconnect(organizationId: string): Promise<void> {
+  async function scheduleReconnect(
+    organizationId: string,
+    options: { force?: boolean } = {},
+  ): Promise<void> {
     if (retryTimers.has(organizationId)) {
       return;
     }
 
     const attempt = (retryAttempts.get(organizationId) ?? 0) + 1;
+
+    if (options.force) {
+      retryAttempts.set(organizationId, attempt);
+      await removeEntry(organizationId, "DISCONNECTED", { persist: false });
+      void connect(organizationId).catch((error: unknown) => {
+        reporter.reportError(error, "Baileys forced reconnect failed", {
+          organizationId,
+          attempt,
+        });
+      });
+      return;
+    }
+
     retryAttempts.set(organizationId, attempt);
 
     if (attempt > retryPolicy.maxAttempts) {
-      retryAttempts.delete(organizationId);
       try {
-        await emitConnectionFallback(organizationId, attempt);
+        await emitConnectionFallback(organizationId);
       } catch (error) {
         reporter.reportError(error, "Baileys reconnect fallback failed", {
           organizationId,
@@ -253,7 +369,7 @@ export function createBaileysChannelWorker({
       return;
     }
 
-    const delay = retryDelay(retryPolicy, attempt, random);
+    const delay = retryDelay(retryPolicy, attempt, random, maxReconnectDelayMs);
     const timer = setTimeout(() => {
       retryTimers.delete(organizationId);
       void connect(organizationId).catch((error: unknown) => {
@@ -277,29 +393,65 @@ export function createBaileysChannelWorker({
       }),
     );
 
-    entry.socket.ev.on("messages.upsert", (payload) => {
+    entry.socket.ev.on("messages.upsert", (payload: unknown) => {
+      const raw = payload as
+        | {
+            type?: string;
+            messages?: Array<{
+              key?: { fromMe?: boolean; remoteJid?: string };
+            }>;
+          }
+        | undefined;
+      const first = raw?.messages?.[0];
+      logger.info("Baileys messages.upsert received", {
+        type: raw?.type,
+        fromMe: first?.key?.fromMe,
+        hasRemoteJid: Boolean(first?.key?.remoteJid),
+        count: raw?.messages?.length,
+      });
+
       try {
-        const message = entry.adapter.parseInbound(payload);
-        void messageLog
-          .create({
-            data: {
-              organizationId: entry.organizationId,
-              channel: "WHATSAPP_BAILEYS",
-              direction: "INBOUND",
-              from: message.from,
-              to: message.to,
-              body: message.body.slice(0, MAX_MESSAGE_BODY_LENGTH),
-              status: "PENDING",
-              truncated: message.body.length > MAX_MESSAGE_BODY_LENGTH,
-            },
-          })
-          .then((log) =>
-            messageLog.update({
-              where: { id: log.id },
-              data: { status: "SENT", externalId: message.id },
-            }),
-          )
-          .catch((error: unknown) => {
+        const messages =
+          entry.adapter.parseInboundBatch?.(payload) ??
+          (() => {
+            const message = entry.adapter.parseInbound(payload);
+            return message ? [message] : [];
+          })();
+
+        for (const message of messages) {
+          const inboundTruncated = truncateBody(message.body);
+          const dedupe = messageLog.findByExternalId?.({
+            organizationId: entry.organizationId,
+            externalId: message.id,
+          });
+
+          const persist = (dedupe ?? Promise.resolve(null)).then((existing) => {
+            if (existing) {
+              return;
+            }
+
+            return messageLog
+              .create({
+                data: {
+                  organizationId: entry.organizationId,
+                  channel: "WHATSAPP_BAILEYS",
+                  direction: "INBOUND",
+                  from: message.from,
+                  to: message.to,
+                  body: inboundTruncated.body,
+                  status: "PENDING",
+                  truncated: inboundTruncated.truncated,
+                },
+              })
+              .then((log) =>
+                messageLog.update({
+                  where: { id: log.id },
+                  data: { status: "SENT", externalId: message.id },
+                }),
+              );
+          });
+
+          void persist.catch((error: unknown) => {
             reporter.reportError(
               error,
               "Baileys inbound message persistence failed",
@@ -308,6 +460,7 @@ export function createBaileysChannelWorker({
               },
             );
           });
+        }
       } catch (error) {
         if (
           error instanceof Error &&
@@ -322,60 +475,121 @@ export function createBaileysChannelWorker({
       }
     });
 
-    entry.socket.ev.on("connection.update", (payload) => {
-      void handleConnectionUpdate(entry, asConnectionUpdate(payload)).catch(
+    entry.socket.ev.on("connection.update", (payload) =>
+      handleConnectionUpdate(entry, asConnectionUpdate(payload)).catch(
         (error: unknown) => {
           reporter.reportError(error, "Baileys connection update failed", {
             organizationId: entry.organizationId,
           });
         },
-      );
+      ),
+    );
+  }
+
+  async function handleQr(update: ConnectionUpdate, entry: WorkerEntry) {
+    if (!update.qr) return;
+    void repository
+      .saveActiveQr?.(entry.organizationId, update.qr)
+      .catch((error: unknown) => {
+        reporter.reportError(error, "Failed to persist active QR to database", {
+          organizationId: entry.organizationId,
+        });
+      });
+    publishQr({
+      organizationId: entry.organizationId,
+      qr: update.qr,
+      createdAt: now(),
     });
+  }
+
+  async function handleOpen(entry: WorkerEntry) {
+    entry.isOpen = true;
+    retryAttempts.delete(entry.organizationId);
+    await updateStatus(entry.organizationId, "CONNECTED", now());
+    await clearActiveQrIfAny(entry.organizationId);
+  }
+
+  async function clearActiveQrIfAny(organizationId: string): Promise<void> {
+    try {
+      const active = await repository.getActiveQr?.(organizationId);
+
+      if (active) {
+        await repository.clearActiveQr?.(organizationId, active.version);
+        channelQrBroker.clear(organizationId);
+      }
+    } catch (error) {
+      reporter.reportError(error, "Baileys active QR clear failed", {
+        organizationId,
+      });
+    }
+  }
+
+  async function handleLoggedOut(entry: WorkerEntry) {
+    try {
+      await repository.clearAuthState?.(entry.organizationId);
+    } catch (error) {
+      reporter.reportError(error, "Baileys logout state clear failed", {
+        organizationId: entry.organizationId,
+      });
+      throw error;
+    }
+
+    await removeEntry(entry.organizationId, "NEEDS_PAIRING", {
+      persist: false,
+    });
+    await connect(entry.organizationId);
+  }
+
+  async function handleReplaced(entry: WorkerEntry) {
+    logger.warn("Baileys connection replaced", {
+      organizationId: entry.organizationId,
+    });
+    await removeEntry(entry.organizationId, "DISCONNECTED");
+  }
+
+  async function handleTerminal(entry: WorkerEntry, reason: DisconnectReason) {
+    logger.warn("Baileys terminal disconnect, pairing required", {
+      organizationId: entry.organizationId,
+      reason,
+    });
+
+    if (reason === DisconnectReason.badSession) {
+      try {
+        await repository.clearAuthState?.(entry.organizationId);
+      } catch (error) {
+        reporter.reportError(error, "Baileys bad session clear failed", {
+          organizationId: entry.organizationId,
+        });
+      }
+    }
+
+    await removeEntry(entry.organizationId, "NEEDS_PAIRING", {
+      persist: false,
+    });
+    await connect(entry.organizationId);
   }
 
   async function handleConnectionUpdate(
     entry: WorkerEntry,
     update: ConnectionUpdate,
   ): Promise<void> {
-    if (entries.get(entry.organizationId)?.socket !== entry.socket) {
-      return;
-    }
+    if (entries.get(entry.organizationId)?.socket !== entry.socket) return;
 
-    if (update.qr) {
-      publishQr({
-        organizationId: entry.organizationId,
-        qr: update.qr,
-        createdAt: now(),
-      });
-    }
+    await handleQr(update, entry);
 
-    if (update.connection === "open") {
-      retryAttempts.delete(entry.organizationId);
-      await updateStatus(entry.organizationId, "CONNECTED", now());
-      return;
-    }
+    if (update.connection === "open") return handleOpen(entry);
+    if (update.connection !== "close") return;
 
-    if (update.connection !== "close") {
-      return;
-    }
+    entry.isOpen = false;
 
     const reason = disconnectReason(update.lastDisconnect);
 
-    if (reason === DisconnectReason.loggedOut) {
-      await updateStatus(entry.organizationId, "NEEDS_PAIRING");
-      await removeEntry(entry.organizationId, "NEEDS_PAIRING");
-      return;
-    }
+    if (isLoggedOut(reason)) return handleLoggedOut(entry);
+    if (isConnectionReplaced(reason)) return handleReplaced(entry);
+    if (isTerminal(reason)) return handleTerminal(entry, reason);
+    if (isRestartRequired(reason))
+      return scheduleReconnect(entry.organizationId, { force: true });
 
-    if (reason === DisconnectReason.connectionReplaced) {
-      logger.warn("Baileys connection replaced", {
-        organizationId: entry.organizationId,
-      });
-      await removeEntry(entry.organizationId, "DISCONNECTED");
-      return;
-    }
-
-    await updateStatus(entry.organizationId, "DISCONNECTED");
     await removeEntry(entry.organizationId, "DISCONNECTED");
     await scheduleReconnect(entry.organizationId);
   }
@@ -391,11 +605,9 @@ export function createBaileysChannelWorker({
   async function connectInternal(
     organizationId: string,
   ): Promise<BaileysWorkerSocket> {
-    const existing = entries.get(organizationId);
+    const existing = touchLru(entries, organizationId);
 
     if (existing) {
-      entries.delete(organizationId);
-      entries.set(organizationId, existing);
       return existing.socket;
     }
 
@@ -424,6 +636,7 @@ export function createBaileysChannelWorker({
         socket,
         session,
         adapter: createBaileysAdapter(adapterOptions),
+        isOpen: false,
       };
 
       entries.set(organizationId, entry);
@@ -444,10 +657,19 @@ export function createBaileysChannelWorker({
     return next;
   }
 
+  function enqueue(operation: () => Promise<void>): Promise<void> {
+    const next = connectionQueue.then(operation);
+    connectionQueue = next.then(
+      () => undefined,
+      () => undefined,
+    );
+    return next;
+  }
+
   return {
     connect,
 
-    async disconnect(organizationId) {
+    disconnect(organizationId) {
       const timer = retryTimers.get(organizationId);
 
       if (timer) {
@@ -456,45 +678,27 @@ export function createBaileysChannelWorker({
       }
 
       retryAttempts.delete(organizationId);
-      await removeEntry(organizationId, "DISCONNECTED");
+      return enqueue(() => removeEntry(organizationId, "DISCONNECTED"));
     },
 
     getSocket(organizationId) {
-      const entry = entries.get(organizationId);
-
-      if (!entry) {
-        return null;
-      }
-
-      entries.delete(organizationId);
-      entries.set(organizationId, entry);
-      return entry.socket;
+      return touchLru(entries, organizationId)?.socket ?? null;
     },
 
     getAdapter(organizationId) {
-      const entry = entries.get(organizationId);
-
-      if (!entry) {
-        return null;
-      }
-
-      entries.delete(organizationId);
-      entries.set(organizationId, entry);
-      return entry.adapter;
+      return touchLru(entries, organizationId)?.adapter ?? null;
     },
 
     async requestPairingCode(organizationId, phone) {
-      const normalized = normalizeIndonesianPhone(phone);
-
-      if (!normalized.ok) {
-        throw new Error("INVALID_E164");
-      }
-
+      const jid = toJid(phone);
       const socket = await connect(organizationId);
-      return socket.requestPairingCode(normalized.e164.slice(1));
+      return socket.requestPairingCode(jid.replace("@s.whatsapp.net", ""));
     },
 
     async close() {
+      clearInterval(heartbeatInterval);
+      clearInterval(pairingScanInterval);
+
       for (const timer of retryTimers.values()) {
         clearTimeout(timer);
       }
@@ -502,7 +706,7 @@ export function createBaileysChannelWorker({
       retryAttempts.clear();
 
       const organizationIds = [...entries.keys()];
-      await Promise.all(
+      await Promise.allSettled(
         organizationIds.map((organizationId) =>
           removeEntry(organizationId, "DISCONNECTED"),
         ),
@@ -514,7 +718,25 @@ export function createBaileysChannelWorker({
 export function createDefaultBaileysSocketFactory(): (
   state: AuthenticationState,
 ) => BaileysWorkerSocket {
-  return (state) => makeWASocket({ auth: state, printQRInTerminal: false });
+  return (state) => {
+    const socket = makeWASocket({
+      auth: state,
+      browser: Browsers.ubuntu("Chrome"),
+      syncFullHistory: false,
+      generateHighQualityLinkPreview: false,
+    });
+
+    const wrapped = socket as unknown as BaileysWorkerSocket;
+    wrapped.ended = false;
+
+    const originalEnd = socket.end.bind(socket);
+    socket.end = async (error?: Error) => {
+      await originalEnd(error);
+      wrapped.ended = true;
+    };
+
+    return wrapped;
+  };
 }
 
 export async function startChannelWorker(): Promise<BaileysChannelWorker> {
@@ -536,27 +758,58 @@ export async function startChannelWorker(): Promise<BaileysChannelWorker> {
     maxChannelSockets: config.maxChannelSockets,
     authDirectory: config.authDir,
   });
-  const connections = await database.channelConnection.findMany({
-    where: { channel: "WHATSAPP_BAILEYS", status: "CONNECTED" },
-    select: { organizationId: true },
-  });
 
-  await Promise.all(
-    connections.map(({ organizationId }) => worker.connect(organizationId)),
-  );
+  const targetOrgIds = repository.listOrganizationIds
+    ? await repository.listOrganizationIds()
+    : (
+        await database.channelConnection.findMany({
+          where: {
+            channel: "WHATSAPP_BAILEYS",
+            status: { not: "DISCONNECTED" },
+          },
+          select: { organizationId: true },
+        })
+      ).map((c) => c.organizationId);
+
+  // Startup connects only organizations with a persisted channel connection;
+  // new organizations are connected lazily when the pairing surface first
+  // requests them, avoiding a thundering herd of sockets at boot.
+  for (const orgId of targetOrgIds) {
+    void worker.connect(orgId).catch((error: unknown) => {
+      defaultReporter.reportError(
+        error,
+        "Failed to connect organization on startup",
+        {
+          organizationId: orgId,
+        },
+      );
+    });
+  }
 
   return worker;
 }
 
 async function main(): Promise<void> {
   const worker = await startChannelWorker();
-  const shutdown = async () => {
-    await worker.close();
-    process.exit(0);
-  };
+  defaultLogger.info("Baileys channel worker running");
 
-  process.on("SIGTERM", () => void shutdown());
-  process.on("SIGINT", () => void shutdown());
+  await new Promise<void>((resolve) => {
+    const shutdown = async () => {
+      defaultLogger.info("Stopping Baileys channel worker...");
+      process.off("SIGTERM", onSigTerm);
+      process.off("SIGINT", onSigInt);
+      await worker.close();
+      resolve();
+    };
+
+    const onSigTerm = () => void shutdown();
+    const onSigInt = () => void shutdown();
+
+    process.on("SIGTERM", onSigTerm);
+    process.on("SIGINT", onSigInt);
+  });
+
+  process.exit(0);
 }
 
 const isMainModule =

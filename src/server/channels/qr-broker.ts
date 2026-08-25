@@ -1,3 +1,42 @@
+export const ACTIVE_QR_KEY = "_activeQr" as const;
+
+export const QR_TTL_MS = 30_000;
+
+export interface QrPayload {
+  version: number;
+  qr: string;
+  createdAt: Date;
+}
+
+export interface QrStreamPayload {
+  version: number;
+  dataUrl: string;
+  createdAt: string;
+}
+
+export function extractActiveQr(
+  authState: unknown,
+): { qr: string; createdAt: Date } | null {
+  if (
+    authState &&
+    typeof authState === "object" &&
+    ACTIVE_QR_KEY in authState
+  ) {
+    const raw = (
+      authState as { _activeQr?: { qr?: string; createdAt?: string } }
+    )._activeQr;
+
+    if (raw?.qr) {
+      return {
+        qr: raw.qr,
+        createdAt: raw.createdAt ? new Date(raw.createdAt) : new Date(),
+      };
+    }
+  }
+
+  return null;
+}
+
 export interface QrEvent {
   organizationId: string;
   qr: string;
@@ -13,17 +52,20 @@ export interface QrEventInput {
 
 export type QrEventListener = (event: QrEvent) => void;
 
-const QR_TTL_MS = 30_000;
+export type QrClearedListener = (event: { organizationId: string }) => void;
 
 export interface QrBroker {
   publish(input: QrEventInput): QrEvent;
   latest(organizationId: string): QrEvent | null;
+  clear(organizationId: string): void;
   subscribe(organizationId: string, listener: QrEventListener): () => void;
+  subscribeCleared(listener: QrClearedListener): () => void;
 }
 
 export function createQrBroker(clock: () => Date = () => new Date()): QrBroker {
   const latestByOrganization = new Map<string, QrEvent>();
   const listenersByOrganization = new Map<string, Set<QrEventListener>>();
+  const clearedListeners = new Set<QrClearedListener>();
 
   return {
     publish(input) {
@@ -56,6 +98,14 @@ export function createQrBroker(clock: () => Date = () => new Date()): QrBroker {
       return event;
     },
 
+    clear(organizationId) {
+      latestByOrganization.delete(organizationId);
+
+      for (const listener of clearedListeners) {
+        listener({ organizationId });
+      }
+    },
+
     subscribe(organizationId, listener) {
       const listeners =
         listenersByOrganization.get(organizationId) ??
@@ -68,6 +118,14 @@ export function createQrBroker(clock: () => Date = () => new Date()): QrBroker {
         if (listeners.size === 0) {
           listenersByOrganization.delete(organizationId);
         }
+      };
+    },
+
+    subscribeCleared(listener) {
+      clearedListeners.add(listener);
+
+      return () => {
+        clearedListeners.delete(listener);
       };
     },
   };

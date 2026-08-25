@@ -13,6 +13,7 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import("next").NextConfig} */
 const config = {
   outputFileTracingRoot: projectRoot,
+  serverExternalPackages: ["@whiskeysockets/baileys", "sharp"],
 };
 
 export const sentryBuildOptions = {

@@ -5,11 +5,23 @@ vi.mock("~/server/auth", () => ({
   auth: vi.fn(),
 }));
 
+vi.mock("~/server/auth/membership", () => ({
+  resolveMembership: vi.fn(),
+}));
+
+vi.mock("~/server/db", () => ({
+  db: {},
+}));
+
 import { auth } from "~/server/auth";
+import { resolveMembership } from "~/server/auth/membership";
 import { channelQrBroker } from "~/server/channels/qr-broker";
 import { GET } from "~/app/api/channels/whatsapp/qr/route";
 
 const authMock = auth as unknown as () => Promise<unknown>;
+const membershipMock = resolveMembership as unknown as (
+  ...args: unknown[]
+) => Promise<unknown>;
 
 describe("WhatsApp QR stream", () => {
   it("requires an authenticated member of the requested organization", async () => {
@@ -25,6 +37,11 @@ describe("WhatsApp QR stream", () => {
       user: { id: "user-a", activeOrganizationId: "org-qr" },
       memberships: [],
       expires: "2099-01-01T00:00:00.000Z",
+    });
+    vi.mocked(membershipMock).mockResolvedValueOnce({
+      id: "membership-a",
+      organizationId: "org-qr",
+      role: "OWNER",
     });
     channelQrBroker.publish({ organizationId: "org-qr", qr: "qr-test" });
 

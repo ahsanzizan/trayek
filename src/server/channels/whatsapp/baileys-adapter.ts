@@ -1,20 +1,22 @@
 import pTimeout from "p-timeout";
 import { type WAMessage } from "@whiskeysockets/baileys";
 
-import { type PrismaClient } from "../../../../generated/prisma";
-
+import { type PrismaClient } from "~/generated/prisma";
 import {
   type ChannelAdapter,
+  type ChannelType,
   type InboundMessage,
-  fromE164,
-  toJid,
+  type MessageDirection,
+  type MessageStatus,
 } from "~/server/domain/ports/channel";
 import { type HumanFallbackRequired } from "~/server/domain/jobs/port";
+import { isRecord } from "~/lib/guards";
+import { fromE164, isWhatsappUserJid, toJid } from "./jid";
+import { truncateBody } from "~/server/channels/message-log";
 import {
   reporter as defaultReporter,
   type Reporter,
 } from "~/server/observability/reporter";
-import { MAX_MESSAGE_BODY_LENGTH } from "~/server/channels/message-log";
 
 export interface BaileysSocket {
   sendMessage(
@@ -25,12 +27,12 @@ export interface BaileysSocket {
 
 type PendingMessageData = {
   organizationId: string;
-  channel: "WHATSAPP_BAILEYS";
-  direction: "INBOUND" | "OUTBOUND";
+  channel: ChannelType;
+  direction: MessageDirection;
   from: string;
   to: string;
   body: string;
-  status: "PENDING";
+  status: MessageStatus;
   truncated: boolean;
 };
 
@@ -43,6 +45,10 @@ export interface BaileysMessageLogStore {
     where: { id: string };
     data: DeliveryUpdate;
   }): Promise<unknown>;
+  findByExternalId?(args: {
+    organizationId: string;
+    externalId: string;
+  }): Promise<{ id: string } | null>;
 }
 
 export interface BaileysAdapterOptions {
@@ -61,16 +67,17 @@ export function createPrismaBaileysMessageLogStore(
   return {
     create: (args) => database.messageLog.create(args),
     update: (args) => database.messageLog.update(args),
+    findByExternalId: async ({ organizationId, externalId }) =>
+      database.messageLog.findFirst({
+        where: { organizationId, externalId },
+        select: { id: true },
+      }),
   };
 }
 
 interface MessageUpsertPayload {
   type: string;
   messages: unknown[];
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
 }
 
 function isMessageUpsertPayload(value: unknown): value is MessageUpsertPayload {
@@ -86,13 +93,33 @@ function hasToNumber(value: unknown): value is { toNumber: () => unknown } {
 }
 
 function getTextContent(message: WAMessage): string {
-  const content = message.message;
+  let content = message.message;
+
+  if (content?.ephemeralMessage?.message) {
+    content = content.ephemeralMessage.message;
+  }
+  if (content?.viewOnceMessage?.message) {
+    content = content.viewOnceMessage.message;
+  }
+  if (content?.viewOnceMessageV2?.message) {
+    content = content.viewOnceMessageV2.message;
+  }
+  if (content?.documentWithCaptionMessage?.message) {
+    content = content.documentWithCaptionMessage.message;
+  }
+  if (content?.editedMessage?.message) {
+    content = content.editedMessage.message;
+  }
 
   return (
     content?.conversation ??
     content?.extendedTextMessage?.text ??
     content?.imageMessage?.caption ??
     content?.documentMessage?.caption ??
+    content?.videoMessage?.caption ??
+    content?.buttonsResponseMessage?.selectedButtonId ??
+    content?.listResponseMessage?.singleSelectReply?.selectedRowId ??
+    content?.templateButtonReplyMessage?.selectedId ??
     ""
   );
 }
@@ -121,6 +148,40 @@ function ignoredMessage(): Error {
   return new Error("IGNORED_MESSAGE_UPSERT");
 }
 
+function parseSingleMessage(raw: unknown): InboundMessage {
+  if (!isRecord(raw) || !isRecord(raw.key)) {
+    throw ignoredMessage();
+  }
+
+  const key = raw.key;
+  const candidates = [key.remoteJid, key.participant, raw.participant];
+  const rawJid =
+    candidates.find(isWhatsappUserJid) ??
+    (typeof key.remoteJid === "string" ? key.remoteJid : "");
+
+  if (
+    key.fromMe === true ||
+    typeof key.id !== "string" ||
+    !isWhatsappUserJid(rawJid) ||
+    !isRecord(raw.message)
+  ) {
+    throw ignoredMessage();
+  }
+
+  const message = raw as unknown as WAMessage;
+  const extractedBody = getTextContent(message);
+
+  return {
+    id: key.id,
+    channel: "WHATSAPP_BAILEYS",
+    from: fromE164(rawJid),
+    to: "system",
+    body: extractedBody.length > 0 ? extractedBody : "[Pesan media/lampiran]",
+    timestamp: messageTimestampToDate(message.messageTimestamp),
+    raw: message,
+  };
+}
+
 export function createBaileysAdapter({
   organizationId,
   socket,
@@ -131,9 +192,9 @@ export function createBaileysAdapter({
   now = () => new Date(),
 }: BaileysAdapterOptions): ChannelAdapter {
   return {
-    async sendMessage(to, body) {
+    async sendMessage(to, body, _options) {
       const jid = toJid(to);
-      const truncated = body.length > MAX_MESSAGE_BODY_LENGTH;
+      const { body: truncatedBody, truncated } = truncateBody(body);
       const log = await messageLog.create({
         data: {
           organizationId,
@@ -141,7 +202,7 @@ export function createBaileysAdapter({
           direction: "OUTBOUND",
           from,
           to,
-          body: body.slice(0, MAX_MESSAGE_BODY_LENGTH),
+          body: truncatedBody,
           status: "PENDING",
           truncated,
         },
@@ -150,7 +211,7 @@ export function createBaileysAdapter({
       try {
         const sent = await pTimeout(
           socket.sendMessage(jid, {
-            text: body.slice(0, MAX_MESSAGE_BODY_LENGTH),
+            text: truncatedBody,
           }),
           { milliseconds: 10_000 },
         );
@@ -188,7 +249,7 @@ export function createBaileysAdapter({
         const fallback: HumanFallbackRequired = {
           organizationId,
           source: "baileys",
-          dedupeKey: `${organizationId}:${jid}:${log.id}`,
+          dedupeKey: `${organizationId}:send-failed:${log.id}`,
           entityType: "MessageLog",
           entityId: log.id,
           instruction:
@@ -204,7 +265,6 @@ export function createBaileysAdapter({
             "Baileys human fallback notification failed",
             { organizationId, messageLogId: log.id },
           );
-          throw notificationError;
         }
 
         reporter.reportError(error, "Baileys message send failed", {
@@ -216,36 +276,32 @@ export function createBaileysAdapter({
     },
 
     parseInbound(payload): InboundMessage {
-      if (!isMessageUpsertPayload(payload) || payload.type !== "notify") {
-        throw ignoredMessage();
-      }
-
-      const first = payload.messages[0];
-
-      if (!isRecord(first) || !isRecord(first.key)) {
-        throw ignoredMessage();
-      }
-
       if (
-        first.key.fromMe === true ||
-        typeof first.key.id !== "string" ||
-        typeof first.key.remoteJid !== "string" ||
-        !isRecord(first.message)
+        !isMessageUpsertPayload(payload) ||
+        (payload.type !== "notify" && payload.type !== "append")
       ) {
         throw ignoredMessage();
       }
 
-      const message = first as unknown as WAMessage;
+      return parseSingleMessage(payload.messages[0]);
+    },
 
-      return {
-        id: first.key.id,
-        channel: "WHATSAPP_BAILEYS",
-        from: fromE164(first.key.remoteJid),
-        to: "system",
-        body: getTextContent(message),
-        timestamp: messageTimestampToDate(first.messageTimestamp),
-        raw: message,
-      };
+    parseInboundBatch(payload): InboundMessage[] {
+      if (!isMessageUpsertPayload(payload)) {
+        return [];
+      }
+
+      const messages: InboundMessage[] = [];
+
+      for (const raw of payload.messages) {
+        try {
+          messages.push(parseSingleMessage(raw));
+        } catch {
+          // skip individual ignored/invalid messages
+        }
+      }
+
+      return messages;
     },
   };
 }

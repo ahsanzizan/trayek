@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { auth } from "~/server/auth";
+import { channelTypeValues } from "~/server/domain/ports/channel";
 import { api, HydrateClient } from "~/trpc/server";
 import { MessageHistory } from "./_components/message-history";
 import { WhatsappPairing } from "./_components/whatsapp-pairing";
@@ -16,8 +18,8 @@ export default async function ChannelIntakePage() {
     redirect("/login?callbackUrl=/ops/channel-intake");
   }
 
-  void api.channel.status.prefetch({ channel: "WHATSAPP_BAILEYS" });
-  void api.channel.intake.prefetch({ channel: "WHATSAPP_BAILEYS" });
+  void api.channel.status.prefetch({ channel: channelTypeValues[0] });
+  void api.channel.intake.prefetch({ channel: channelTypeValues[0] });
 
   return (
     <main className="bg-background text-text-primary min-h-screen antialiased">
@@ -36,8 +38,16 @@ export default async function ChannelIntakePage() {
         </header>
 
         <HydrateClient>
-          <WhatsappPairing />
-          <MessageHistory />
+          <Suspense
+            fallback={
+              <div className="border-border-subtle bg-surface text-text-muted rounded-[var(--radius-card)] border p-6 text-sm">
+                Memuat status channel WhatsApp…
+              </div>
+            }
+          >
+            <WhatsappPairing />
+            <MessageHistory />
+          </Suspense>
         </HydrateClient>
       </div>
     </main>

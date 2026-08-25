@@ -37,6 +37,17 @@ function createRepository(): BaileysChannelRepository & {
   };
 }
 
+function createMessageLog(): BaileysMessageLogStore {
+  return {
+    async create() {
+      return { id: "log-1" };
+    },
+    async update() {
+      return undefined;
+    },
+  };
+}
+
 function createSocket() {
   const handlers = new Map<
     string,
@@ -75,14 +86,7 @@ describe("Baileys channel worker lifecycle", () => {
     const sockets = [createSocket(), createSocket()];
     const worker = createBaileysChannelWorker({
       repository,
-      messageLog: {
-        async create() {
-          return { id: "log-1" };
-        },
-        async update() {
-          return undefined;
-        },
-      },
+      messageLog: createMessageLog(),
       notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
       socketFactory: vi
         .fn()
@@ -101,40 +105,225 @@ describe("Baileys channel worker lifecycle", () => {
     expect(worker.getSocket("org-b")).toBe(sockets[1]);
   });
 
-  it("maps logged out connections to pairing without reconnecting", async () => {
+  it("maps logged out connections to pairing and restarts pairing socket", async () => {
     const repository = createRepository();
-    const socket = createSocket();
-    const socketFactory = vi.fn().mockResolvedValue(socket);
+    const socket1 = createSocket();
+    const socket2 = createSocket();
+    const socketFactory = vi
+      .fn()
+      .mockResolvedValueOnce(socket1)
+      .mockResolvedValueOnce(socket2);
     const worker = createBaileysChannelWorker({
       repository,
-      messageLog: {
-        async create() {
-          return { id: "log-1" };
-        },
-        async update() {
-          return undefined;
-        },
-      },
+      messageLog: createMessageLog(),
       notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
       socketFactory,
       maxChannelSockets: 2,
     });
 
     await worker.connect("org-a");
-    await socket.emit("connection.update", {
+    await socket1.emit("connection.update", {
       connection: "close",
       lastDisconnect: { error: { output: { statusCode: 401 } } },
     });
 
-    expect(repository.statuses.get("org-a")).toBe("NEEDS_PAIRING");
-    expect(socketFactory).toHaveBeenCalledTimes(1);
-    expect(socket.ended).toBe(true);
+    await vi.waitFor(() => {
+      expect(repository.statuses.get("org-a")).toBe("NEEDS_PAIRING");
+      expect(socketFactory).toHaveBeenCalledTimes(2);
+      expect(socket1.ended).toBe(true);
+    });
   });
 
   it("pins the disconnect reason values used by the reconnect contract", () => {
     expect(DisconnectReason.loggedOut).toBe(401);
     expect(DisconnectReason.connectionClosed).toBe(428);
     expect(DisconnectReason.connectionReplaced).toBe(440);
+    expect(DisconnectReason.badSession).toBe(500);
+    expect(DisconnectReason.restartRequired).toBe(515);
+    expect(DisconnectReason.forbidden).toBe(403);
+  });
+
+  it("maps a bad session to pairing without a reconnect attempt", async () => {
+    const repository = createRepository();
+    const socket1 = createSocket();
+    const socket2 = createSocket();
+    const socketFactory = vi
+      .fn()
+      .mockResolvedValueOnce(socket1)
+      .mockResolvedValueOnce(socket2);
+    const worker = createBaileysChannelWorker({
+      repository,
+      messageLog: createMessageLog(),
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+      socketFactory,
+      maxChannelSockets: 2,
+    });
+
+    await worker.connect("org-a");
+    await socket1.emit("connection.update", {
+      connection: "close",
+      lastDisconnect: { error: { output: { statusCode: 500 } } },
+    });
+
+    await vi.waitFor(() => {
+      expect(repository.statuses.get("org-a")).toBe("NEEDS_PAIRING");
+      expect(socketFactory).toHaveBeenCalledTimes(2);
+      expect(socket1.ended).toBe(true);
+    });
+  });
+
+  it("reads plain error statusCode, not only Boom output", async () => {
+    const repository = createRepository();
+    const socket1 = createSocket();
+    const socket2 = createSocket();
+    const socketFactory = vi
+      .fn()
+      .mockResolvedValueOnce(socket1)
+      .mockResolvedValueOnce(socket2);
+    const worker = createBaileysChannelWorker({
+      repository,
+      messageLog: createMessageLog(),
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+      socketFactory,
+      maxChannelSockets: 2,
+    });
+
+    await worker.connect("org-a");
+    await socket1.emit("connection.update", {
+      connection: "close",
+      lastDisconnect: { error: { statusCode: 401 } },
+    });
+
+    await vi.waitFor(() => {
+      expect(repository.statuses.get("org-a")).toBe("NEEDS_PAIRING");
+    });
+  });
+
+  it("reconnects immediately on restartRequired without exponential backoff", async () => {
+    const repository = createRepository();
+    const socket1 = createSocket();
+    const socket2 = createSocket();
+    const socketFactory = vi
+      .fn()
+      .mockResolvedValueOnce(socket1)
+      .mockResolvedValueOnce(socket2);
+    const worker = createBaileysChannelWorker({
+      repository,
+      messageLog: createMessageLog(),
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+      socketFactory,
+      maxChannelSockets: 2,
+    });
+
+    await worker.connect("org-a");
+    await socket1.emit("connection.update", {
+      connection: "close",
+      lastDisconnect: { error: { output: { statusCode: 515 } } },
+    });
+
+    await vi.waitFor(() => expect(socketFactory).toHaveBeenCalledTimes(2));
+    expect(socket1.ended).toBe(true);
+  });
+
+  it("persists every message in a multi-message upsert", async () => {
+    const repository = createRepository();
+    const socket = createSocket();
+    const writes: string[] = [];
+    const messageLog: BaileysMessageLogStore = {
+      async create({ data }) {
+        writes.push(data.body);
+        return { id: `log-${writes.length}` };
+      },
+      async update() {
+        return undefined;
+      },
+    };
+    const worker = createBaileysChannelWorker({
+      repository,
+      messageLog,
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+      socketFactory: () => socket,
+      maxChannelSockets: 2,
+    });
+
+    await worker.connect("org-a");
+    await socket.emit("messages.upsert", {
+      type: "notify",
+      messages: [
+        {
+          key: {
+            id: "multi-1",
+            remoteJid: "628123456789@s.whatsapp.net",
+            fromMe: false,
+          },
+          message: { conversation: "satu" },
+          messageTimestamp: 1_700_000_000,
+        },
+        {
+          key: {
+            id: "multi-2",
+            remoteJid: "628123456789@s.whatsapp.net",
+            fromMe: false,
+          },
+          message: { conversation: "dua" },
+          messageTimestamp: 1_700_000_001,
+        },
+      ],
+    });
+
+    await vi.waitFor(() => expect(writes).toEqual(["satu", "dua"]));
+  });
+
+  it("skips an inbound message whose external id is already stored", async () => {
+    const repository = createRepository();
+    const socket = createSocket();
+    const writes: string[] = [];
+    const messageLog: BaileysMessageLogStore = {
+      async create({ data }) {
+        writes.push(data.body);
+        return { id: `log-${writes.length}` };
+      },
+      async update() {
+        return undefined;
+      },
+      async findByExternalId({ externalId }) {
+        return externalId === "dup-1" ? { id: "existing" } : null;
+      },
+    };
+    const worker = createBaileysChannelWorker({
+      repository,
+      messageLog,
+      notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
+      socketFactory: () => socket,
+      maxChannelSockets: 2,
+    });
+
+    await worker.connect("org-a");
+    await socket.emit("messages.upsert", {
+      type: "notify",
+      messages: [
+        {
+          key: {
+            id: "dup-1",
+            remoteJid: "628123456789@s.whatsapp.net",
+            fromMe: false,
+          },
+          message: { conversation: "duplicate" },
+          messageTimestamp: 1_700_000_000,
+        },
+        {
+          key: {
+            id: "new-1",
+            remoteJid: "628123456789@s.whatsapp.net",
+            fromMe: false,
+          },
+          message: { conversation: "baru" },
+          messageTimestamp: 1_700_000_001,
+        },
+      ],
+    });
+
+    await vi.waitFor(() => expect(writes).toEqual(["baru"]));
   });
 
   it("keeps inbound message writes scoped to the socket organization", async () => {
@@ -235,14 +424,7 @@ describe("Baileys channel worker lifecycle", () => {
     const repository = createRepository();
     const worker = createBaileysChannelWorker({
       repository,
-      messageLog: {
-        async create() {
-          return { id: "log-1" };
-        },
-        async update() {
-          return undefined;
-        },
-      },
+      messageLog: createMessageLog(),
       notifyHumanFallback: vi.fn().mockResolvedValue(undefined),
       socketFactory: () => socket,
       maxChannelSockets: 2,
