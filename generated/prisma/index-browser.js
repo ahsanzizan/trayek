@@ -389,7 +389,14 @@ exports.Prisma.PodSubmissionScalarFieldEnum = {
   orderId: 'orderId',
   podUploadLinkId: 'podUploadLinkId',
   receivedAt: 'receivedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  lowestQualityScore: 'lowestQualityScore',
+  qualityOverridden: 'qualityOverridden',
+  captureLatitude: 'captureLatitude',
+  captureLongitude: 'captureLongitude',
+  captureAccuracyMeters: 'captureAccuracyMeters',
+  capturedAt: 'capturedAt',
+  geolocationPermission: 'geolocationPermission'
 };
 
 exports.Prisma.PodSubmissionPageScalarFieldEnum = {
@@ -401,6 +408,9 @@ exports.Prisma.PodSubmissionPageScalarFieldEnum = {
   fileName: 'fileName',
   contentType: 'contentType',
   sizeBytes: 'sizeBytes',
+  qualityScore: 'qualityScore',
+  qualityChecks: 'qualityChecks',
+  qualityOverridden: 'qualityOverridden',
   createdAt: 'createdAt'
 };
 
@@ -490,6 +500,12 @@ exports.DsoBaselineMethod = exports.$Enums.DsoBaselineMethod = {
   CLAIMED: 'CLAIMED',
   COMPUTED_FROM_INVOICES: 'COMPUTED_FROM_INVOICES',
   COMPUTED_FROM_BALANCES: 'COMPUTED_FROM_BALANCES'
+};
+
+exports.GeolocationPermission = exports.$Enums.GeolocationPermission = {
+  GRANTED: 'GRANTED',
+  DENIED: 'DENIED',
+  UNAVAILABLE: 'UNAVAILABLE'
 };
 
 exports.Prisma.ModelName = {

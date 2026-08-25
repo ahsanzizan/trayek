@@ -3,10 +3,17 @@
 import { useRef, useState } from "react";
 import { genUploader } from "uploadthing/client";
 
+import { type QualityReport } from "~/lib/pod-quality";
 import { type UploadRouter } from "~/server/storage/router";
+import {
+  captureLocation,
+  unavailableAttestation,
+  type CaptureAttestation,
+} from "./capture-location";
+import { measurePhoto } from "./measure-photo";
 
 /**
- * The capture screen (TRK-030).
+ * The capture screen (TRK-030), with the quality guard (TRK-031).
  *
  * Deliberately built from plain elements rather than the shadcn primitives the
  * console uses. Pak Herman is on a throttled 3G connection at a warehouse
@@ -15,6 +22,10 @@ import { type UploadRouter } from "~/server/storage/router";
  * `genUploader` rather than the React helpers in `~/lib/uploadthing`: the
  * helpers pull in a dropzone built for a mouse, which is the wrong interaction
  * and the wrong weight for a phone held in one hand.
+ *
+ * The quality guard warns and never blocks. Every warning is overridable by
+ * the same single tap that sends a clean photograph, because a blurry POD
+ * beats no POD and the driver is the one who can see the document.
  */
 
 const { uploadFiles } = genUploader<UploadRouter>();
@@ -29,10 +40,16 @@ type Selected = {
   file: File;
   /** Object URL for the thumbnail; revoked when the photo is removed. */
   previewUrl: string;
+  /** Undefined while measuring, null when the browser could not decode it. */
+  quality?: QualityReport | null;
 };
 
 function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function isWarned(item: Selected): boolean {
+  return (item.quality?.failures.length ?? 0) > 0;
 }
 
 export function PodCapture({ token }: { token: string }) {
@@ -40,9 +57,34 @@ export function PodCapture({ token }: { token: string }) {
   const [phase, setPhase] = useState<Phase>("memilih");
   const [message, setMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  /**
+   * Where and when the driver photographed the POD (TRK-032). Requested once,
+   * on the first photograph, so the browser prompt appears immediately after
+   * the consent notice below rather than out of nowhere on send.
+   */
+  const [attestation, setAttestation] = useState<CaptureAttestation | null>(
+    null,
+  );
 
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
+
+  /**
+   * Measures after the thumbnail is already on screen, keyed by preview URL.
+   *
+   * The driver sees his photograph immediately and the verdict arrives a
+   * moment later. Blocking the preview on the measurement would make a cheap
+   * phone feel broken for the second it takes to decode a 12 MP frame.
+   */
+  function measure(item: Selected) {
+    void measurePhoto(item.file).then((quality) => {
+      setSelected((current) =>
+        current.map((entry) =>
+          entry.previewUrl === item.previewUrl ? { ...entry, quality } : entry,
+        ),
+      );
+    });
+  }
 
   function addFiles(fileList: FileList | null) {
     if (!fileList) {
@@ -69,13 +111,21 @@ export function PodCapture({ token }: { token: string }) {
 
       setMessage(null);
 
-      return [
-        ...current,
-        ...incoming.slice(0, room).map((file) => ({
-          file,
-          previewUrl: URL.createObjectURL(file),
-        })),
-      ];
+      const added = incoming.slice(0, room).map((file) => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      added.forEach(measure);
+
+      // Asked once, and never awaited: a driver whose phone cannot get a fix
+      // inside a warehouse must not wait on it, and one who refuses must not
+      // be blocked by it.
+      if (current.length === 0 && added.length > 0) {
+        void captureLocation().then(setAttestation);
+      }
+
+      return [...current, ...added];
     });
   }
 
@@ -103,7 +153,25 @@ export function PodCapture({ token }: { token: string }) {
     try {
       await uploadFiles("podUploader", {
         files: selected.map((item) => item.file),
-        input: { token },
+        input: {
+          token,
+          // Recorded whether or not a fix was obtained: the absence of a
+          // location is itself worth knowing, and TRK-062 reads both.
+          attestation: attestation ?? unavailableAttestation(),
+          // Advisory only. The server stores this for the TRK-044 correlation
+          // and must never let it decide whether a write is allowed.
+          quality: selected.map((item) => ({
+            fileName: item.file.name,
+            score: item.quality?.score ?? null,
+            overridden: isWarned(item),
+            checks:
+              item.quality?.checks.map((check) => ({
+                id: check.id,
+                passed: check.passed,
+                value: check.value,
+              })) ?? [],
+          })),
+        },
         onUploadProgress: ({ progress: percent }) => {
           setProgress(Math.round(percent));
         },
@@ -139,6 +207,13 @@ export function PodCapture({ token }: { token: string }) {
       </section>
     );
   }
+
+  const warnings = selected.flatMap((item, index) =>
+    (item.quality?.failures ?? []).map((failure) => ({
+      page: index + 1,
+      message: failure.message,
+    })),
+  );
 
   return (
     <section className="mt-8">
@@ -195,8 +270,20 @@ export function PodCapture({ token }: { token: string }) {
               <img
                 src={item.previewUrl}
                 alt={`Foto POD halaman ${index + 1}`}
-                className="border-border aspect-square w-full rounded-md border object-cover"
+                className={
+                  isWarned(item)
+                    ? "aspect-square w-full rounded-md border-2 border-amber-500 object-cover"
+                    : "border-border aspect-square w-full rounded-md border object-cover"
+                }
               />
+              {isWarned(item) && (
+                <span
+                  className="absolute bottom-1 left-1 rounded bg-amber-500 px-1.5 py-0.5 text-xs text-white"
+                  aria-label={`Halaman ${index + 1} kurang jelas`}
+                >
+                  !
+                </span>
+              )}
               <button
                 type="button"
                 disabled={phase === "mengunggah"}
@@ -209,6 +296,29 @@ export function PodCapture({ token }: { token: string }) {
             </li>
           ))}
         </ul>
+      )}
+
+      {warnings.length > 0 && (
+        <div
+          className="mt-6 rounded-lg border border-amber-500 p-4"
+          role="status"
+        >
+          <p className="text-sm font-medium">Periksa foto berikut</p>
+          <ul className="mt-2 space-y-1">
+            {warnings.map((warning) => (
+              <li
+                key={`${warning.page}-${warning.message}`}
+                className="text-sm leading-6 text-amber-700"
+              >
+                Halaman {warning.page}: {warning.message}
+              </li>
+            ))}
+          </ul>
+          <p className="text-muted-foreground mt-3 text-sm leading-6">
+            Anda tetap bisa mengirim foto ini jika sudah tidak memungkinkan
+            untuk foto ulang.
+          </p>
+        </div>
       )}
 
       {message !== null && (
@@ -226,13 +336,25 @@ export function PodCapture({ token }: { token: string }) {
         >
           {phase === "mengunggah"
             ? `Mengirim… ${progress}%`
-            : `Kirim ${selected.length} foto`}
+            : warnings.length > 0
+              ? `Tetap kirim ${selected.length} foto`
+              : `Kirim ${selected.length} foto`}
         </button>
       )}
 
       <p className="text-muted-foreground mt-4 text-sm leading-6">
         Foto POD harus terlihat jelas: nomor surat jalan, tanda tangan, nama
         terang, dan stempel penerima.
+      </p>
+
+      {/* Shown before the browser is asked, never after. The prompt appears
+          when the first photograph is added, and a driver who has not read
+          why would simply refuse it. Wording pending review against the PDP
+          notice in TRK-140. */}
+      <p className="text-muted-foreground mt-4 text-xs leading-5">
+        Saat Anda menambahkan foto, aplikasi meminta izin lokasi untuk mencatat
+        tempat pengambilan foto sebagai bukti pengiriman. Anda boleh menolak,
+        dan foto tetap bisa dikirim seperti biasa.
       </p>
     </section>
   );

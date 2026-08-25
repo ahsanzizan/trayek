@@ -10,8 +10,11 @@ import {
 } from "~/server/pod-link/resolve";
 import {
   openPodSubmission,
+  type PageQuality,
   recordPodSubmissionPage,
 } from "~/server/pod-link/submission";
+
+type QualityForFile = PageQuality;
 import {
   createObservabilityContext,
   getObservabilityContext,
@@ -30,8 +33,49 @@ const f = createUploadthing();
  * upload against any organization. Both are now derived from the token, so
  * the client no longer names the tenant it is writing to.
  */
+/**
+ * Capture quality as the browser measured it (TRK-031).
+ *
+ * Client-supplied and therefore forgeable. It is recorded so a human can see
+ * why a POD was hard to read, and so TRK-044 can correlate quality against
+ * extraction accuracy. It must never gate a write or authorize anything —
+ * a driver who fakes a perfect score gains nothing, which is the point.
+ */
+const qualityCheckInput = z.object({
+  id: z.enum(["RESOLUTION", "BLUR", "BRIGHTNESS", "DOCUMENT_COVERAGE"]),
+  passed: z.boolean(),
+  value: z.number().finite(),
+});
+
+const qualityInput = z.object({
+  fileName: z.string().min(1).max(300),
+  /** Null when the browser could not decode the photograph to measure it. */
+  score: z.number().int().min(0).max(100).nullable(),
+  overridden: z.boolean(),
+  checks: z.array(qualityCheckInput).max(8),
+});
+
+/**
+ * Where and when the driver photographed the POD (TRK-032).
+ *
+ * Like the quality score, this is client-supplied: a browser reports its own
+ * position and its own clock, and both can be lied about. It is evidence for a
+ * human and an input to TRK-062's plausibility check, never an authorization
+ * decision. Absence is a legitimate value — a refused prompt uploads exactly
+ * like a granted one.
+ */
+const attestationInput = z.object({
+  permission: z.enum(["GRANTED", "DENIED", "UNAVAILABLE"]),
+  latitude: z.number().min(-90).max(90).nullable(),
+  longitude: z.number().min(-180).max(180).nullable(),
+  accuracyMeters: z.number().nonnegative().nullable(),
+  capturedAt: z.string().datetime(),
+});
+
 export const podUploadInput = z.object({
   token: z.string().min(1).max(64),
+  quality: z.array(qualityInput).max(6).optional(),
+  attestation: attestationInput.optional(),
 });
 
 export const invoiceUploadInput = z.object({
@@ -49,6 +93,22 @@ const MAX_POD_PDF_BYTES = 10 * 1024 * 1024;
 function rejectUploadThingError(message: string): Promise<never> {
   const error: Error = new UploadThingError({
     code: "TOO_LARGE",
+    message,
+  });
+
+  return Promise.reject(error);
+}
+
+/**
+ * Refuses an upload the caller is not allowed to make.
+ *
+ * Separate from `rejectUploadThingError`, which means "too large". Reusing
+ * that one for an authorization failure reported a dead link as HTTP 413
+ * Payload Too Large, which sent a real diagnosis down the wrong path.
+ */
+function rejectUnauthorized(message: string): Promise<never> {
+  const error: Error = new UploadThingError({
+    code: "FORBIDDEN",
     message,
   });
 
@@ -124,6 +184,7 @@ export async function authorizePodUpload({
   podUploadLinkId: string;
   podSubmissionId: string;
   pageIndexByName: Record<string, number>;
+  qualityByName: Record<string, QualityForFile>;
 }> {
   const resolved = await resolveUploadLink({
     db,
@@ -135,7 +196,7 @@ export async function authorizePodUpload({
     // The driver already sees the Indonesian reason on his screen; this
     // message is for the network tab, and it deliberately says nothing about
     // which links exist.
-    return rejectUploadThingError("Tautan unggah tidak berlaku");
+    return rejectUnauthorized("Tautan unggah tidak berlaku");
   }
 
   const { link } = resolved;
@@ -146,11 +207,11 @@ export async function authorizePodUpload({
   const spent = await consumeUploadLinkUse({
     db,
     linkId: link.linkId,
-    useBudget: link.remainingUses + 1,
+    useBudget: link.useBudget,
   });
 
   if (!spent) {
-    return rejectUploadThingError("Tautan unggah tidak berlaku");
+    return rejectUnauthorized("Tautan unggah tidak berlaku");
   }
 
   const podSubmissionId = await openPodSubmission({
@@ -158,6 +219,7 @@ export async function authorizePodUpload({
     organizationId: link.organizationId,
     orderId: link.orderId,
     podUploadLinkId: link.linkId,
+    attestation: input.attestation ?? null,
   });
 
   // The batch is the only place capture order is visible: UploadThing calls
@@ -168,12 +230,23 @@ export async function authorizePodUpload({
     pageIndexByName[file.name] ??= index;
   });
 
+  const qualityByName: Record<string, QualityForFile> = {};
+
+  for (const entry of input.quality ?? []) {
+    qualityByName[entry.fileName] = {
+      score: entry.score,
+      overridden: entry.overridden,
+      checks: entry.checks,
+    };
+  }
+
   return {
     organizationId: link.organizationId,
     orderId: link.orderId,
     podUploadLinkId: link.linkId,
     podSubmissionId,
     pageIndexByName,
+    qualityByName,
   };
 }
 
@@ -237,6 +310,7 @@ export const uploadRouter = {
         contentType: file.type,
         sizeBytes: file.size,
         pageIndex: metadata.pageIndexByName[file.name] ?? null,
+        quality: metadata.qualityByName[file.name] ?? null,
       });
 
       return {

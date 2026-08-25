@@ -50,6 +50,17 @@ enum DsoBaselineMethod {
   COMPUTED_FROM_BALANCES
 }
 
+/// Whether the driver's browser gave up a location at capture time (TRK-032).
+///
+/// `DENIED` is a weak signal and nothing more. Drivers refuse prompts they do
+/// not understand, on phones they share, in warehouses with no sky view — so a
+/// refusal must never read as evidence of anything (INV-4).
+enum GeolocationPermission {
+  GRANTED
+  DENIED
+  UNAVAILABLE
+}
+
 enum AuditActorType {
   USER
   AGENT
@@ -591,6 +602,38 @@ model PodSubmission {
   receivedAt      DateTime @default(now())
   createdAt       DateTime @default(now())
 
+  /// The worst page score in this submission, 0-100 (TRK-031). A rollup, not
+  /// a separate measurement: a three-page POD is only as readable as its
+  /// least readable page, and that is the page extraction will fail on.
+  /// Null when the client sent no quality data at all.
+  lowestQualityScore Int?
+  /// True when the driver was warned about any page and sent it anyway.
+  /// Not a fault: a blurry POD beats no POD, and the flag is what lets the
+  /// correlation in TRK-044 separate warned uploads from clean ones.
+  qualityOverridden  Boolean @default(false)
+
+  /// Where the browser said the driver was, at capture time (TRK-032).
+  ///
+  /// Captured independently of EXIF, which WhatsApp strips from forwarded
+  /// images and which a browser upload can lose anyway. Feeds the geospatial
+  /// plausibility check in TRK-062.
+  ///
+  /// Personal data under UU PDP: collected against a consent prompt shown
+  /// before the browser is asked, retained under the policy in TRK-140, and
+  /// never written to a log line.
+  captureLatitude       Float?
+  captureLongitude      Float?
+  /// Radius of the reported position in metres, as the browser gave it. A
+  /// 2000 m accuracy is a cell-tower fix, not a GPS one, and TRK-062 has to
+  /// be able to tell the difference before calling anything implausible.
+  captureAccuracyMeters Float?
+  /// The client's own clock at capture. Kept beside `receivedAt` rather than
+  /// replacing it: the two disagreeing is itself a signal, and a phone clock
+  /// is trivially wrong or deliberately set.
+  capturedAt            DateTime?
+  /// Null only for submissions predating TRK-032.
+  geolocationPermission GeolocationPermission?
+
   organization  Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   order         Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
   podUploadLink PodUploadLink       @relation(fields: [podUploadLinkId], references: [id], onDelete: Restrict)
@@ -607,18 +650,31 @@ model PodSubmission {
 /// (TRK-061) reads EXIF off the original, and a rotated, recompressed copy
 /// has none left to read.
 model PodSubmissionPage {
-  id              String   @id @default(cuid())
-  organizationId  String
-  podSubmissionId String
+  id                String   @id @default(cuid())
+  organizationId    String
+  podSubmissionId   String
   /// Zero-based, the order the driver took them in.
-  pageIndex       Int
+  pageIndex         Int
   /// Opaque storage key. Never logged, never put in a URL that outlives its
   /// purpose: a POD carries a signature, which is personal data under UU PDP.
-  storageKey      String
-  fileName        String
-  contentType     String
-  sizeBytes       Int
-  createdAt       DateTime @default(now())
+  storageKey        String
+  fileName          String
+  contentType       String
+  sizeBytes         Int
+  /// Capture quality for this photograph, 0-100 (TRK-031).
+  ///
+  /// Measured in the browser before upload and therefore advisory: it is
+  /// client-supplied and forgeable, so it may inform a human and feed the
+  /// TRK-044 correlation, and must never gate a write or authorize anything.
+  /// Null when the browser could not decode the image to measure it.
+  qualityScore      Int?
+  /// The individual checks and their measured values, kept so a threshold
+  /// can be retuned later against photographs already collected rather than
+  /// only against ones taken after the change.
+  qualityChecks     Json?
+  /// True when this page was warned about and sent anyway.
+  qualityOverridden Boolean  @default(false)
+  createdAt         DateTime @default(now())
 
   organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   podSubmission PodSubmission @relation(fields: [podSubmissionId], references: [id], onDelete: Cascade)
