@@ -55,9 +55,27 @@ const qualityInput = z.object({
   checks: z.array(qualityCheckInput).max(8),
 });
 
+/**
+ * Where and when the driver photographed the POD (TRK-032).
+ *
+ * Like the quality score, this is client-supplied: a browser reports its own
+ * position and its own clock, and both can be lied about. It is evidence for a
+ * human and an input to TRK-062's plausibility check, never an authorization
+ * decision. Absence is a legitimate value — a refused prompt uploads exactly
+ * like a granted one.
+ */
+const attestationInput = z.object({
+  permission: z.enum(["GRANTED", "DENIED", "UNAVAILABLE"]),
+  latitude: z.number().min(-90).max(90).nullable(),
+  longitude: z.number().min(-180).max(180).nullable(),
+  accuracyMeters: z.number().nonnegative().nullable(),
+  capturedAt: z.string().datetime(),
+});
+
 export const podUploadInput = z.object({
   token: z.string().min(1).max(64),
   quality: z.array(qualityInput).max(6).optional(),
+  attestation: attestationInput.optional(),
 });
 
 export const invoiceUploadInput = z.object({
@@ -201,6 +219,7 @@ export async function authorizePodUpload({
     organizationId: link.organizationId,
     orderId: link.orderId,
     podUploadLinkId: link.linkId,
+    attestation: input.attestation ?? null,
   });
 
   // The batch is the only place capture order is visible: UploadThing calls

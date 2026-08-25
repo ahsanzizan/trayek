@@ -10,11 +10,27 @@ import { logger } from "~/server/observability/logger";
  * from anything the client sent.
  */
 
+/**
+ * Capture attestation as the browser reported it (TRK-032).
+ *
+ * `capturedAt` is the client's clock and is stored beside the server's own
+ * `receivedAt` rather than replacing it. The two disagreeing is a signal
+ * TRK-062 can use; collapsing them into one would throw that away.
+ */
+export type CaptureAttestation = {
+  permission: "GRANTED" | "DENIED" | "UNAVAILABLE";
+  latitude: number | null;
+  longitude: number | null;
+  accuracyMeters: number | null;
+  capturedAt: string;
+};
+
 export type OpenSubmissionInput = {
   db: PrismaClient;
   organizationId: string;
   orderId: string;
   podUploadLinkId: string;
+  attestation?: CaptureAttestation | null;
 };
 
 /**
@@ -30,9 +46,22 @@ export async function openPodSubmission({
   organizationId,
   orderId,
   podUploadLinkId,
+  attestation = null,
 }: OpenSubmissionInput): Promise<string> {
   const submission = await db.podSubmission.create({
-    data: { organizationId, orderId, podUploadLinkId },
+    data: {
+      organizationId,
+      orderId,
+      podUploadLinkId,
+      // A refused prompt still records its refusal. Storing nothing would make
+      // "the driver said no" indistinguishable from "we never asked", and only
+      // one of those is worth anything to a fraud reviewer.
+      geolocationPermission: attestation?.permission ?? null,
+      captureLatitude: attestation?.latitude ?? null,
+      captureLongitude: attestation?.longitude ?? null,
+      captureAccuracyMeters: attestation?.accuracyMeters ?? null,
+      capturedAt: attestation ? new Date(attestation.capturedAt) : null,
+    },
     select: { id: true },
   });
 
