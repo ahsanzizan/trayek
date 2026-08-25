@@ -104,7 +104,8 @@ What exists today:
 ```
 prisma/
   migrations/            # committed, forward-only
-  schema.prisma          # identity, tenancy, jobs, audit, Shipper, RequirementProfile, Driver, Order
+  schema.prisma          # identity, tenancy, jobs, audit, Shipper, RequirementProfile,
+                         # Driver, Order, DsoBaseline, HistoricalInvoice
   seed.ts                # multi-org fixtures the tenancy tests rely on
 docs/
   INVARIANTS.md          # the eight product invariants — authoritative
@@ -116,6 +117,7 @@ src/
     _components/         # login-form, org-switcher, sign-out-form, utility-bar
     shippers/            # shipper registry + requirement profile admin UI
     orders/              # order list, manual create form, CSV import panel
+    baseline/            # DSO baseline wizard + print-to-PDF summary
     api/
       auth/[...nextauth]/route.ts   # re-exports handlers from ~/server/auth
       trpc/[trpc]/route.ts          # tRPC fetch adapter
@@ -137,7 +139,9 @@ src/
       audit/entry.ts     # actor union + pure row flattening
       jobs/              # retry policy, registry, runner — all IO-free
       driver/            # Indonesian phone normalisation to E.164
+      baseline/          # DSO computation + historical invoice parsing
       order/             # CSV row parsing, column mapping, per-row validation
+      spreadsheet/       # cell readers shared by both importers
       shipper/           # requirement rule schema + version diff
       ports/storage.ts   # StoragePort — the domain owns the interface
     storage/             # UploadThing implementation of StoragePort
@@ -152,7 +156,7 @@ src/
 tests/
   invariants/            # one file per INV-1..INV-8, wired into `pnpm check`
   guardrails/            # architectural assertions (domain boundaries)
-  auth/ storage/ tenancy/ audit/ jobs/ shipper/ driver/ order/  # mirror the source path
+  auth/ storage/ tenancy/ audit/ jobs/ shipper/ driver/ order/ baseline/  # mirror the source path
   e2e/                   # Playwright specs
 components.json          # shadcn config — style, aliases, baseColor
 trayek-settle-mvp-backlog.md  # the backlog and the build order
@@ -238,6 +242,10 @@ Route-specific components live in `src/app/<route>/_components/`, mirroring `src
 
 - Every mutation of a domain entity goes through `withAudit()` (`src/server/audit/with-audit.ts`), which writes the mutation and its `AuditLog` row in one transaction. Two separate writes are not equivalent: an audit row for a mutation that rolled back is a lie, and a mutation whose audit row failed to write is the silent gap INV-1 and INV-7 exist to close.
 - The mutation receives the transaction and must use it. Writing through the outer client escapes the transaction and reintroduces that gap.
+- **An organization that has recorded any audited action cannot be deleted.** The
+  append-only trigger refuses the cascading DELETE, so `organization.delete()` fails.
+  This surfaced in TRK-013's tests and matters for tenant offboarding and UU PDP
+  erasure — neither has an issue yet.
 - `AuditLog` is append-only, enforced by a Postgres trigger — `UPDATE`, `DELETE`, and `TRUNCATE` all raise. Grants alone would not do it: Prisma connects as the table owner in some environments, and an owner bypasses its own `REVOKE`. Never add a code path that edits or deletes an entry; corrections are new entries.
 - Actors are a discriminated union (`src/server/domain/audit/entry.ts`). An `AGENT` actor must carry its model and prompt version, so an agent action that omits them does not compile.
 - `tests/audit/mutation-coverage.test.ts` enumerates every tRPC mutation and fails when one is neither audited nor explicitly exempt. Adding a mutation means making that call.

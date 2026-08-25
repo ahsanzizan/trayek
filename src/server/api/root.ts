@@ -1,4 +1,5 @@
 import { auditRouter } from "~/server/api/routers/audit";
+import { baselineRouter } from "~/server/api/routers/baseline";
 import { driverRouter } from "~/server/api/routers/driver";
 import { orderRouter } from "~/server/api/routers/order";
 import { organizationRouter } from "~/server/api/routers/organization";
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   shipper: shipperRouter,
   driver: driverRouter,
   order: orderRouter,
+  baseline: baselineRouter,
 });
 
 // export type definition of API

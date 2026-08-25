@@ -24,6 +24,9 @@ const AUDITED = new Set<string>([
   "driver.create",
   "order.create",
   "order.import",
+  "baseline.captureClaimed",
+  "baseline.captureFromBalances",
+  "baseline.importHistoricalInvoices",
 ]);
 
 /**
