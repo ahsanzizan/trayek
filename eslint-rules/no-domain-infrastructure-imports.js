@@ -45,6 +45,24 @@ function getRestriction(source, filename) {
     return "the queue vendor belongs behind JobQueuePort, not in the domain";
   }
 
+  if (
+    source === "baileys" ||
+    source.startsWith("baileys/") ||
+    source === "@whiskeysockets/baileys" ||
+    source.startsWith("@whiskeysockets/baileys/")
+  ) {
+    return "the WhatsApp vendor belongs in a channel adapter, not in the domain";
+  }
+
+  if (
+    source === "qrcode" ||
+    source.startsWith("qrcode/") ||
+    source === "qrcode-terminal" ||
+    source.startsWith("qrcode-terminal/")
+  ) {
+    return "QR rendering belongs in a channel adapter or UI boundary, not in the domain";
+  }
+
   const resolvedPath = resolveImportPath(source, filename);
 
   if (!resolvedPath) {

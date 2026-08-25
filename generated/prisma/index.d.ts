@@ -79,6 +79,16 @@ export type LlmCallLog = $Result.DefaultSelection<Prisma.$LlmCallLogPayload>
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 /**
+ * Model MessageLog
+ * 
+ */
+export type MessageLog = $Result.DefaultSelection<Prisma.$MessageLogPayload>
+/**
+ * Model ChannelConnection
+ * 
+ */
+export type ChannelConnection = $Result.DefaultSelection<Prisma.$ChannelConnectionPayload>
+/**
  * Model Shipper
  * A shipper this forwarder bills (TRK-010).
  * 
@@ -195,6 +205,41 @@ export const AuditActorType: {
 
 export type AuditActorType = (typeof AuditActorType)[keyof typeof AuditActorType]
 
+
+export const ChannelType: {
+  WHATSAPP_BAILEYS: 'WHATSAPP_BAILEYS',
+  EMAIL: 'EMAIL'
+};
+
+export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
+
+
+export const MessageDirection: {
+  INBOUND: 'INBOUND',
+  OUTBOUND: 'OUTBOUND'
+};
+
+export type MessageDirection = (typeof MessageDirection)[keyof typeof MessageDirection]
+
+
+export const MessageLogStatus: {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED'
+};
+
+export type MessageLogStatus = (typeof MessageLogStatus)[keyof typeof MessageLogStatus]
+
+
+export const ChannelConnectionStatus: {
+  CONNECTED: 'CONNECTED',
+  DISCONNECTED: 'DISCONNECTED',
+  NEEDS_PAIRING: 'NEEDS_PAIRING'
+};
+
+export type ChannelConnectionStatus = (typeof ChannelConnectionStatus)[keyof typeof ChannelConnectionStatus]
+
 }
 
 export type OrganizationType = $Enums.OrganizationType
@@ -216,6 +261,22 @@ export const DsoBaselineMethod: typeof $Enums.DsoBaselineMethod
 export type AuditActorType = $Enums.AuditActorType
 
 export const AuditActorType: typeof $Enums.AuditActorType
+
+export type ChannelType = $Enums.ChannelType
+
+export const ChannelType: typeof $Enums.ChannelType
+
+export type MessageDirection = $Enums.MessageDirection
+
+export const MessageDirection: typeof $Enums.MessageDirection
+
+export type MessageLogStatus = $Enums.MessageLogStatus
+
+export const MessageLogStatus: typeof $Enums.MessageLogStatus
+
+export type ChannelConnectionStatus = $Enums.ChannelConnectionStatus
+
+export const ChannelConnectionStatus: typeof $Enums.ChannelConnectionStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -454,6 +515,26 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.messageLog`: Exposes CRUD operations for the **MessageLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MessageLogs
+    * const messageLogs = await prisma.messageLog.findMany()
+    * ```
+    */
+  get messageLog(): Prisma.MessageLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.channelConnection`: Exposes CRUD operations for the **ChannelConnection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ChannelConnections
+    * const channelConnections = await prisma.channelConnection.findMany()
+    * ```
+    */
+  get channelConnection(): Prisma.ChannelConnectionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.shipper`: Exposes CRUD operations for the **Shipper** model.
@@ -967,6 +1048,8 @@ export namespace Prisma {
     HumanFallbackEvent: 'HumanFallbackEvent',
     LlmCallLog: 'LlmCallLog',
     AuditLog: 'AuditLog',
+    MessageLog: 'MessageLog',
+    ChannelConnection: 'ChannelConnection',
     Shipper: 'Shipper',
     RequirementProfile: 'RequirementProfile',
     Driver: 'Driver',
@@ -991,7 +1074,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "messageLog" | "channelConnection" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1883,6 +1966,154 @@ export namespace Prisma {
           }
         }
       }
+      MessageLog: {
+        payload: Prisma.$MessageLogPayload<ExtArgs>
+        fields: Prisma.MessageLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MessageLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MessageLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          findFirst: {
+            args: Prisma.MessageLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MessageLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          findMany: {
+            args: Prisma.MessageLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>[]
+          }
+          create: {
+            args: Prisma.MessageLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          createMany: {
+            args: Prisma.MessageLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MessageLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>[]
+          }
+          delete: {
+            args: Prisma.MessageLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          update: {
+            args: Prisma.MessageLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.MessageLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MessageLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MessageLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.MessageLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageLogPayload>
+          }
+          aggregate: {
+            args: Prisma.MessageLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMessageLog>
+          }
+          groupBy: {
+            args: Prisma.MessageLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MessageLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MessageLogCountArgs<ExtArgs>
+            result: $Utils.Optional<MessageLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      ChannelConnection: {
+        payload: Prisma.$ChannelConnectionPayload<ExtArgs>
+        fields: Prisma.ChannelConnectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChannelConnectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChannelConnectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          findFirst: {
+            args: Prisma.ChannelConnectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChannelConnectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          findMany: {
+            args: Prisma.ChannelConnectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>[]
+          }
+          create: {
+            args: Prisma.ChannelConnectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          createMany: {
+            args: Prisma.ChannelConnectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChannelConnectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>[]
+          }
+          delete: {
+            args: Prisma.ChannelConnectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          update: {
+            args: Prisma.ChannelConnectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChannelConnectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChannelConnectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ChannelConnectionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ChannelConnectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelConnectionPayload>
+          }
+          aggregate: {
+            args: Prisma.ChannelConnectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChannelConnection>
+          }
+          groupBy: {
+            args: Prisma.ChannelConnectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChannelConnectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChannelConnectionCountArgs<ExtArgs>
+            result: $Utils.Optional<ChannelConnectionCountAggregateOutputType> | number
+          }
+        }
+      }
       Shipper: {
         payload: Prisma.$ShipperPayload<ExtArgs>
         fields: Prisma.ShipperFieldRefs
@@ -2435,6 +2666,8 @@ export namespace Prisma {
     humanFallbackEvent?: HumanFallbackEventOmit
     llmCallLog?: LlmCallLogOmit
     auditLog?: AuditLogOmit
+    messageLog?: MessageLogOmit
+    channelConnection?: ChannelConnectionOmit
     shipper?: ShipperOmit
     requirementProfile?: RequirementProfileOmit
     driver?: DriverOmit
@@ -2533,6 +2766,8 @@ export namespace Prisma {
     orders: number
     dsoBaselines: number
     historicalInvoices: number
+    messageLogs: number
+    channelConnections: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2548,6 +2783,8 @@ export namespace Prisma {
     orders?: boolean | OrganizationCountOutputTypeCountOrdersArgs
     dsoBaselines?: boolean | OrganizationCountOutputTypeCountDsoBaselinesArgs
     historicalInvoices?: boolean | OrganizationCountOutputTypeCountHistoricalInvoicesArgs
+    messageLogs?: boolean | OrganizationCountOutputTypeCountMessageLogsArgs
+    channelConnections?: boolean | OrganizationCountOutputTypeCountChannelConnectionsArgs
   }
 
   // Custom InputTypes
@@ -2643,6 +2880,20 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountHistoricalInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: HistoricalInvoiceWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountMessageLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageLogWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountChannelConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelConnectionWhereInput
   }
 
 
@@ -3009,6 +3260,8 @@ export namespace Prisma {
     orders?: boolean | Organization$ordersArgs<ExtArgs>
     dsoBaselines?: boolean | Organization$dsoBaselinesArgs<ExtArgs>
     historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
+    messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
+    channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -3056,6 +3309,8 @@ export namespace Prisma {
     orders?: boolean | Organization$ordersArgs<ExtArgs>
     dsoBaselines?: boolean | Organization$dsoBaselinesArgs<ExtArgs>
     historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
+    messageLogs?: boolean | Organization$messageLogsArgs<ExtArgs>
+    channelConnections?: boolean | Organization$channelConnectionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3076,6 +3331,8 @@ export namespace Prisma {
       orders: Prisma.$OrderPayload<ExtArgs>[]
       dsoBaselines: Prisma.$DsoBaselinePayload<ExtArgs>[]
       historicalInvoices: Prisma.$HistoricalInvoicePayload<ExtArgs>[]
+      messageLogs: Prisma.$MessageLogPayload<ExtArgs>[]
+      channelConnections: Prisma.$ChannelConnectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3491,6 +3748,8 @@ export namespace Prisma {
     orders<T extends Organization$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dsoBaselines<T extends Organization$dsoBaselinesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$dsoBaselinesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     historicalInvoices<T extends Organization$historicalInvoicesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$historicalInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messageLogs<T extends Organization$messageLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$messageLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    channelConnections<T extends Organization$channelConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$channelConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4200,6 +4459,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: HistoricalInvoiceScalarFieldEnum | HistoricalInvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.messageLogs
+   */
+  export type Organization$messageLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    where?: MessageLogWhereInput
+    orderBy?: MessageLogOrderByWithRelationInput | MessageLogOrderByWithRelationInput[]
+    cursor?: MessageLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageLogScalarFieldEnum | MessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.channelConnections
+   */
+  export type Organization$channelConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    where?: ChannelConnectionWhereInput
+    orderBy?: ChannelConnectionOrderByWithRelationInput | ChannelConnectionOrderByWithRelationInput[]
+    cursor?: ChannelConnectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChannelConnectionScalarFieldEnum | ChannelConnectionScalarFieldEnum[]
   }
 
   /**
@@ -16489,6 +16796,2282 @@ export namespace Prisma {
 
 
   /**
+   * Model MessageLog
+   */
+
+  export type AggregateMessageLog = {
+    _count: MessageLogCountAggregateOutputType | null
+    _min: MessageLogMinAggregateOutputType | null
+    _max: MessageLogMaxAggregateOutputType | null
+  }
+
+  export type MessageLogMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    channel: $Enums.ChannelType | null
+    direction: $Enums.MessageDirection | null
+    from: string | null
+    to: string | null
+    body: string | null
+    status: $Enums.MessageLogStatus | null
+    externalId: string | null
+    truncated: boolean | null
+    createdAt: Date | null
+  }
+
+  export type MessageLogMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    channel: $Enums.ChannelType | null
+    direction: $Enums.MessageDirection | null
+    from: string | null
+    to: string | null
+    body: string | null
+    status: $Enums.MessageLogStatus | null
+    externalId: string | null
+    truncated: boolean | null
+    createdAt: Date | null
+  }
+
+  export type MessageLogCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    channel: number
+    direction: number
+    from: number
+    to: number
+    body: number
+    status: number
+    externalId: number
+    truncated: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type MessageLogMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    direction?: true
+    from?: true
+    to?: true
+    body?: true
+    status?: true
+    externalId?: true
+    truncated?: true
+    createdAt?: true
+  }
+
+  export type MessageLogMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    direction?: true
+    from?: true
+    to?: true
+    body?: true
+    status?: true
+    externalId?: true
+    truncated?: true
+    createdAt?: true
+  }
+
+  export type MessageLogCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    direction?: true
+    from?: true
+    to?: true
+    body?: true
+    status?: true
+    externalId?: true
+    truncated?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type MessageLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageLog to aggregate.
+     */
+    where?: MessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageLogs to fetch.
+     */
+    orderBy?: MessageLogOrderByWithRelationInput | MessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MessageLogs
+    **/
+    _count?: true | MessageLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MessageLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MessageLogMaxAggregateInputType
+  }
+
+  export type GetMessageLogAggregateType<T extends MessageLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateMessageLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMessageLog[P]>
+      : GetScalarType<T[P], AggregateMessageLog[P]>
+  }
+
+
+
+
+  export type MessageLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageLogWhereInput
+    orderBy?: MessageLogOrderByWithAggregationInput | MessageLogOrderByWithAggregationInput[]
+    by: MessageLogScalarFieldEnum[] | MessageLogScalarFieldEnum
+    having?: MessageLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MessageLogCountAggregateInputType | true
+    _min?: MessageLogMinAggregateInputType
+    _max?: MessageLogMaxAggregateInputType
+  }
+
+  export type MessageLogGroupByOutputType = {
+    id: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body: string | null
+    status: $Enums.MessageLogStatus
+    externalId: string | null
+    truncated: boolean
+    createdAt: Date
+    _count: MessageLogCountAggregateOutputType | null
+    _min: MessageLogMinAggregateOutputType | null
+    _max: MessageLogMaxAggregateOutputType | null
+  }
+
+  type GetMessageLogGroupByPayload<T extends MessageLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MessageLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MessageLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MessageLogGroupByOutputType[P]>
+            : GetScalarType<T[P], MessageLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MessageLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    direction?: boolean
+    from?: boolean
+    to?: boolean
+    body?: boolean
+    status?: boolean
+    externalId?: boolean
+    truncated?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageLog"]>
+
+  export type MessageLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    direction?: boolean
+    from?: boolean
+    to?: boolean
+    body?: boolean
+    status?: boolean
+    externalId?: boolean
+    truncated?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageLog"]>
+
+  export type MessageLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    direction?: boolean
+    from?: boolean
+    to?: boolean
+    body?: boolean
+    status?: boolean
+    externalId?: boolean
+    truncated?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageLog"]>
+
+  export type MessageLogSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    direction?: boolean
+    from?: boolean
+    to?: boolean
+    body?: boolean
+    status?: boolean
+    externalId?: boolean
+    truncated?: boolean
+    createdAt?: boolean
+  }
+
+  export type MessageLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "channel" | "direction" | "from" | "to" | "body" | "status" | "externalId" | "truncated" | "createdAt", ExtArgs["result"]["messageLog"]>
+  export type MessageLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type MessageLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type MessageLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $MessageLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MessageLog"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      channel: $Enums.ChannelType
+      direction: $Enums.MessageDirection
+      from: string
+      to: string
+      body: string | null
+      status: $Enums.MessageLogStatus
+      externalId: string | null
+      truncated: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["messageLog"]>
+    composites: {}
+  }
+
+  type MessageLogGetPayload<S extends boolean | null | undefined | MessageLogDefaultArgs> = $Result.GetResult<Prisma.$MessageLogPayload, S>
+
+  type MessageLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MessageLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MessageLogCountAggregateInputType | true
+    }
+
+  export interface MessageLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MessageLog'], meta: { name: 'MessageLog' } }
+    /**
+     * Find zero or one MessageLog that matches the filter.
+     * @param {MessageLogFindUniqueArgs} args - Arguments to find a MessageLog
+     * @example
+     * // Get one MessageLog
+     * const messageLog = await prisma.messageLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MessageLogFindUniqueArgs>(args: SelectSubset<T, MessageLogFindUniqueArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MessageLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MessageLogFindUniqueOrThrowArgs} args - Arguments to find a MessageLog
+     * @example
+     * // Get one MessageLog
+     * const messageLog = await prisma.messageLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MessageLogFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MessageLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogFindFirstArgs} args - Arguments to find a MessageLog
+     * @example
+     * // Get one MessageLog
+     * const messageLog = await prisma.messageLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MessageLogFindFirstArgs>(args?: SelectSubset<T, MessageLogFindFirstArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MessageLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogFindFirstOrThrowArgs} args - Arguments to find a MessageLog
+     * @example
+     * // Get one MessageLog
+     * const messageLog = await prisma.messageLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MessageLogFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MessageLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MessageLogs
+     * const messageLogs = await prisma.messageLog.findMany()
+     * 
+     * // Get first 10 MessageLogs
+     * const messageLogs = await prisma.messageLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const messageLogWithIdOnly = await prisma.messageLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MessageLogFindManyArgs>(args?: SelectSubset<T, MessageLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MessageLog.
+     * @param {MessageLogCreateArgs} args - Arguments to create a MessageLog.
+     * @example
+     * // Create one MessageLog
+     * const MessageLog = await prisma.messageLog.create({
+     *   data: {
+     *     // ... data to create a MessageLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends MessageLogCreateArgs>(args: SelectSubset<T, MessageLogCreateArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MessageLogs.
+     * @param {MessageLogCreateManyArgs} args - Arguments to create many MessageLogs.
+     * @example
+     * // Create many MessageLogs
+     * const messageLog = await prisma.messageLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MessageLogCreateManyArgs>(args?: SelectSubset<T, MessageLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MessageLogs and returns the data saved in the database.
+     * @param {MessageLogCreateManyAndReturnArgs} args - Arguments to create many MessageLogs.
+     * @example
+     * // Create many MessageLogs
+     * const messageLog = await prisma.messageLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MessageLogs and only return the `id`
+     * const messageLogWithIdOnly = await prisma.messageLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MessageLogCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MessageLog.
+     * @param {MessageLogDeleteArgs} args - Arguments to delete one MessageLog.
+     * @example
+     * // Delete one MessageLog
+     * const MessageLog = await prisma.messageLog.delete({
+     *   where: {
+     *     // ... filter to delete one MessageLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MessageLogDeleteArgs>(args: SelectSubset<T, MessageLogDeleteArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MessageLog.
+     * @param {MessageLogUpdateArgs} args - Arguments to update one MessageLog.
+     * @example
+     * // Update one MessageLog
+     * const messageLog = await prisma.messageLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MessageLogUpdateArgs>(args: SelectSubset<T, MessageLogUpdateArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MessageLogs.
+     * @param {MessageLogDeleteManyArgs} args - Arguments to filter MessageLogs to delete.
+     * @example
+     * // Delete a few MessageLogs
+     * const { count } = await prisma.messageLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MessageLogDeleteManyArgs>(args?: SelectSubset<T, MessageLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MessageLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MessageLogs
+     * const messageLog = await prisma.messageLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MessageLogUpdateManyArgs>(args: SelectSubset<T, MessageLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MessageLogs and returns the data updated in the database.
+     * @param {MessageLogUpdateManyAndReturnArgs} args - Arguments to update many MessageLogs.
+     * @example
+     * // Update many MessageLogs
+     * const messageLog = await prisma.messageLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MessageLogs and only return the `id`
+     * const messageLogWithIdOnly = await prisma.messageLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MessageLogUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MessageLog.
+     * @param {MessageLogUpsertArgs} args - Arguments to update or create a MessageLog.
+     * @example
+     * // Update or create a MessageLog
+     * const messageLog = await prisma.messageLog.upsert({
+     *   create: {
+     *     // ... data to create a MessageLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MessageLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MessageLogUpsertArgs>(args: SelectSubset<T, MessageLogUpsertArgs<ExtArgs>>): Prisma__MessageLogClient<$Result.GetResult<Prisma.$MessageLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MessageLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogCountArgs} args - Arguments to filter MessageLogs to count.
+     * @example
+     * // Count the number of MessageLogs
+     * const count = await prisma.messageLog.count({
+     *   where: {
+     *     // ... the filter for the MessageLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends MessageLogCountArgs>(
+      args?: Subset<T, MessageLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MessageLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MessageLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MessageLogAggregateArgs>(args: Subset<T, MessageLogAggregateArgs>): Prisma.PrismaPromise<GetMessageLogAggregateType<T>>
+
+    /**
+     * Group by MessageLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MessageLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MessageLogGroupByArgs['orderBy'] }
+        : { orderBy?: MessageLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MessageLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMessageLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MessageLog model
+   */
+  readonly fields: MessageLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MessageLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MessageLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MessageLog model
+   */
+  interface MessageLogFieldRefs {
+    readonly id: FieldRef<"MessageLog", 'String'>
+    readonly organizationId: FieldRef<"MessageLog", 'String'>
+    readonly channel: FieldRef<"MessageLog", 'ChannelType'>
+    readonly direction: FieldRef<"MessageLog", 'MessageDirection'>
+    readonly from: FieldRef<"MessageLog", 'String'>
+    readonly to: FieldRef<"MessageLog", 'String'>
+    readonly body: FieldRef<"MessageLog", 'String'>
+    readonly status: FieldRef<"MessageLog", 'MessageLogStatus'>
+    readonly externalId: FieldRef<"MessageLog", 'String'>
+    readonly truncated: FieldRef<"MessageLog", 'Boolean'>
+    readonly createdAt: FieldRef<"MessageLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MessageLog findUnique
+   */
+  export type MessageLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageLog to fetch.
+     */
+    where: MessageLogWhereUniqueInput
+  }
+
+  /**
+   * MessageLog findUniqueOrThrow
+   */
+  export type MessageLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageLog to fetch.
+     */
+    where: MessageLogWhereUniqueInput
+  }
+
+  /**
+   * MessageLog findFirst
+   */
+  export type MessageLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageLog to fetch.
+     */
+    where?: MessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageLogs to fetch.
+     */
+    orderBy?: MessageLogOrderByWithRelationInput | MessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageLogs.
+     */
+    cursor?: MessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageLogs.
+     */
+    distinct?: MessageLogScalarFieldEnum | MessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * MessageLog findFirstOrThrow
+   */
+  export type MessageLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageLog to fetch.
+     */
+    where?: MessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageLogs to fetch.
+     */
+    orderBy?: MessageLogOrderByWithRelationInput | MessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageLogs.
+     */
+    cursor?: MessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageLogs.
+     */
+    distinct?: MessageLogScalarFieldEnum | MessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * MessageLog findMany
+   */
+  export type MessageLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageLogs to fetch.
+     */
+    where?: MessageLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageLogs to fetch.
+     */
+    orderBy?: MessageLogOrderByWithRelationInput | MessageLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MessageLogs.
+     */
+    cursor?: MessageLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageLogs.
+     */
+    skip?: number
+    distinct?: MessageLogScalarFieldEnum | MessageLogScalarFieldEnum[]
+  }
+
+  /**
+   * MessageLog create
+   */
+  export type MessageLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MessageLog.
+     */
+    data: XOR<MessageLogCreateInput, MessageLogUncheckedCreateInput>
+  }
+
+  /**
+   * MessageLog createMany
+   */
+  export type MessageLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MessageLogs.
+     */
+    data: MessageLogCreateManyInput | MessageLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MessageLog createManyAndReturn
+   */
+  export type MessageLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many MessageLogs.
+     */
+    data: MessageLogCreateManyInput | MessageLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MessageLog update
+   */
+  export type MessageLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MessageLog.
+     */
+    data: XOR<MessageLogUpdateInput, MessageLogUncheckedUpdateInput>
+    /**
+     * Choose, which MessageLog to update.
+     */
+    where: MessageLogWhereUniqueInput
+  }
+
+  /**
+   * MessageLog updateMany
+   */
+  export type MessageLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MessageLogs.
+     */
+    data: XOR<MessageLogUpdateManyMutationInput, MessageLogUncheckedUpdateManyInput>
+    /**
+     * Filter which MessageLogs to update
+     */
+    where?: MessageLogWhereInput
+    /**
+     * Limit how many MessageLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MessageLog updateManyAndReturn
+   */
+  export type MessageLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * The data used to update MessageLogs.
+     */
+    data: XOR<MessageLogUpdateManyMutationInput, MessageLogUncheckedUpdateManyInput>
+    /**
+     * Filter which MessageLogs to update
+     */
+    where?: MessageLogWhereInput
+    /**
+     * Limit how many MessageLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MessageLog upsert
+   */
+  export type MessageLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MessageLog to update in case it exists.
+     */
+    where: MessageLogWhereUniqueInput
+    /**
+     * In case the MessageLog found by the `where` argument doesn't exist, create a new MessageLog with this data.
+     */
+    create: XOR<MessageLogCreateInput, MessageLogUncheckedCreateInput>
+    /**
+     * In case the MessageLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MessageLogUpdateInput, MessageLogUncheckedUpdateInput>
+  }
+
+  /**
+   * MessageLog delete
+   */
+  export type MessageLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+    /**
+     * Filter which MessageLog to delete.
+     */
+    where: MessageLogWhereUniqueInput
+  }
+
+  /**
+   * MessageLog deleteMany
+   */
+  export type MessageLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageLogs to delete
+     */
+    where?: MessageLogWhereInput
+    /**
+     * Limit how many MessageLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MessageLog without action
+   */
+  export type MessageLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageLog
+     */
+    select?: MessageLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageLog
+     */
+    omit?: MessageLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageLogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ChannelConnection
+   */
+
+  export type AggregateChannelConnection = {
+    _count: ChannelConnectionCountAggregateOutputType | null
+    _avg: ChannelConnectionAvgAggregateOutputType | null
+    _sum: ChannelConnectionSumAggregateOutputType | null
+    _min: ChannelConnectionMinAggregateOutputType | null
+    _max: ChannelConnectionMaxAggregateOutputType | null
+  }
+
+  export type ChannelConnectionAvgAggregateOutputType = {
+    authStateVersion: number | null
+  }
+
+  export type ChannelConnectionSumAggregateOutputType = {
+    authStateVersion: number | null
+  }
+
+  export type ChannelConnectionMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    channel: $Enums.ChannelType | null
+    status: $Enums.ChannelConnectionStatus | null
+    authStateVersion: number | null
+    lastConnectedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChannelConnectionMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    channel: $Enums.ChannelType | null
+    status: $Enums.ChannelConnectionStatus | null
+    authStateVersion: number | null
+    lastConnectedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChannelConnectionCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    channel: number
+    status: number
+    authState: number
+    authStateVersion: number
+    lastConnectedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ChannelConnectionAvgAggregateInputType = {
+    authStateVersion?: true
+  }
+
+  export type ChannelConnectionSumAggregateInputType = {
+    authStateVersion?: true
+  }
+
+  export type ChannelConnectionMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    status?: true
+    authStateVersion?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChannelConnectionMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    status?: true
+    authStateVersion?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChannelConnectionCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    channel?: true
+    status?: true
+    authState?: true
+    authStateVersion?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ChannelConnectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChannelConnection to aggregate.
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelConnections to fetch.
+     */
+    orderBy?: ChannelConnectionOrderByWithRelationInput | ChannelConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChannelConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ChannelConnections
+    **/
+    _count?: true | ChannelConnectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ChannelConnectionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChannelConnectionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChannelConnectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChannelConnectionMaxAggregateInputType
+  }
+
+  export type GetChannelConnectionAggregateType<T extends ChannelConnectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateChannelConnection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChannelConnection[P]>
+      : GetScalarType<T[P], AggregateChannelConnection[P]>
+  }
+
+
+
+
+  export type ChannelConnectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelConnectionWhereInput
+    orderBy?: ChannelConnectionOrderByWithAggregationInput | ChannelConnectionOrderByWithAggregationInput[]
+    by: ChannelConnectionScalarFieldEnum[] | ChannelConnectionScalarFieldEnum
+    having?: ChannelConnectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChannelConnectionCountAggregateInputType | true
+    _avg?: ChannelConnectionAvgAggregateInputType
+    _sum?: ChannelConnectionSumAggregateInputType
+    _min?: ChannelConnectionMinAggregateInputType
+    _max?: ChannelConnectionMaxAggregateInputType
+  }
+
+  export type ChannelConnectionGroupByOutputType = {
+    id: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    status: $Enums.ChannelConnectionStatus
+    authState: JsonValue | null
+    authStateVersion: number
+    lastConnectedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ChannelConnectionCountAggregateOutputType | null
+    _avg: ChannelConnectionAvgAggregateOutputType | null
+    _sum: ChannelConnectionSumAggregateOutputType | null
+    _min: ChannelConnectionMinAggregateOutputType | null
+    _max: ChannelConnectionMaxAggregateOutputType | null
+  }
+
+  type GetChannelConnectionGroupByPayload<T extends ChannelConnectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChannelConnectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChannelConnectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChannelConnectionGroupByOutputType[P]>
+            : GetScalarType<T[P], ChannelConnectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChannelConnectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    status?: boolean
+    authState?: boolean
+    authStateVersion?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["channelConnection"]>
+
+  export type ChannelConnectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    status?: boolean
+    authState?: boolean
+    authStateVersion?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["channelConnection"]>
+
+  export type ChannelConnectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    status?: boolean
+    authState?: boolean
+    authStateVersion?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["channelConnection"]>
+
+  export type ChannelConnectionSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    channel?: boolean
+    status?: boolean
+    authState?: boolean
+    authStateVersion?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ChannelConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "channel" | "status" | "authState" | "authStateVersion" | "lastConnectedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["channelConnection"]>
+  export type ChannelConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type ChannelConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type ChannelConnectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $ChannelConnectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChannelConnection"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      channel: $Enums.ChannelType
+      status: $Enums.ChannelConnectionStatus
+      authState: Prisma.JsonValue | null
+      authStateVersion: number
+      lastConnectedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["channelConnection"]>
+    composites: {}
+  }
+
+  type ChannelConnectionGetPayload<S extends boolean | null | undefined | ChannelConnectionDefaultArgs> = $Result.GetResult<Prisma.$ChannelConnectionPayload, S>
+
+  type ChannelConnectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ChannelConnectionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ChannelConnectionCountAggregateInputType | true
+    }
+
+  export interface ChannelConnectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChannelConnection'], meta: { name: 'ChannelConnection' } }
+    /**
+     * Find zero or one ChannelConnection that matches the filter.
+     * @param {ChannelConnectionFindUniqueArgs} args - Arguments to find a ChannelConnection
+     * @example
+     * // Get one ChannelConnection
+     * const channelConnection = await prisma.channelConnection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChannelConnectionFindUniqueArgs>(args: SelectSubset<T, ChannelConnectionFindUniqueArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ChannelConnection that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ChannelConnectionFindUniqueOrThrowArgs} args - Arguments to find a ChannelConnection
+     * @example
+     * // Get one ChannelConnection
+     * const channelConnection = await prisma.channelConnection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChannelConnectionFindUniqueOrThrowArgs>(args: SelectSubset<T, ChannelConnectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChannelConnection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionFindFirstArgs} args - Arguments to find a ChannelConnection
+     * @example
+     * // Get one ChannelConnection
+     * const channelConnection = await prisma.channelConnection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChannelConnectionFindFirstArgs>(args?: SelectSubset<T, ChannelConnectionFindFirstArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChannelConnection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionFindFirstOrThrowArgs} args - Arguments to find a ChannelConnection
+     * @example
+     * // Get one ChannelConnection
+     * const channelConnection = await prisma.channelConnection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChannelConnectionFindFirstOrThrowArgs>(args?: SelectSubset<T, ChannelConnectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ChannelConnections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ChannelConnections
+     * const channelConnections = await prisma.channelConnection.findMany()
+     * 
+     * // Get first 10 ChannelConnections
+     * const channelConnections = await prisma.channelConnection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const channelConnectionWithIdOnly = await prisma.channelConnection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChannelConnectionFindManyArgs>(args?: SelectSubset<T, ChannelConnectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ChannelConnection.
+     * @param {ChannelConnectionCreateArgs} args - Arguments to create a ChannelConnection.
+     * @example
+     * // Create one ChannelConnection
+     * const ChannelConnection = await prisma.channelConnection.create({
+     *   data: {
+     *     // ... data to create a ChannelConnection
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChannelConnectionCreateArgs>(args: SelectSubset<T, ChannelConnectionCreateArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ChannelConnections.
+     * @param {ChannelConnectionCreateManyArgs} args - Arguments to create many ChannelConnections.
+     * @example
+     * // Create many ChannelConnections
+     * const channelConnection = await prisma.channelConnection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChannelConnectionCreateManyArgs>(args?: SelectSubset<T, ChannelConnectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ChannelConnections and returns the data saved in the database.
+     * @param {ChannelConnectionCreateManyAndReturnArgs} args - Arguments to create many ChannelConnections.
+     * @example
+     * // Create many ChannelConnections
+     * const channelConnection = await prisma.channelConnection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ChannelConnections and only return the `id`
+     * const channelConnectionWithIdOnly = await prisma.channelConnection.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChannelConnectionCreateManyAndReturnArgs>(args?: SelectSubset<T, ChannelConnectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ChannelConnection.
+     * @param {ChannelConnectionDeleteArgs} args - Arguments to delete one ChannelConnection.
+     * @example
+     * // Delete one ChannelConnection
+     * const ChannelConnection = await prisma.channelConnection.delete({
+     *   where: {
+     *     // ... filter to delete one ChannelConnection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChannelConnectionDeleteArgs>(args: SelectSubset<T, ChannelConnectionDeleteArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ChannelConnection.
+     * @param {ChannelConnectionUpdateArgs} args - Arguments to update one ChannelConnection.
+     * @example
+     * // Update one ChannelConnection
+     * const channelConnection = await prisma.channelConnection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChannelConnectionUpdateArgs>(args: SelectSubset<T, ChannelConnectionUpdateArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ChannelConnections.
+     * @param {ChannelConnectionDeleteManyArgs} args - Arguments to filter ChannelConnections to delete.
+     * @example
+     * // Delete a few ChannelConnections
+     * const { count } = await prisma.channelConnection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChannelConnectionDeleteManyArgs>(args?: SelectSubset<T, ChannelConnectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChannelConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ChannelConnections
+     * const channelConnection = await prisma.channelConnection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChannelConnectionUpdateManyArgs>(args: SelectSubset<T, ChannelConnectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChannelConnections and returns the data updated in the database.
+     * @param {ChannelConnectionUpdateManyAndReturnArgs} args - Arguments to update many ChannelConnections.
+     * @example
+     * // Update many ChannelConnections
+     * const channelConnection = await prisma.channelConnection.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ChannelConnections and only return the `id`
+     * const channelConnectionWithIdOnly = await prisma.channelConnection.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ChannelConnectionUpdateManyAndReturnArgs>(args: SelectSubset<T, ChannelConnectionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ChannelConnection.
+     * @param {ChannelConnectionUpsertArgs} args - Arguments to update or create a ChannelConnection.
+     * @example
+     * // Update or create a ChannelConnection
+     * const channelConnection = await prisma.channelConnection.upsert({
+     *   create: {
+     *     // ... data to create a ChannelConnection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ChannelConnection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChannelConnectionUpsertArgs>(args: SelectSubset<T, ChannelConnectionUpsertArgs<ExtArgs>>): Prisma__ChannelConnectionClient<$Result.GetResult<Prisma.$ChannelConnectionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ChannelConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionCountArgs} args - Arguments to filter ChannelConnections to count.
+     * @example
+     * // Count the number of ChannelConnections
+     * const count = await prisma.channelConnection.count({
+     *   where: {
+     *     // ... the filter for the ChannelConnections we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChannelConnectionCountArgs>(
+      args?: Subset<T, ChannelConnectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChannelConnectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ChannelConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChannelConnectionAggregateArgs>(args: Subset<T, ChannelConnectionAggregateArgs>): Prisma.PrismaPromise<GetChannelConnectionAggregateType<T>>
+
+    /**
+     * Group by ChannelConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelConnectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChannelConnectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChannelConnectionGroupByArgs['orderBy'] }
+        : { orderBy?: ChannelConnectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChannelConnectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChannelConnectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ChannelConnection model
+   */
+  readonly fields: ChannelConnectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ChannelConnection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChannelConnectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ChannelConnection model
+   */
+  interface ChannelConnectionFieldRefs {
+    readonly id: FieldRef<"ChannelConnection", 'String'>
+    readonly organizationId: FieldRef<"ChannelConnection", 'String'>
+    readonly channel: FieldRef<"ChannelConnection", 'ChannelType'>
+    readonly status: FieldRef<"ChannelConnection", 'ChannelConnectionStatus'>
+    readonly authState: FieldRef<"ChannelConnection", 'Json'>
+    readonly authStateVersion: FieldRef<"ChannelConnection", 'Int'>
+    readonly lastConnectedAt: FieldRef<"ChannelConnection", 'DateTime'>
+    readonly createdAt: FieldRef<"ChannelConnection", 'DateTime'>
+    readonly updatedAt: FieldRef<"ChannelConnection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ChannelConnection findUnique
+   */
+  export type ChannelConnectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelConnection to fetch.
+     */
+    where: ChannelConnectionWhereUniqueInput
+  }
+
+  /**
+   * ChannelConnection findUniqueOrThrow
+   */
+  export type ChannelConnectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelConnection to fetch.
+     */
+    where: ChannelConnectionWhereUniqueInput
+  }
+
+  /**
+   * ChannelConnection findFirst
+   */
+  export type ChannelConnectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelConnection to fetch.
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelConnections to fetch.
+     */
+    orderBy?: ChannelConnectionOrderByWithRelationInput | ChannelConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChannelConnections.
+     */
+    cursor?: ChannelConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChannelConnections.
+     */
+    distinct?: ChannelConnectionScalarFieldEnum | ChannelConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelConnection findFirstOrThrow
+   */
+  export type ChannelConnectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelConnection to fetch.
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelConnections to fetch.
+     */
+    orderBy?: ChannelConnectionOrderByWithRelationInput | ChannelConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChannelConnections.
+     */
+    cursor?: ChannelConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChannelConnections.
+     */
+    distinct?: ChannelConnectionScalarFieldEnum | ChannelConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelConnection findMany
+   */
+  export type ChannelConnectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelConnections to fetch.
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelConnections to fetch.
+     */
+    orderBy?: ChannelConnectionOrderByWithRelationInput | ChannelConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ChannelConnections.
+     */
+    cursor?: ChannelConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelConnections.
+     */
+    skip?: number
+    distinct?: ChannelConnectionScalarFieldEnum | ChannelConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelConnection create
+   */
+  export type ChannelConnectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ChannelConnection.
+     */
+    data: XOR<ChannelConnectionCreateInput, ChannelConnectionUncheckedCreateInput>
+  }
+
+  /**
+   * ChannelConnection createMany
+   */
+  export type ChannelConnectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ChannelConnections.
+     */
+    data: ChannelConnectionCreateManyInput | ChannelConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChannelConnection createManyAndReturn
+   */
+  export type ChannelConnectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to create many ChannelConnections.
+     */
+    data: ChannelConnectionCreateManyInput | ChannelConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ChannelConnection update
+   */
+  export type ChannelConnectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ChannelConnection.
+     */
+    data: XOR<ChannelConnectionUpdateInput, ChannelConnectionUncheckedUpdateInput>
+    /**
+     * Choose, which ChannelConnection to update.
+     */
+    where: ChannelConnectionWhereUniqueInput
+  }
+
+  /**
+   * ChannelConnection updateMany
+   */
+  export type ChannelConnectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ChannelConnections.
+     */
+    data: XOR<ChannelConnectionUpdateManyMutationInput, ChannelConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which ChannelConnections to update
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * Limit how many ChannelConnections to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChannelConnection updateManyAndReturn
+   */
+  export type ChannelConnectionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to update ChannelConnections.
+     */
+    data: XOR<ChannelConnectionUpdateManyMutationInput, ChannelConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which ChannelConnections to update
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * Limit how many ChannelConnections to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ChannelConnection upsert
+   */
+  export type ChannelConnectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ChannelConnection to update in case it exists.
+     */
+    where: ChannelConnectionWhereUniqueInput
+    /**
+     * In case the ChannelConnection found by the `where` argument doesn't exist, create a new ChannelConnection with this data.
+     */
+    create: XOR<ChannelConnectionCreateInput, ChannelConnectionUncheckedCreateInput>
+    /**
+     * In case the ChannelConnection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChannelConnectionUpdateInput, ChannelConnectionUncheckedUpdateInput>
+  }
+
+  /**
+   * ChannelConnection delete
+   */
+  export type ChannelConnectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+    /**
+     * Filter which ChannelConnection to delete.
+     */
+    where: ChannelConnectionWhereUniqueInput
+  }
+
+  /**
+   * ChannelConnection deleteMany
+   */
+  export type ChannelConnectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChannelConnections to delete
+     */
+    where?: ChannelConnectionWhereInput
+    /**
+     * Limit how many ChannelConnections to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChannelConnection without action
+   */
+  export type ChannelConnectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelConnection
+     */
+    select?: ChannelConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelConnection
+     */
+    omit?: ChannelConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelConnectionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Shipper
    */
 
@@ -23803,6 +26386,38 @@ export namespace Prisma {
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+  export const MessageLogScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    channel: 'channel',
+    direction: 'direction',
+    from: 'from',
+    to: 'to',
+    body: 'body',
+    status: 'status',
+    externalId: 'externalId',
+    truncated: 'truncated',
+    createdAt: 'createdAt'
+  };
+
+  export type MessageLogScalarFieldEnum = (typeof MessageLogScalarFieldEnum)[keyof typeof MessageLogScalarFieldEnum]
+
+
+  export const ChannelConnectionScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    channel: 'channel',
+    status: 'status',
+    authState: 'authState',
+    authStateVersion: 'authStateVersion',
+    lastConnectedAt: 'lastConnectedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ChannelConnectionScalarFieldEnum = (typeof ChannelConnectionScalarFieldEnum)[keyof typeof ChannelConnectionScalarFieldEnum]
+
+
   export const ShipperScalarFieldEnum: {
     id: 'id',
     organizationId: 'organizationId',
@@ -24076,6 +26691,62 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ChannelType'
+   */
+  export type EnumChannelTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChannelType[]'
+   */
+  export type ListEnumChannelTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'MessageDirection'
+   */
+  export type EnumMessageDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageDirection'>
+    
+
+
+  /**
+   * Reference to a field of type 'MessageDirection[]'
+   */
+  export type ListEnumMessageDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageDirection[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'MessageLogStatus'
+   */
+  export type EnumMessageLogStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageLogStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'MessageLogStatus[]'
+   */
+  export type ListEnumMessageLogStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageLogStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChannelConnectionStatus'
+   */
+  export type EnumChannelConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelConnectionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChannelConnectionStatus[]'
+   */
+  export type ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelConnectionStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'OrderStatus'
    */
   export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
@@ -24143,6 +26814,8 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     dsoBaselines?: DsoBaselineListRelationFilter
     historicalInvoices?: HistoricalInvoiceListRelationFilter
+    messageLogs?: MessageLogListRelationFilter
+    channelConnections?: ChannelConnectionListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -24165,6 +26838,8 @@ export namespace Prisma {
     orders?: OrderOrderByRelationAggregateInput
     dsoBaselines?: DsoBaselineOrderByRelationAggregateInput
     historicalInvoices?: HistoricalInvoiceOrderByRelationAggregateInput
+    messageLogs?: MessageLogOrderByRelationAggregateInput
+    channelConnections?: ChannelConnectionOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -24190,6 +26865,8 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     dsoBaselines?: DsoBaselineListRelationFilter
     historicalInvoices?: HistoricalInvoiceListRelationFilter
+    messageLogs?: MessageLogListRelationFilter
+    channelConnections?: ChannelConnectionListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -25005,6 +27682,170 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
   }
 
+  export type MessageLogWhereInput = {
+    AND?: MessageLogWhereInput | MessageLogWhereInput[]
+    OR?: MessageLogWhereInput[]
+    NOT?: MessageLogWhereInput | MessageLogWhereInput[]
+    id?: StringFilter<"MessageLog"> | string
+    organizationId?: StringFilter<"MessageLog"> | string
+    channel?: EnumChannelTypeFilter<"MessageLog"> | $Enums.ChannelType
+    direction?: EnumMessageDirectionFilter<"MessageLog"> | $Enums.MessageDirection
+    from?: StringFilter<"MessageLog"> | string
+    to?: StringFilter<"MessageLog"> | string
+    body?: StringNullableFilter<"MessageLog"> | string | null
+    status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
+    externalId?: StringNullableFilter<"MessageLog"> | string | null
+    truncated?: BoolFilter<"MessageLog"> | boolean
+    createdAt?: DateTimeFilter<"MessageLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type MessageLogOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    body?: SortOrderInput | SortOrder
+    status?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    truncated?: SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type MessageLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_externalId?: MessageLogOrganizationIdExternalIdCompoundUniqueInput
+    AND?: MessageLogWhereInput | MessageLogWhereInput[]
+    OR?: MessageLogWhereInput[]
+    NOT?: MessageLogWhereInput | MessageLogWhereInput[]
+    organizationId?: StringFilter<"MessageLog"> | string
+    channel?: EnumChannelTypeFilter<"MessageLog"> | $Enums.ChannelType
+    direction?: EnumMessageDirectionFilter<"MessageLog"> | $Enums.MessageDirection
+    from?: StringFilter<"MessageLog"> | string
+    to?: StringFilter<"MessageLog"> | string
+    body?: StringNullableFilter<"MessageLog"> | string | null
+    status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
+    externalId?: StringNullableFilter<"MessageLog"> | string | null
+    truncated?: BoolFilter<"MessageLog"> | boolean
+    createdAt?: DateTimeFilter<"MessageLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_externalId">
+
+  export type MessageLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    body?: SortOrderInput | SortOrder
+    status?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    truncated?: SortOrder
+    createdAt?: SortOrder
+    _count?: MessageLogCountOrderByAggregateInput
+    _max?: MessageLogMaxOrderByAggregateInput
+    _min?: MessageLogMinOrderByAggregateInput
+  }
+
+  export type MessageLogScalarWhereWithAggregatesInput = {
+    AND?: MessageLogScalarWhereWithAggregatesInput | MessageLogScalarWhereWithAggregatesInput[]
+    OR?: MessageLogScalarWhereWithAggregatesInput[]
+    NOT?: MessageLogScalarWhereWithAggregatesInput | MessageLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MessageLog"> | string
+    organizationId?: StringWithAggregatesFilter<"MessageLog"> | string
+    channel?: EnumChannelTypeWithAggregatesFilter<"MessageLog"> | $Enums.ChannelType
+    direction?: EnumMessageDirectionWithAggregatesFilter<"MessageLog"> | $Enums.MessageDirection
+    from?: StringWithAggregatesFilter<"MessageLog"> | string
+    to?: StringWithAggregatesFilter<"MessageLog"> | string
+    body?: StringNullableWithAggregatesFilter<"MessageLog"> | string | null
+    status?: EnumMessageLogStatusWithAggregatesFilter<"MessageLog"> | $Enums.MessageLogStatus
+    externalId?: StringNullableWithAggregatesFilter<"MessageLog"> | string | null
+    truncated?: BoolWithAggregatesFilter<"MessageLog"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"MessageLog"> | Date | string
+  }
+
+  export type ChannelConnectionWhereInput = {
+    AND?: ChannelConnectionWhereInput | ChannelConnectionWhereInput[]
+    OR?: ChannelConnectionWhereInput[]
+    NOT?: ChannelConnectionWhereInput | ChannelConnectionWhereInput[]
+    id?: StringFilter<"ChannelConnection"> | string
+    organizationId?: StringFilter<"ChannelConnection"> | string
+    channel?: EnumChannelTypeFilter<"ChannelConnection"> | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFilter<"ChannelConnection"> | $Enums.ChannelConnectionStatus
+    authState?: JsonNullableFilter<"ChannelConnection">
+    authStateVersion?: IntFilter<"ChannelConnection"> | number
+    lastConnectedAt?: DateTimeNullableFilter<"ChannelConnection"> | Date | string | null
+    createdAt?: DateTimeFilter<"ChannelConnection"> | Date | string
+    updatedAt?: DateTimeFilter<"ChannelConnection"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type ChannelConnectionOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    authState?: SortOrderInput | SortOrder
+    authStateVersion?: SortOrder
+    lastConnectedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type ChannelConnectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_channel?: ChannelConnectionOrganizationIdChannelCompoundUniqueInput
+    AND?: ChannelConnectionWhereInput | ChannelConnectionWhereInput[]
+    OR?: ChannelConnectionWhereInput[]
+    NOT?: ChannelConnectionWhereInput | ChannelConnectionWhereInput[]
+    organizationId?: StringFilter<"ChannelConnection"> | string
+    channel?: EnumChannelTypeFilter<"ChannelConnection"> | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFilter<"ChannelConnection"> | $Enums.ChannelConnectionStatus
+    authState?: JsonNullableFilter<"ChannelConnection">
+    authStateVersion?: IntFilter<"ChannelConnection"> | number
+    lastConnectedAt?: DateTimeNullableFilter<"ChannelConnection"> | Date | string | null
+    createdAt?: DateTimeFilter<"ChannelConnection"> | Date | string
+    updatedAt?: DateTimeFilter<"ChannelConnection"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_channel">
+
+  export type ChannelConnectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    authState?: SortOrderInput | SortOrder
+    authStateVersion?: SortOrder
+    lastConnectedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ChannelConnectionCountOrderByAggregateInput
+    _avg?: ChannelConnectionAvgOrderByAggregateInput
+    _max?: ChannelConnectionMaxOrderByAggregateInput
+    _min?: ChannelConnectionMinOrderByAggregateInput
+    _sum?: ChannelConnectionSumOrderByAggregateInput
+  }
+
+  export type ChannelConnectionScalarWhereWithAggregatesInput = {
+    AND?: ChannelConnectionScalarWhereWithAggregatesInput | ChannelConnectionScalarWhereWithAggregatesInput[]
+    OR?: ChannelConnectionScalarWhereWithAggregatesInput[]
+    NOT?: ChannelConnectionScalarWhereWithAggregatesInput | ChannelConnectionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ChannelConnection"> | string
+    organizationId?: StringWithAggregatesFilter<"ChannelConnection"> | string
+    channel?: EnumChannelTypeWithAggregatesFilter<"ChannelConnection"> | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusWithAggregatesFilter<"ChannelConnection"> | $Enums.ChannelConnectionStatus
+    authState?: JsonNullableWithAggregatesFilter<"ChannelConnection">
+    authStateVersion?: IntWithAggregatesFilter<"ChannelConnection"> | number
+    lastConnectedAt?: DateTimeNullableWithAggregatesFilter<"ChannelConnection"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ChannelConnection"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ChannelConnection"> | Date | string
+  }
+
   export type ShipperWhereInput = {
     AND?: ShipperWhereInput | ShipperWhereInput[]
     OR?: ShipperWhereInput[]
@@ -25557,6 +28398,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -25579,6 +28422,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -25601,6 +28446,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -25623,6 +28470,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -26491,6 +29340,186 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MessageLogCreateInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutMessageLogsInput
+  }
+
+  export type MessageLogUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+  }
+
+  export type MessageLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutMessageLogsNestedInput
+  }
+
+  export type MessageLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageLogCreateManyInput = {
+    id?: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+  }
+
+  export type MessageLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionCreateInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutChannelConnectionsInput
+  }
+
+  export type ChannelConnectionUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelConnectionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutChannelConnectionsNestedInput
+  }
+
+  export type ChannelConnectionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionCreateManyInput = {
+    id?: string
+    organizationId: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelConnectionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ShipperCreateInput = {
     id?: string
     name: string
@@ -27184,6 +30213,18 @@ export namespace Prisma {
     none?: HistoricalInvoiceWhereInput
   }
 
+  export type MessageLogListRelationFilter = {
+    every?: MessageLogWhereInput
+    some?: MessageLogWhereInput
+    none?: MessageLogWhereInput
+  }
+
+  export type ChannelConnectionListRelationFilter = {
+    every?: ChannelConnectionWhereInput
+    some?: ChannelConnectionWhereInput
+    none?: ChannelConnectionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -27234,6 +30275,14 @@ export namespace Prisma {
   }
 
   export type HistoricalInvoiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MessageLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChannelConnectionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28064,6 +31113,168 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type EnumChannelTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelType | EnumChannelTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelTypeFilter<$PrismaModel> | $Enums.ChannelType
+  }
+
+  export type EnumMessageDirectionFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageDirection | EnumMessageDirectionFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageDirectionFilter<$PrismaModel> | $Enums.MessageDirection
+  }
+
+  export type EnumMessageLogStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageLogStatus | EnumMessageLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageLogStatusFilter<$PrismaModel> | $Enums.MessageLogStatus
+  }
+
+  export type MessageLogOrganizationIdExternalIdCompoundUniqueInput = {
+    organizationId: string
+    externalId: string
+  }
+
+  export type MessageLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    body?: SortOrder
+    status?: SortOrder
+    externalId?: SortOrder
+    truncated?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MessageLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    body?: SortOrder
+    status?: SortOrder
+    externalId?: SortOrder
+    truncated?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MessageLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    body?: SortOrder
+    status?: SortOrder
+    externalId?: SortOrder
+    truncated?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumChannelTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelType | EnumChannelTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelTypeWithAggregatesFilter<$PrismaModel> | $Enums.ChannelType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelTypeFilter<$PrismaModel>
+    _max?: NestedEnumChannelTypeFilter<$PrismaModel>
+  }
+
+  export type EnumMessageDirectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageDirection | EnumMessageDirectionFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageDirectionWithAggregatesFilter<$PrismaModel> | $Enums.MessageDirection
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMessageDirectionFilter<$PrismaModel>
+    _max?: NestedEnumMessageDirectionFilter<$PrismaModel>
+  }
+
+  export type EnumMessageLogStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageLogStatus | EnumMessageLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageLogStatusWithAggregatesFilter<$PrismaModel> | $Enums.MessageLogStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+    _max?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+  }
+
+  export type EnumChannelConnectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelConnectionStatus | EnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelConnectionStatusFilter<$PrismaModel> | $Enums.ChannelConnectionStatus
+  }
+
+  export type ChannelConnectionOrganizationIdChannelCompoundUniqueInput = {
+    organizationId: string
+    channel: $Enums.ChannelType
+  }
+
+  export type ChannelConnectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    authState?: SortOrder
+    authStateVersion?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChannelConnectionAvgOrderByAggregateInput = {
+    authStateVersion?: SortOrder
+  }
+
+  export type ChannelConnectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    authStateVersion?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChannelConnectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    authStateVersion?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChannelConnectionSumOrderByAggregateInput = {
+    authStateVersion?: SortOrder
+  }
+
+  export type EnumChannelConnectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelConnectionStatus | EnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelConnectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChannelConnectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelConnectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumChannelConnectionStatusFilter<$PrismaModel>
+  }
+
   export type ShipperOrganizationIdNameCompoundUniqueInput = {
     organizationId: string
     name: string
@@ -28548,6 +31759,20 @@ export namespace Prisma {
     connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
   }
 
+  export type MessageLogCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput> | MessageLogCreateWithoutOrganizationInput[] | MessageLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MessageLogCreateOrConnectWithoutOrganizationInput | MessageLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: MessageLogCreateManyOrganizationInputEnvelope
+    connect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+  }
+
+  export type ChannelConnectionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput> | ChannelConnectionCreateWithoutOrganizationInput[] | ChannelConnectionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelConnectionCreateOrConnectWithoutOrganizationInput | ChannelConnectionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ChannelConnectionCreateManyOrganizationInputEnvelope
+    connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -28630,6 +31855,20 @@ export namespace Prisma {
     connectOrCreate?: HistoricalInvoiceCreateOrConnectWithoutOrganizationInput | HistoricalInvoiceCreateOrConnectWithoutOrganizationInput[]
     createMany?: HistoricalInvoiceCreateManyOrganizationInputEnvelope
     connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+  }
+
+  export type MessageLogUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput> | MessageLogCreateWithoutOrganizationInput[] | MessageLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MessageLogCreateOrConnectWithoutOrganizationInput | MessageLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: MessageLogCreateManyOrganizationInputEnvelope
+    connect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+  }
+
+  export type ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput> | ChannelConnectionCreateWithoutOrganizationInput[] | ChannelConnectionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelConnectionCreateOrConnectWithoutOrganizationInput | ChannelConnectionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ChannelConnectionCreateManyOrganizationInputEnvelope
+    connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -28820,6 +32059,34 @@ export namespace Prisma {
     deleteMany?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
   }
 
+  export type MessageLogUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput> | MessageLogCreateWithoutOrganizationInput[] | MessageLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MessageLogCreateOrConnectWithoutOrganizationInput | MessageLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: MessageLogUpsertWithWhereUniqueWithoutOrganizationInput | MessageLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: MessageLogCreateManyOrganizationInputEnvelope
+    set?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    disconnect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    delete?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    connect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    update?: MessageLogUpdateWithWhereUniqueWithoutOrganizationInput | MessageLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: MessageLogUpdateManyWithWhereWithoutOrganizationInput | MessageLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: MessageLogScalarWhereInput | MessageLogScalarWhereInput[]
+  }
+
+  export type ChannelConnectionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput> | ChannelConnectionCreateWithoutOrganizationInput[] | ChannelConnectionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelConnectionCreateOrConnectWithoutOrganizationInput | ChannelConnectionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ChannelConnectionUpsertWithWhereUniqueWithoutOrganizationInput | ChannelConnectionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ChannelConnectionCreateManyOrganizationInputEnvelope
+    set?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    disconnect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    delete?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    update?: ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput | ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput | ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -28986,6 +32253,34 @@ export namespace Prisma {
     update?: HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput | HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput | HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
+  }
+
+  export type MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput> | MessageLogCreateWithoutOrganizationInput[] | MessageLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MessageLogCreateOrConnectWithoutOrganizationInput | MessageLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: MessageLogUpsertWithWhereUniqueWithoutOrganizationInput | MessageLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: MessageLogCreateManyOrganizationInputEnvelope
+    set?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    disconnect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    delete?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    connect?: MessageLogWhereUniqueInput | MessageLogWhereUniqueInput[]
+    update?: MessageLogUpdateWithWhereUniqueWithoutOrganizationInput | MessageLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: MessageLogUpdateManyWithWhereWithoutOrganizationInput | MessageLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: MessageLogScalarWhereInput | MessageLogScalarWhereInput[]
+  }
+
+  export type ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput> | ChannelConnectionCreateWithoutOrganizationInput[] | ChannelConnectionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelConnectionCreateOrConnectWithoutOrganizationInput | ChannelConnectionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ChannelConnectionUpsertWithWhereUniqueWithoutOrganizationInput | ChannelConnectionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ChannelConnectionCreateManyOrganizationInputEnvelope
+    set?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    disconnect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    delete?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    connect?: ChannelConnectionWhereUniqueInput | ChannelConnectionWhereUniqueInput[]
+    update?: ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput | ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput | ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -29330,6 +32625,50 @@ export namespace Prisma {
     upsert?: OrganizationUpsertWithoutAuditLogsInput
     connect?: OrganizationWhereUniqueInput
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutAuditLogsInput, OrganizationUpdateWithoutAuditLogsInput>, OrganizationUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutMessageLogsInput = {
+    create?: XOR<OrganizationCreateWithoutMessageLogsInput, OrganizationUncheckedCreateWithoutMessageLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutMessageLogsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type EnumChannelTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ChannelType
+  }
+
+  export type EnumMessageDirectionFieldUpdateOperationsInput = {
+    set?: $Enums.MessageDirection
+  }
+
+  export type EnumMessageLogStatusFieldUpdateOperationsInput = {
+    set?: $Enums.MessageLogStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutMessageLogsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutMessageLogsInput, OrganizationUncheckedCreateWithoutMessageLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutMessageLogsInput
+    upsert?: OrganizationUpsertWithoutMessageLogsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutMessageLogsInput, OrganizationUpdateWithoutMessageLogsInput>, OrganizationUncheckedUpdateWithoutMessageLogsInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutChannelConnectionsInput = {
+    create?: XOR<OrganizationCreateWithoutChannelConnectionsInput, OrganizationUncheckedCreateWithoutChannelConnectionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutChannelConnectionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type EnumChannelConnectionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ChannelConnectionStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutChannelConnectionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutChannelConnectionsInput, OrganizationUncheckedCreateWithoutChannelConnectionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutChannelConnectionsInput
+    upsert?: OrganizationUpsertWithoutChannelConnectionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutChannelConnectionsInput, OrganizationUpdateWithoutChannelConnectionsInput>, OrganizationUncheckedUpdateWithoutChannelConnectionsInput>
   }
 
   export type OrganizationCreateNestedOneWithoutShippersInput = {
@@ -29931,6 +33270,74 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumChannelTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelType | EnumChannelTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelTypeFilter<$PrismaModel> | $Enums.ChannelType
+  }
+
+  export type NestedEnumMessageDirectionFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageDirection | EnumMessageDirectionFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageDirectionFilter<$PrismaModel> | $Enums.MessageDirection
+  }
+
+  export type NestedEnumMessageLogStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageLogStatus | EnumMessageLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageLogStatusFilter<$PrismaModel> | $Enums.MessageLogStatus
+  }
+
+  export type NestedEnumChannelTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelType | EnumChannelTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelType[] | ListEnumChannelTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelTypeWithAggregatesFilter<$PrismaModel> | $Enums.ChannelType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelTypeFilter<$PrismaModel>
+    _max?: NestedEnumChannelTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumMessageDirectionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageDirection | EnumMessageDirectionFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageDirection[] | ListEnumMessageDirectionFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageDirectionWithAggregatesFilter<$PrismaModel> | $Enums.MessageDirection
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMessageDirectionFilter<$PrismaModel>
+    _max?: NestedEnumMessageDirectionFilter<$PrismaModel>
+  }
+
+  export type NestedEnumMessageLogStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MessageLogStatus | EnumMessageLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MessageLogStatus[] | ListEnumMessageLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMessageLogStatusWithAggregatesFilter<$PrismaModel> | $Enums.MessageLogStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+    _max?: NestedEnumMessageLogStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumChannelConnectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelConnectionStatus | EnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelConnectionStatusFilter<$PrismaModel> | $Enums.ChannelConnectionStatus
+  }
+
+  export type NestedEnumChannelConnectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelConnectionStatus | EnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelConnectionStatus[] | ListEnumChannelConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelConnectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChannelConnectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelConnectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumChannelConnectionStatusFilter<$PrismaModel>
+  }
+
   export type NestedBigIntNullableFilter<$PrismaModel = never> = {
     equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
     in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
@@ -30419,6 +33826,74 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MessageLogCreateWithoutOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+  }
+
+  export type MessageLogUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+  }
+
+  export type MessageLogCreateOrConnectWithoutOrganizationInput = {
+    where: MessageLogWhereUniqueInput
+    create: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type MessageLogCreateManyOrganizationInputEnvelope = {
+    data: MessageLogCreateManyOrganizationInput | MessageLogCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ChannelConnectionCreateWithoutOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelConnectionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelConnectionCreateOrConnectWithoutOrganizationInput = {
+    where: ChannelConnectionWhereUniqueInput
+    create: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ChannelConnectionCreateManyOrganizationInputEnvelope = {
+    data: ChannelConnectionCreateManyOrganizationInput | ChannelConnectionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MembershipUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: MembershipWhereUniqueInput
     update: XOR<MembershipUpdateWithoutOrganizationInput, MembershipUncheckedUpdateWithoutOrganizationInput>
@@ -30801,6 +34276,70 @@ export namespace Prisma {
     paymentDate?: DateTimeNullableFilter<"HistoricalInvoice"> | Date | string | null
     amountRupiah?: BigIntFilter<"HistoricalInvoice"> | bigint | number
     createdAt?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+  }
+
+  export type MessageLogUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: MessageLogWhereUniqueInput
+    update: XOR<MessageLogUpdateWithoutOrganizationInput, MessageLogUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<MessageLogCreateWithoutOrganizationInput, MessageLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type MessageLogUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: MessageLogWhereUniqueInput
+    data: XOR<MessageLogUpdateWithoutOrganizationInput, MessageLogUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type MessageLogUpdateManyWithWhereWithoutOrganizationInput = {
+    where: MessageLogScalarWhereInput
+    data: XOR<MessageLogUpdateManyMutationInput, MessageLogUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type MessageLogScalarWhereInput = {
+    AND?: MessageLogScalarWhereInput | MessageLogScalarWhereInput[]
+    OR?: MessageLogScalarWhereInput[]
+    NOT?: MessageLogScalarWhereInput | MessageLogScalarWhereInput[]
+    id?: StringFilter<"MessageLog"> | string
+    organizationId?: StringFilter<"MessageLog"> | string
+    channel?: EnumChannelTypeFilter<"MessageLog"> | $Enums.ChannelType
+    direction?: EnumMessageDirectionFilter<"MessageLog"> | $Enums.MessageDirection
+    from?: StringFilter<"MessageLog"> | string
+    to?: StringFilter<"MessageLog"> | string
+    body?: StringNullableFilter<"MessageLog"> | string | null
+    status?: EnumMessageLogStatusFilter<"MessageLog"> | $Enums.MessageLogStatus
+    externalId?: StringNullableFilter<"MessageLog"> | string | null
+    truncated?: BoolFilter<"MessageLog"> | boolean
+    createdAt?: DateTimeFilter<"MessageLog"> | Date | string
+  }
+
+  export type ChannelConnectionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: ChannelConnectionWhereUniqueInput
+    update: XOR<ChannelConnectionUpdateWithoutOrganizationInput, ChannelConnectionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<ChannelConnectionCreateWithoutOrganizationInput, ChannelConnectionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ChannelConnectionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: ChannelConnectionWhereUniqueInput
+    data: XOR<ChannelConnectionUpdateWithoutOrganizationInput, ChannelConnectionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type ChannelConnectionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: ChannelConnectionScalarWhereInput
+    data: XOR<ChannelConnectionUpdateManyMutationInput, ChannelConnectionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type ChannelConnectionScalarWhereInput = {
+    AND?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
+    OR?: ChannelConnectionScalarWhereInput[]
+    NOT?: ChannelConnectionScalarWhereInput | ChannelConnectionScalarWhereInput[]
+    id?: StringFilter<"ChannelConnection"> | string
+    organizationId?: StringFilter<"ChannelConnection"> | string
+    channel?: EnumChannelTypeFilter<"ChannelConnection"> | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFilter<"ChannelConnection"> | $Enums.ChannelConnectionStatus
+    authState?: JsonNullableFilter<"ChannelConnection">
+    authStateVersion?: IntFilter<"ChannelConnection"> | number
+    lastConnectedAt?: DateTimeNullableFilter<"ChannelConnection"> | Date | string | null
+    createdAt?: DateTimeFilter<"ChannelConnection"> | Date | string
+    updatedAt?: DateTimeFilter<"ChannelConnection"> | Date | string
   }
 
   export type UserCreateWithoutPostsInput = {
@@ -31242,6 +34781,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -31263,6 +34804,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -31333,6 +34876,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -31354,6 +34899,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -31375,6 +34922,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -31396,6 +34945,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -31433,6 +34984,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -31454,6 +35007,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -31475,6 +35030,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -31496,6 +35053,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -31533,6 +35092,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -31554,6 +35115,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -31575,6 +35138,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -31596,6 +35161,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -31633,6 +35200,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -31654,6 +35223,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -31675,6 +35246,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -31696,6 +35269,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -31733,6 +35308,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -31754,6 +35331,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -31775,6 +35354,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -31796,6 +35377,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -31833,6 +35416,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -31854,6 +35439,224 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutMessageLogsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutMessageLogsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutMessageLogsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutMessageLogsInput, OrganizationUncheckedCreateWithoutMessageLogsInput>
+  }
+
+  export type OrganizationUpsertWithoutMessageLogsInput = {
+    update: XOR<OrganizationUpdateWithoutMessageLogsInput, OrganizationUncheckedUpdateWithoutMessageLogsInput>
+    create: XOR<OrganizationCreateWithoutMessageLogsInput, OrganizationUncheckedCreateWithoutMessageLogsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutMessageLogsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutMessageLogsInput, OrganizationUncheckedUpdateWithoutMessageLogsInput>
+  }
+
+  export type OrganizationUpdateWithoutMessageLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutMessageLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutChannelConnectionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutChannelConnectionsInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutChannelConnectionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutChannelConnectionsInput, OrganizationUncheckedCreateWithoutChannelConnectionsInput>
+  }
+
+  export type OrganizationUpsertWithoutChannelConnectionsInput = {
+    update: XOR<OrganizationUpdateWithoutChannelConnectionsInput, OrganizationUncheckedUpdateWithoutChannelConnectionsInput>
+    create: XOR<OrganizationCreateWithoutChannelConnectionsInput, OrganizationUncheckedCreateWithoutChannelConnectionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutChannelConnectionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutChannelConnectionsInput, OrganizationUncheckedUpdateWithoutChannelConnectionsInput>
+  }
+
+  export type OrganizationUpdateWithoutChannelConnectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutChannelConnectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutShippersInput = {
@@ -31875,6 +35678,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutShippersInput = {
@@ -31896,6 +35701,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutShippersInput = {
@@ -32011,6 +35818,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutShippersInput = {
@@ -32032,6 +35841,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
@@ -32085,6 +35896,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
@@ -32106,6 +35919,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
@@ -32176,6 +35991,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -32197,6 +36014,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutRequirementProfilesInput = {
@@ -32257,6 +36076,8 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDriversInput = {
@@ -32278,6 +36099,8 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDriversInput = {
@@ -32361,6 +36184,8 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDriversInput = {
@@ -32382,6 +36207,8 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutDriverInput = {
@@ -32419,6 +36246,8 @@ export namespace Prisma {
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOrdersInput = {
@@ -32440,6 +36269,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOrdersInput = {
@@ -32537,6 +36368,8 @@ export namespace Prisma {
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOrdersInput = {
@@ -32558,6 +36391,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutOrdersInput = {
@@ -32651,6 +36486,8 @@ export namespace Prisma {
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDsoBaselinesInput = {
@@ -32672,6 +36509,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDsoBaselinesInput = {
@@ -32709,6 +36548,8 @@ export namespace Prisma {
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDsoBaselinesInput = {
@@ -32730,6 +36571,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHistoricalInvoicesInput = {
@@ -32751,6 +36594,8 @@ export namespace Prisma {
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHistoricalInvoicesInput = {
@@ -32772,6 +36617,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
     dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    messageLogs?: MessageLogUncheckedCreateNestedManyWithoutOrganizationInput
+    channelConnections?: ChannelConnectionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHistoricalInvoicesInput = {
@@ -32809,6 +36656,8 @@ export namespace Prisma {
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput = {
@@ -32830,6 +36679,8 @@ export namespace Prisma {
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
     dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    messageLogs?: MessageLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    channelConnections?: ChannelConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -32974,6 +36825,30 @@ export namespace Prisma {
     paymentDate?: Date | string | null
     amountRupiah: bigint | number
     createdAt?: Date | string
+  }
+
+  export type MessageLogCreateManyOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    direction: $Enums.MessageDirection
+    from: string
+    to: string
+    body?: string | null
+    status?: $Enums.MessageLogStatus
+    externalId?: string | null
+    truncated?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ChannelConnectionCreateManyOrganizationInput = {
+    id?: string
+    channel: $Enums.ChannelType
+    status?: $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: number
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MembershipUpdateWithoutOrganizationInput = {
@@ -33412,6 +37287,78 @@ export namespace Prisma {
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageLogUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageLogUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageLogUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    direction?: EnumMessageDirectionFieldUpdateOperationsInput | $Enums.MessageDirection
+    from?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumMessageLogStatusFieldUpdateOperationsInput | $Enums.MessageLogStatus
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    truncated?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelConnectionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
+    status?: EnumChannelConnectionStatusFieldUpdateOperationsInput | $Enums.ChannelConnectionStatus
+    authState?: NullableJsonNullValueInput | InputJsonValue
+    authStateVersion?: IntFieldUpdateOperationsInput | number
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountCreateManyUserInput = {

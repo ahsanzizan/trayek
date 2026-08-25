@@ -243,19 +243,18 @@ describe("orders are audited", () => {
     const nomor = `${suffix}-noaudit`;
     await createOrder(nomor);
 
+    const before = await db.auditLog.count({
+      where: { entityType: "Order", action: "ORDER_CREATED" },
+    });
+
     await expect(
       admin.order.create({ ...orderInput(nomor), status: undefined }),
     ).rejects.toMatchObject({ code: "CONFLICT" });
 
-    const entries = await db.auditLog.count({
+    const after = await db.auditLog.count({
       where: { entityType: "Order", action: "ORDER_CREATED" },
     });
 
-    const orders = await db.order.count({
-      where: { organizationId: organization!.id },
-    });
-
-    // Never more audit entries than orders that actually exist.
-    expect(entries).toBeLessThanOrEqual(orders + createdIds.length);
+    expect(after).toBe(before);
   });
 });

@@ -56,6 +56,29 @@ enum AuditActorType {
   SYSTEM
 }
 
+enum ChannelType {
+  WHATSAPP_BAILEYS
+  EMAIL
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageLogStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+enum ChannelConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+  NEEDS_PAIRING
+}
+
 model Organization {
   id                        String               @id @default(cuid())
   name                      String
@@ -76,6 +99,8 @@ model Organization {
   orders                    Order[]
   dsoBaselines              DsoBaseline[]
   historicalInvoices        HistoricalInvoice[]
+  messageLogs               MessageLog[]
+  channelConnections        ChannelConnection[]
 }
 
 model Post {
@@ -254,6 +279,44 @@ model AuditLog {
 
   @@index([organizationId, entityType, entityId])
   @@index([organizationId, createdAt])
+}
+
+model MessageLog {
+  id             String           @id @default(cuid())
+  organizationId String
+  channel        ChannelType
+  direction      MessageDirection
+  from           String
+  to             String
+  body           String?          @db.Text
+  status         MessageLogStatus @default(PENDING)
+  externalId     String?
+  truncated      Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, externalId])
+  @@index([organizationId])
+  @@index([organizationId, createdAt])
+  @@index([organizationId, channel, createdAt])
+}
+
+model ChannelConnection {
+  id               String                  @id @default(cuid())
+  organizationId   String
+  channel          ChannelType
+  status           ChannelConnectionStatus @default(DISCONNECTED)
+  authState        Json?
+  authStateVersion Int                     @default(1)
+  lastConnectedAt  DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, channel])
+  @@index([organizationId])
 }
 
 /// A shipper this forwarder bills (TRK-010).

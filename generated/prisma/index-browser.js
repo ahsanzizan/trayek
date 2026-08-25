@@ -250,6 +250,32 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MessageLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  channel: 'channel',
+  direction: 'direction',
+  from: 'from',
+  to: 'to',
+  body: 'body',
+  status: 'status',
+  externalId: 'externalId',
+  truncated: 'truncated',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ChannelConnectionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  channel: 'channel',
+  status: 'status',
+  authState: 'authState',
+  authStateVersion: 'authStateVersion',
+  lastConnectedAt: 'lastConnectedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ShipperScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
@@ -379,6 +405,29 @@ exports.AuditActorType = exports.$Enums.AuditActorType = {
   SYSTEM: 'SYSTEM'
 };
 
+exports.ChannelType = exports.$Enums.ChannelType = {
+  WHATSAPP_BAILEYS: 'WHATSAPP_BAILEYS',
+  EMAIL: 'EMAIL'
+};
+
+exports.MessageDirection = exports.$Enums.MessageDirection = {
+  INBOUND: 'INBOUND',
+  OUTBOUND: 'OUTBOUND'
+};
+
+exports.MessageLogStatus = exports.$Enums.MessageLogStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED'
+};
+
+exports.ChannelConnectionStatus = exports.$Enums.ChannelConnectionStatus = {
+  CONNECTED: 'CONNECTED',
+  DISCONNECTED: 'DISCONNECTED',
+  NEEDS_PAIRING: 'NEEDS_PAIRING'
+};
+
 exports.OrderStatus = exports.$Enums.OrderStatus = {
   CREATED: 'CREATED',
   IN_TRANSIT: 'IN_TRANSIT',
@@ -410,6 +459,8 @@ exports.Prisma.ModelName = {
   HumanFallbackEvent: 'HumanFallbackEvent',
   LlmCallLog: 'LlmCallLog',
   AuditLog: 'AuditLog',
+  MessageLog: 'MessageLog',
+  ChannelConnection: 'ChannelConnection',
   Shipper: 'Shipper',
   RequirementProfile: 'RequirementProfile',
   Driver: 'Driver',
