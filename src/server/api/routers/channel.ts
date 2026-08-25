@@ -36,7 +36,7 @@ const monthlyReportOutput = z.object({
       estimatedCost: z.number().finite().nonnegative(),
     }),
   ),
-  avgPerPod: z.number().finite().min(0).max(100),
+  avgPerPod: z.number().finite().min(0).nullable(),
   designRuleViolation: z.boolean(),
   csv: z.string(),
 });
@@ -77,26 +77,6 @@ const qrStreamOutput = z.object({
   createdAt: z.string(),
 });
 
-type MessageLogCostGroupByArgs = {
-  by: ["category"];
-  where: {
-    organizationId: string;
-    createdAt: { gte: Date; lt: Date };
-  };
-  _count: { _all: true };
-  _sum: { estimatedCost: true };
-};
-
-type MessageLogCostGroupByRow = {
-  category: string;
-  _count: { _all: number };
-  _sum: { estimatedCost: unknown };
-};
-
-type MessageLogCostGroupByDelegate = {
-  groupBy(args: MessageLogCostGroupByArgs): Promise<MessageLogCostGroupByRow[]>;
-};
-
 type DecimalLike = { toNumber: () => unknown };
 
 function hasToNumber(value: unknown): value is DecimalLike {
@@ -111,6 +91,19 @@ function monthBounds(month: string): { gte: Date; lt: Date } {
     gte: new Date(Date.UTC(year, monthIndex, 1)),
     lt: new Date(Date.UTC(year, monthIndex + 1, 1)),
   };
+}
+
+function trailingWindowBounds(
+  end: Date,
+  days: number,
+): {
+  gte: Date;
+  lt: Date;
+} {
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - days);
+
+  return { gte: start, lt: end };
 }
 
 function toEstimatedCostNumber(value: unknown): number {
@@ -194,23 +187,28 @@ export const channelRouter = createTRPCRouter({
     .input(monthlyReportInput)
     .output(monthlyReportOutput)
     .query(async ({ ctx, input }) => {
-      const createdAt = monthBounds(input.month);
-      const messageLog = ctx.db
-        .messageLog as unknown as MessageLogCostGroupByDelegate;
-      const [categoryRows, podCount] = await Promise.all([
-        messageLog.groupBy({
+      const monthRange = monthBounds(input.month);
+      const averageRange = trailingWindowBounds(monthRange.lt, 30);
+      const [categoryRows, messageCount, podCount] = await Promise.all([
+        ctx.db.messageLog.groupBy({
           by: ["category"],
           where: {
             organizationId: ctx.organizationId,
-            createdAt,
+            createdAt: monthRange,
           },
           _count: { _all: true },
           _sum: { estimatedCost: true },
         }),
+        ctx.db.messageLog.count({
+          where: {
+            organizationId: ctx.organizationId,
+            createdAt: averageRange,
+          },
+        }),
         ctx.db.podSubmission.count({
           where: {
             organizationId: ctx.organizationId,
-            receivedAt: createdAt,
+            receivedAt: averageRange,
           },
         }),
       ]);
@@ -224,7 +222,7 @@ export const channelRouter = createTRPCRouter({
         (total, row) => total + row.messageCount,
         0,
       );
-      const avgPerPod = podCount === 0 ? 0 : totalMessages / podCount;
+      const avgPerPod = podCount === 0 ? null : messageCount / podCount;
 
       return {
         month: input.month,

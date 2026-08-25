@@ -229,9 +229,19 @@ describe("Baileys channel worker lifecycle", () => {
     const repository = createRepository();
     const socket = createSocket();
     const writes: string[] = [];
+    const attributions: Array<{
+      category: string;
+      estimatedCost: number;
+      conversationWindowState: string;
+    }> = [];
     const messageLog: BaileysMessageLogStore = {
       async create({ data }) {
         writes.push(data.body);
+        attributions.push({
+          category: data.category,
+          estimatedCost: data.estimatedCost,
+          conversationWindowState: data.conversationWindowState,
+        });
         return { id: `log-${writes.length}` };
       },
       async update() {
@@ -272,6 +282,18 @@ describe("Baileys channel worker lifecycle", () => {
     });
 
     await vi.waitFor(() => expect(writes).toEqual(["satu", "dua"]));
+    expect(attributions).toEqual([
+      {
+        category: "WHATSAPP_BAILEYS",
+        estimatedCost: 0,
+        conversationWindowState: "N/A",
+      },
+      {
+        category: "WHATSAPP_BAILEYS",
+        estimatedCost: 0,
+        conversationWindowState: "N/A",
+      },
+    ]);
   });
 
   it("skips an inbound message whose external id is already stored", async () => {

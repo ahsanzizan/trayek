@@ -34,9 +34,19 @@ describe("message cost attribution", () => {
     });
   });
 
+  it("requires an explicit price for a non-Baileys channel", () => {
+    expect(() => costFor("EMAIL", "UTILITY")).toThrow(
+      "Missing message cost for category UTILITY",
+    );
+    expect(() => costMetadataFor("EMAIL")).toThrow(
+      "Missing message cost for category UTILITY",
+    );
+  });
+
   it("flags only averages above three messages per POD", () => {
     expect(designRuleViolation(3)).toBe(false);
     expect(designRuleViolation(3.01)).toBe(true);
+    expect(designRuleViolation(null)).toBe(false);
   });
 
   it("serializes category summaries as escaped CSV", () => {
@@ -86,7 +96,8 @@ describe("channel.monthlyReport", () => {
         _sum: { estimatedCost: 12.5 },
       },
     ]);
-    const podCount = vi.fn().mockResolvedValue(1);
+    const podCount = vi.fn().mockResolvedValue(2);
+    const messageCount = vi.fn().mockResolvedValue(7);
     let database = {} as typeof db;
     database = {
       membership: {
@@ -96,7 +107,7 @@ describe("channel.monthlyReport", () => {
           role: "OWNER",
         }),
       },
-      messageLog: { groupBy },
+      messageLog: { groupBy, count: messageCount },
       podSubmission: { count: podCount },
       $extends: vi.fn(() => database),
     } as unknown as typeof db;
@@ -118,6 +129,7 @@ describe("channel.monthlyReport", () => {
     const report = await caller.monthlyReport({ month: "2026-02" });
     const monthStart = new Date("2026-02-01T00:00:00.000Z");
     const monthEnd = new Date("2026-03-01T00:00:00.000Z");
+    const rollingWindowStart = new Date("2026-01-30T00:00:00.000Z");
 
     expect(groupBy).toHaveBeenCalledWith({
       by: ["category"],
@@ -131,7 +143,13 @@ describe("channel.monthlyReport", () => {
     expect(podCount).toHaveBeenCalledWith({
       where: {
         organizationId: "org-1",
-        receivedAt: { gte: monthStart, lt: monthEnd },
+        receivedAt: { gte: rollingWindowStart, lt: monthEnd },
+      },
+    });
+    expect(messageCount).toHaveBeenCalledWith({
+      where: {
+        organizationId: "org-1",
+        createdAt: { gte: rollingWindowStart, lt: monthEnd },
       },
     });
     expect(report).toEqual({
@@ -145,7 +163,7 @@ describe("channel.monthlyReport", () => {
         },
         { category: "UTILITY", messageCount: 1, estimatedCost: 12.5 },
       ],
-      avgPerPod: 4,
+      avgPerPod: 3.5,
       designRuleViolation: true,
       csv: [
         "category,messageCount,estimatedCost",
@@ -157,6 +175,7 @@ describe("channel.monthlyReport", () => {
 
   it("returns a stable empty report when the month has no messages or PODs", async () => {
     const groupBy = vi.fn().mockResolvedValue([]);
+    const messageCount = vi.fn().mockResolvedValue(0);
     const podCount = vi.fn().mockResolvedValue(0);
     let database = {} as typeof db;
     database = {
@@ -167,7 +186,7 @@ describe("channel.monthlyReport", () => {
           role: "OWNER",
         }),
       },
-      messageLog: { groupBy },
+      messageLog: { groupBy, count: messageCount },
       podSubmission: { count: podCount },
       $extends: vi.fn(() => database),
     } as unknown as typeof db;
@@ -191,9 +210,56 @@ describe("channel.monthlyReport", () => {
       month: "2026-02",
       totalMessages: 0,
       byCategory: [],
-      avgPerPod: 0,
+      avgPerPod: null,
       designRuleViolation: false,
       csv: "",
     });
+  });
+
+  it("does not invent an average or alert when no POD is available", async () => {
+    const groupBy = vi.fn().mockResolvedValue([
+      {
+        category: "WHATSAPP_BAILEYS",
+        _count: { _all: 2 },
+        _sum: { estimatedCost: 0 },
+      },
+    ]);
+    const messageCount = vi.fn().mockResolvedValue(2);
+    const podCount = vi.fn().mockResolvedValue(0);
+    let database = {} as typeof db;
+    database = {
+      membership: {
+        findUnique: vi.fn().mockResolvedValue({
+          userId: "user-1",
+          organizationId: "org-1",
+          role: "OWNER",
+        }),
+      },
+      messageLog: { groupBy, count: messageCount },
+      podSubmission: { count: podCount },
+      $extends: vi.fn(() => database),
+    } as unknown as typeof db;
+
+    const caller = createCallerFactory(channelRouter)({
+      db: database,
+      session: {
+        user: {
+          id: "user-1",
+          activeOrganizationId: "org-1",
+        },
+        memberships: [],
+        expires: "2099-01-01T00:00:00.000Z",
+      },
+      headers: new Headers(),
+      requestId: "cost-report-no-pod-test",
+    });
+
+    await expect(caller.monthlyReport({ month: "2026-02" })).resolves.toEqual(
+      expect.objectContaining({
+        totalMessages: 2,
+        avgPerPod: null,
+        designRuleViolation: false,
+      }),
+    );
   });
 });

@@ -11,6 +11,23 @@ if (!organization) {
 
 const messageId = `message-log-immutable-${Date.now()}`;
 const externalId = `external-message-${Date.now()}`;
+const costFieldCases = [
+  {
+    name: "category",
+    id: `${messageId}-category`,
+    data: { category: "UTILITY" },
+  },
+  {
+    name: "estimatedCost",
+    id: `${messageId}-cost`,
+    data: { estimatedCost: 1 },
+  },
+  {
+    name: "conversationWindowState",
+    id: `${messageId}-window`,
+    data: { conversationWindowState: "OPEN" },
+  },
+] as const;
 
 beforeAll(async () => {
   await db.messageLog.create({
@@ -26,6 +43,22 @@ beforeAll(async () => {
       truncated: false,
     },
   });
+
+  for (const testCase of costFieldCases) {
+    await db.messageLog.create({
+      data: {
+        id: testCase.id,
+        organizationId: organization.id,
+        channel: "WHATSAPP_BAILEYS",
+        direction: "OUTBOUND",
+        from: "system",
+        to: "+628123456789",
+        body: "cost metadata",
+        status: "PENDING",
+        truncated: false,
+      },
+    });
+  }
 });
 
 afterAll(async () => {
@@ -57,4 +90,16 @@ describe("MessageLog mutation boundary", () => {
       db.messageLog.delete({ where: { id: messageId } }),
     ).rejects.toThrow(/immutable|append-only/i);
   });
+
+  it.each(costFieldCases)(
+    "rejects editing $name during the delivery transition",
+    async ({ id, data }) => {
+      await expect(
+        db.messageLog.update({
+          where: { id },
+          data: { ...data, status: "SENT", externalId: `${id}-external` },
+        }),
+      ).rejects.toThrow(/immutable|append-only/i);
+    },
+  );
 });

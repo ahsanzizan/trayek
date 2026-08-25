@@ -57,7 +57,13 @@ export function costFor(
     return 0;
   }
 
-  return assertValidCost(costTable[category] ?? 0);
+  const configuredCost = costTable[category];
+
+  if (configuredCost === undefined) {
+    throw new RangeError(`Missing message cost for category ${category}`);
+  }
+
+  return assertValidCost(configuredCost);
 }
 
 export function costMetadataFor(
@@ -79,8 +85,8 @@ export function costMetadataFor(
   };
 }
 
-export function designRuleViolation(messagesPerPod: number): boolean {
-  return messagesPerPod > DESIGN_RULE_MESSAGE_LIMIT;
+export function designRuleViolation(messagesPerPod: number | null): boolean {
+  return messagesPerPod !== null && messagesPerPod > DESIGN_RULE_MESSAGE_LIMIT;
 }
 
 function escapeCsvCell(value: number | string): string {
