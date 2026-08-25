@@ -41,6 +41,15 @@ enum OrderStatus {
   REJECTED
 }
 
+/// How a baseline DSO figure was arrived at. Kept separate because they mean
+/// different things: what an owner believes is a sales signal, what the data
+/// says is the number we are held to.
+enum DsoBaselineMethod {
+  CLAIMED
+  COMPUTED_FROM_INVOICES
+  COMPUTED_FROM_BALANCES
+}
+
 enum AuditActorType {
   USER
   AGENT
@@ -65,6 +74,8 @@ model Organization {
   requirementProfiles       RequirementProfile[]
   drivers                   Driver[]
   orders                    Order[]
+  dsoBaselines              DsoBaseline[]
+  historicalInvoices        HistoricalInvoice[]
 }
 
 model Post {
@@ -375,4 +386,61 @@ model Order {
   @@index([organizationId, status])
   @@index([organizationId, shipperId])
   @@index([organizationId, driverId])
+}
+
+/// The DSO figure a customer started at, frozen before Trayek changed anything
+/// (TRK-013).
+///
+/// Immutable by database trigger. The product is sold on removing 8 or more
+/// days of DSO, and a baseline that can be edited after the fact turns month 8
+/// into an argument instead of a demonstration.
+model DsoBaseline {
+  id                String            @id @default(cuid())
+  organizationId    String
+  method            DsoBaselineMethod
+  /// Whole days. The claim is measured in days, so days are the unit; the
+  /// inputs below are kept so the figure can be re-derived exactly.
+  dsoDays           Int
+  /// Inclusive range the figure describes, so two baselines are comparable.
+  periodStart       DateTime
+  periodEnd         DateTime
+  /// Whole rupiah, for a balances-derived figure. Preserved as evidence.
+  invoicedRevenue   BigInt?
+  averageReceivable BigInt?
+  /// How many historical invoices an invoice-derived figure was built from.
+  invoiceCount      Int?
+  /// The PRD's month 0-2 go/no-go signal: could the owner state a DSO figure
+  /// without being prompted? Belongs in the database, not someone's notebook.
+  statedUnprompted  Boolean?
+  note              String?
+  createdById       String?
+  createdAt         DateTime          @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, method])
+  @@index([organizationId])
+}
+
+/// Invoices from before Trayek, imported only to compute a baseline (TRK-013).
+///
+/// The amount is deliberately not called `nilaiTagihan`: this is historical
+/// evidence of how fast a customer got paid, not a figure Trayek bills on.
+/// Nothing derives a rate, margin, or price from it (INV-3).
+model HistoricalInvoice {
+  id             String    @id @default(cuid())
+  organizationId String
+  nomorInvoice   String
+  shipperName    String?
+  issueDate      DateTime
+  /// Null when the invoice was still unpaid at import. Unpaid invoices are
+  /// excluded from the computation rather than counted as paid on day zero.
+  paymentDate    DateTime?
+  amountRupiah   BigInt
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, nomorInvoice])
+  @@index([organizationId, issueDate])
 }

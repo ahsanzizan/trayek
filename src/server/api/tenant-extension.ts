@@ -16,6 +16,8 @@ export const TENANT_SCOPED_MODELS = new Set<string>([
   "RequirementProfile",
   "Driver",
   "Order",
+  "DsoBaseline",
+  "HistoricalInvoice",
 ]);
 const UNSCOPED_MODELS = new Set(["User", "Organization", "Membership", "Post"]);
 

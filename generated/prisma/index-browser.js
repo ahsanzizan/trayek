@@ -305,6 +305,33 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DsoBaselineScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  method: 'method',
+  dsoDays: 'dsoDays',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  invoicedRevenue: 'invoicedRevenue',
+  averageReceivable: 'averageReceivable',
+  invoiceCount: 'invoiceCount',
+  statedUnprompted: 'statedUnprompted',
+  note: 'note',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.HistoricalInvoiceScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  nomorInvoice: 'nomorInvoice',
+  shipperName: 'shipperName',
+  issueDate: 'issueDate',
+  paymentDate: 'paymentDate',
+  amountRupiah: 'amountRupiah',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -364,6 +391,12 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   REJECTED: 'REJECTED'
 };
 
+exports.DsoBaselineMethod = exports.$Enums.DsoBaselineMethod = {
+  CLAIMED: 'CLAIMED',
+  COMPUTED_FROM_INVOICES: 'COMPUTED_FROM_INVOICES',
+  COMPUTED_FROM_BALANCES: 'COMPUTED_FROM_BALANCES'
+};
+
 exports.Prisma.ModelName = {
   Organization: 'Organization',
   Post: 'Post',
@@ -380,7 +413,9 @@ exports.Prisma.ModelName = {
   Shipper: 'Shipper',
   RequirementProfile: 'RequirementProfile',
   Driver: 'Driver',
-  Order: 'Order'
+  Order: 'Order',
+  DsoBaseline: 'DsoBaseline',
+  HistoricalInvoice: 'HistoricalInvoice'
 };
 
 /**

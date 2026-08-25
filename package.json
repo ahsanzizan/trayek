@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "baseline:report": "tsx --env-file=.env src/server/baseline/report.ts",
     "build": "next build",
     "check": "pnpm lint && pnpm typecheck && pnpm test:unit && pnpm test:invariants",
     "db:generate": "prisma migrate dev",

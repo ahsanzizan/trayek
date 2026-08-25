@@ -121,6 +121,25 @@ export type Driver = $Result.DefaultSelection<Prisma.$DriverPayload>
  * on it anywhere in the source.
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
+/**
+ * Model DsoBaseline
+ * The DSO figure a customer started at, frozen before Trayek changed anything
+ * (TRK-013).
+ * 
+ * Immutable by database trigger. The product is sold on removing 8 or more
+ * days of DSO, and a baseline that can be edited after the fact turns month 8
+ * into an argument instead of a demonstration.
+ */
+export type DsoBaseline = $Result.DefaultSelection<Prisma.$DsoBaselinePayload>
+/**
+ * Model HistoricalInvoice
+ * Invoices from before Trayek, imported only to compute a baseline (TRK-013).
+ * 
+ * The amount is deliberately not called `nilaiTagihan`: this is historical
+ * evidence of how fast a customer got paid, not a figure Trayek bills on.
+ * Nothing derives a rate, margin, or price from it (INV-3).
+ */
+export type HistoricalInvoice = $Result.DefaultSelection<Prisma.$HistoricalInvoicePayload>
 
 /**
  * Enums
@@ -159,6 +178,15 @@ export const OrderStatus: {
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
+export const DsoBaselineMethod: {
+  CLAIMED: 'CLAIMED',
+  COMPUTED_FROM_INVOICES: 'COMPUTED_FROM_INVOICES',
+  COMPUTED_FROM_BALANCES: 'COMPUTED_FROM_BALANCES'
+};
+
+export type DsoBaselineMethod = (typeof DsoBaselineMethod)[keyof typeof DsoBaselineMethod]
+
+
 export const AuditActorType: {
   USER: 'USER',
   AGENT: 'AGENT',
@@ -180,6 +208,10 @@ export const MembershipRole: typeof $Enums.MembershipRole
 export type OrderStatus = $Enums.OrderStatus
 
 export const OrderStatus: typeof $Enums.OrderStatus
+
+export type DsoBaselineMethod = $Enums.DsoBaselineMethod
+
+export const DsoBaselineMethod: typeof $Enums.DsoBaselineMethod
 
 export type AuditActorType = $Enums.AuditActorType
 
@@ -462,6 +494,26 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dsoBaseline`: Exposes CRUD operations for the **DsoBaseline** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DsoBaselines
+    * const dsoBaselines = await prisma.dsoBaseline.findMany()
+    * ```
+    */
+  get dsoBaseline(): Prisma.DsoBaselineDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.historicalInvoice`: Exposes CRUD operations for the **HistoricalInvoice** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HistoricalInvoices
+    * const historicalInvoices = await prisma.historicalInvoice.findMany()
+    * ```
+    */
+  get historicalInvoice(): Prisma.HistoricalInvoiceDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -918,7 +970,9 @@ export namespace Prisma {
     Shipper: 'Shipper',
     RequirementProfile: 'RequirementProfile',
     Driver: 'Driver',
-    Order: 'Order'
+    Order: 'Order',
+    DsoBaseline: 'DsoBaseline',
+    HistoricalInvoice: 'HistoricalInvoice'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -937,7 +991,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile" | "driver" | "order"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile" | "driver" | "order" | "dsoBaseline" | "historicalInvoice"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2125,6 +2179,154 @@ export namespace Prisma {
           }
         }
       }
+      DsoBaseline: {
+        payload: Prisma.$DsoBaselinePayload<ExtArgs>
+        fields: Prisma.DsoBaselineFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DsoBaselineFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DsoBaselineFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          findFirst: {
+            args: Prisma.DsoBaselineFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DsoBaselineFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          findMany: {
+            args: Prisma.DsoBaselineFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>[]
+          }
+          create: {
+            args: Prisma.DsoBaselineCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          createMany: {
+            args: Prisma.DsoBaselineCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DsoBaselineCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>[]
+          }
+          delete: {
+            args: Prisma.DsoBaselineDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          update: {
+            args: Prisma.DsoBaselineUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          deleteMany: {
+            args: Prisma.DsoBaselineDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DsoBaselineUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DsoBaselineUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>[]
+          }
+          upsert: {
+            args: Prisma.DsoBaselineUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DsoBaselinePayload>
+          }
+          aggregate: {
+            args: Prisma.DsoBaselineAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDsoBaseline>
+          }
+          groupBy: {
+            args: Prisma.DsoBaselineGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DsoBaselineGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DsoBaselineCountArgs<ExtArgs>
+            result: $Utils.Optional<DsoBaselineCountAggregateOutputType> | number
+          }
+        }
+      }
+      HistoricalInvoice: {
+        payload: Prisma.$HistoricalInvoicePayload<ExtArgs>
+        fields: Prisma.HistoricalInvoiceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HistoricalInvoiceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HistoricalInvoiceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          findFirst: {
+            args: Prisma.HistoricalInvoiceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HistoricalInvoiceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          findMany: {
+            args: Prisma.HistoricalInvoiceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>[]
+          }
+          create: {
+            args: Prisma.HistoricalInvoiceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          createMany: {
+            args: Prisma.HistoricalInvoiceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.HistoricalInvoiceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>[]
+          }
+          delete: {
+            args: Prisma.HistoricalInvoiceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          update: {
+            args: Prisma.HistoricalInvoiceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          deleteMany: {
+            args: Prisma.HistoricalInvoiceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HistoricalInvoiceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.HistoricalInvoiceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>[]
+          }
+          upsert: {
+            args: Prisma.HistoricalInvoiceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalInvoicePayload>
+          }
+          aggregate: {
+            args: Prisma.HistoricalInvoiceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHistoricalInvoice>
+          }
+          groupBy: {
+            args: Prisma.HistoricalInvoiceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HistoricalInvoiceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.HistoricalInvoiceCountArgs<ExtArgs>
+            result: $Utils.Optional<HistoricalInvoiceCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2237,6 +2439,8 @@ export namespace Prisma {
     requirementProfile?: RequirementProfileOmit
     driver?: DriverOmit
     order?: OrderOmit
+    dsoBaseline?: DsoBaselineOmit
+    historicalInvoice?: HistoricalInvoiceOmit
   }
 
   /* Types for Logging */
@@ -2327,6 +2531,8 @@ export namespace Prisma {
     requirementProfiles: number
     drivers: number
     orders: number
+    dsoBaselines: number
+    historicalInvoices: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2340,6 +2546,8 @@ export namespace Prisma {
     requirementProfiles?: boolean | OrganizationCountOutputTypeCountRequirementProfilesArgs
     drivers?: boolean | OrganizationCountOutputTypeCountDriversArgs
     orders?: boolean | OrganizationCountOutputTypeCountOrdersArgs
+    dsoBaselines?: boolean | OrganizationCountOutputTypeCountDsoBaselinesArgs
+    historicalInvoices?: boolean | OrganizationCountOutputTypeCountHistoricalInvoicesArgs
   }
 
   // Custom InputTypes
@@ -2421,6 +2629,20 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountDsoBaselinesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DsoBaselineWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountHistoricalInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HistoricalInvoiceWhereInput
   }
 
 
@@ -2785,6 +3007,8 @@ export namespace Prisma {
     requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     drivers?: boolean | Organization$driversArgs<ExtArgs>
     orders?: boolean | Organization$ordersArgs<ExtArgs>
+    dsoBaselines?: boolean | Organization$dsoBaselinesArgs<ExtArgs>
+    historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -2830,6 +3054,8 @@ export namespace Prisma {
     requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     drivers?: boolean | Organization$driversArgs<ExtArgs>
     orders?: boolean | Organization$ordersArgs<ExtArgs>
+    dsoBaselines?: boolean | Organization$dsoBaselinesArgs<ExtArgs>
+    historicalInvoices?: boolean | Organization$historicalInvoicesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2848,6 +3074,8 @@ export namespace Prisma {
       requirementProfiles: Prisma.$RequirementProfilePayload<ExtArgs>[]
       drivers: Prisma.$DriverPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      dsoBaselines: Prisma.$DsoBaselinePayload<ExtArgs>[]
+      historicalInvoices: Prisma.$HistoricalInvoicePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3261,6 +3489,8 @@ export namespace Prisma {
     requirementProfiles<T extends Organization$requirementProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$requirementProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     drivers<T extends Organization$driversArgs<ExtArgs> = {}>(args?: Subset<T, Organization$driversArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends Organization$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    dsoBaselines<T extends Organization$dsoBaselinesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$dsoBaselinesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    historicalInvoices<T extends Organization$historicalInvoicesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$historicalInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3922,6 +4152,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.dsoBaselines
+   */
+  export type Organization$dsoBaselinesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    where?: DsoBaselineWhereInput
+    orderBy?: DsoBaselineOrderByWithRelationInput | DsoBaselineOrderByWithRelationInput[]
+    cursor?: DsoBaselineWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DsoBaselineScalarFieldEnum | DsoBaselineScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.historicalInvoices
+   */
+  export type Organization$historicalInvoicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    where?: HistoricalInvoiceWhereInput
+    orderBy?: HistoricalInvoiceOrderByWithRelationInput | HistoricalInvoiceOrderByWithRelationInput[]
+    cursor?: HistoricalInvoiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HistoricalInvoiceScalarFieldEnum | HistoricalInvoiceScalarFieldEnum[]
   }
 
   /**
@@ -20987,6 +21265,2366 @@ export namespace Prisma {
 
 
   /**
+   * Model DsoBaseline
+   */
+
+  export type AggregateDsoBaseline = {
+    _count: DsoBaselineCountAggregateOutputType | null
+    _avg: DsoBaselineAvgAggregateOutputType | null
+    _sum: DsoBaselineSumAggregateOutputType | null
+    _min: DsoBaselineMinAggregateOutputType | null
+    _max: DsoBaselineMaxAggregateOutputType | null
+  }
+
+  export type DsoBaselineAvgAggregateOutputType = {
+    dsoDays: number | null
+    invoicedRevenue: number | null
+    averageReceivable: number | null
+    invoiceCount: number | null
+  }
+
+  export type DsoBaselineSumAggregateOutputType = {
+    dsoDays: number | null
+    invoicedRevenue: bigint | null
+    averageReceivable: bigint | null
+    invoiceCount: number | null
+  }
+
+  export type DsoBaselineMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    method: $Enums.DsoBaselineMethod | null
+    dsoDays: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    invoicedRevenue: bigint | null
+    averageReceivable: bigint | null
+    invoiceCount: number | null
+    statedUnprompted: boolean | null
+    note: string | null
+    createdById: string | null
+    createdAt: Date | null
+  }
+
+  export type DsoBaselineMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    method: $Enums.DsoBaselineMethod | null
+    dsoDays: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    invoicedRevenue: bigint | null
+    averageReceivable: bigint | null
+    invoiceCount: number | null
+    statedUnprompted: boolean | null
+    note: string | null
+    createdById: string | null
+    createdAt: Date | null
+  }
+
+  export type DsoBaselineCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    method: number
+    dsoDays: number
+    periodStart: number
+    periodEnd: number
+    invoicedRevenue: number
+    averageReceivable: number
+    invoiceCount: number
+    statedUnprompted: number
+    note: number
+    createdById: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DsoBaselineAvgAggregateInputType = {
+    dsoDays?: true
+    invoicedRevenue?: true
+    averageReceivable?: true
+    invoiceCount?: true
+  }
+
+  export type DsoBaselineSumAggregateInputType = {
+    dsoDays?: true
+    invoicedRevenue?: true
+    averageReceivable?: true
+    invoiceCount?: true
+  }
+
+  export type DsoBaselineMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    method?: true
+    dsoDays?: true
+    periodStart?: true
+    periodEnd?: true
+    invoicedRevenue?: true
+    averageReceivable?: true
+    invoiceCount?: true
+    statedUnprompted?: true
+    note?: true
+    createdById?: true
+    createdAt?: true
+  }
+
+  export type DsoBaselineMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    method?: true
+    dsoDays?: true
+    periodStart?: true
+    periodEnd?: true
+    invoicedRevenue?: true
+    averageReceivable?: true
+    invoiceCount?: true
+    statedUnprompted?: true
+    note?: true
+    createdById?: true
+    createdAt?: true
+  }
+
+  export type DsoBaselineCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    method?: true
+    dsoDays?: true
+    periodStart?: true
+    periodEnd?: true
+    invoicedRevenue?: true
+    averageReceivable?: true
+    invoiceCount?: true
+    statedUnprompted?: true
+    note?: true
+    createdById?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DsoBaselineAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DsoBaseline to aggregate.
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DsoBaselines to fetch.
+     */
+    orderBy?: DsoBaselineOrderByWithRelationInput | DsoBaselineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DsoBaselineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DsoBaselines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DsoBaselines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DsoBaselines
+    **/
+    _count?: true | DsoBaselineCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DsoBaselineAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DsoBaselineSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DsoBaselineMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DsoBaselineMaxAggregateInputType
+  }
+
+  export type GetDsoBaselineAggregateType<T extends DsoBaselineAggregateArgs> = {
+        [P in keyof T & keyof AggregateDsoBaseline]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDsoBaseline[P]>
+      : GetScalarType<T[P], AggregateDsoBaseline[P]>
+  }
+
+
+
+
+  export type DsoBaselineGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DsoBaselineWhereInput
+    orderBy?: DsoBaselineOrderByWithAggregationInput | DsoBaselineOrderByWithAggregationInput[]
+    by: DsoBaselineScalarFieldEnum[] | DsoBaselineScalarFieldEnum
+    having?: DsoBaselineScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DsoBaselineCountAggregateInputType | true
+    _avg?: DsoBaselineAvgAggregateInputType
+    _sum?: DsoBaselineSumAggregateInputType
+    _min?: DsoBaselineMinAggregateInputType
+    _max?: DsoBaselineMaxAggregateInputType
+  }
+
+  export type DsoBaselineGroupByOutputType = {
+    id: string
+    organizationId: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date
+    periodEnd: Date
+    invoicedRevenue: bigint | null
+    averageReceivable: bigint | null
+    invoiceCount: number | null
+    statedUnprompted: boolean | null
+    note: string | null
+    createdById: string | null
+    createdAt: Date
+    _count: DsoBaselineCountAggregateOutputType | null
+    _avg: DsoBaselineAvgAggregateOutputType | null
+    _sum: DsoBaselineSumAggregateOutputType | null
+    _min: DsoBaselineMinAggregateOutputType | null
+    _max: DsoBaselineMaxAggregateOutputType | null
+  }
+
+  type GetDsoBaselineGroupByPayload<T extends DsoBaselineGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DsoBaselineGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DsoBaselineGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DsoBaselineGroupByOutputType[P]>
+            : GetScalarType<T[P], DsoBaselineGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DsoBaselineSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    method?: boolean
+    dsoDays?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    invoicedRevenue?: boolean
+    averageReceivable?: boolean
+    invoiceCount?: boolean
+    statedUnprompted?: boolean
+    note?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dsoBaseline"]>
+
+  export type DsoBaselineSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    method?: boolean
+    dsoDays?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    invoicedRevenue?: boolean
+    averageReceivable?: boolean
+    invoiceCount?: boolean
+    statedUnprompted?: boolean
+    note?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dsoBaseline"]>
+
+  export type DsoBaselineSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    method?: boolean
+    dsoDays?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    invoicedRevenue?: boolean
+    averageReceivable?: boolean
+    invoiceCount?: boolean
+    statedUnprompted?: boolean
+    note?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dsoBaseline"]>
+
+  export type DsoBaselineSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    method?: boolean
+    dsoDays?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    invoicedRevenue?: boolean
+    averageReceivable?: boolean
+    invoiceCount?: boolean
+    statedUnprompted?: boolean
+    note?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+  }
+
+  export type DsoBaselineOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "method" | "dsoDays" | "periodStart" | "periodEnd" | "invoicedRevenue" | "averageReceivable" | "invoiceCount" | "statedUnprompted" | "note" | "createdById" | "createdAt", ExtArgs["result"]["dsoBaseline"]>
+  export type DsoBaselineInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type DsoBaselineIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type DsoBaselineIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $DsoBaselinePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DsoBaseline"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      method: $Enums.DsoBaselineMethod
+      /**
+       * Whole days. The claim is measured in days, so days are the unit; the
+       * inputs below are kept so the figure can be re-derived exactly.
+       */
+      dsoDays: number
+      /**
+       * Inclusive range the figure describes, so two baselines are comparable.
+       */
+      periodStart: Date
+      periodEnd: Date
+      /**
+       * Whole rupiah, for a balances-derived figure. Preserved as evidence.
+       */
+      invoicedRevenue: bigint | null
+      averageReceivable: bigint | null
+      /**
+       * How many historical invoices an invoice-derived figure was built from.
+       */
+      invoiceCount: number | null
+      /**
+       * The PRD's month 0-2 go/no-go signal: could the owner state a DSO figure
+       * without being prompted? Belongs in the database, not someone's notebook.
+       */
+      statedUnprompted: boolean | null
+      note: string | null
+      createdById: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["dsoBaseline"]>
+    composites: {}
+  }
+
+  type DsoBaselineGetPayload<S extends boolean | null | undefined | DsoBaselineDefaultArgs> = $Result.GetResult<Prisma.$DsoBaselinePayload, S>
+
+  type DsoBaselineCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DsoBaselineFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DsoBaselineCountAggregateInputType | true
+    }
+
+  export interface DsoBaselineDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DsoBaseline'], meta: { name: 'DsoBaseline' } }
+    /**
+     * Find zero or one DsoBaseline that matches the filter.
+     * @param {DsoBaselineFindUniqueArgs} args - Arguments to find a DsoBaseline
+     * @example
+     * // Get one DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DsoBaselineFindUniqueArgs>(args: SelectSubset<T, DsoBaselineFindUniqueArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DsoBaseline that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DsoBaselineFindUniqueOrThrowArgs} args - Arguments to find a DsoBaseline
+     * @example
+     * // Get one DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DsoBaselineFindUniqueOrThrowArgs>(args: SelectSubset<T, DsoBaselineFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DsoBaseline that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineFindFirstArgs} args - Arguments to find a DsoBaseline
+     * @example
+     * // Get one DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DsoBaselineFindFirstArgs>(args?: SelectSubset<T, DsoBaselineFindFirstArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DsoBaseline that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineFindFirstOrThrowArgs} args - Arguments to find a DsoBaseline
+     * @example
+     * // Get one DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DsoBaselineFindFirstOrThrowArgs>(args?: SelectSubset<T, DsoBaselineFindFirstOrThrowArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DsoBaselines that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DsoBaselines
+     * const dsoBaselines = await prisma.dsoBaseline.findMany()
+     * 
+     * // Get first 10 DsoBaselines
+     * const dsoBaselines = await prisma.dsoBaseline.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dsoBaselineWithIdOnly = await prisma.dsoBaseline.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DsoBaselineFindManyArgs>(args?: SelectSubset<T, DsoBaselineFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DsoBaseline.
+     * @param {DsoBaselineCreateArgs} args - Arguments to create a DsoBaseline.
+     * @example
+     * // Create one DsoBaseline
+     * const DsoBaseline = await prisma.dsoBaseline.create({
+     *   data: {
+     *     // ... data to create a DsoBaseline
+     *   }
+     * })
+     * 
+     */
+    create<T extends DsoBaselineCreateArgs>(args: SelectSubset<T, DsoBaselineCreateArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DsoBaselines.
+     * @param {DsoBaselineCreateManyArgs} args - Arguments to create many DsoBaselines.
+     * @example
+     * // Create many DsoBaselines
+     * const dsoBaseline = await prisma.dsoBaseline.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DsoBaselineCreateManyArgs>(args?: SelectSubset<T, DsoBaselineCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DsoBaselines and returns the data saved in the database.
+     * @param {DsoBaselineCreateManyAndReturnArgs} args - Arguments to create many DsoBaselines.
+     * @example
+     * // Create many DsoBaselines
+     * const dsoBaseline = await prisma.dsoBaseline.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DsoBaselines and only return the `id`
+     * const dsoBaselineWithIdOnly = await prisma.dsoBaseline.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DsoBaselineCreateManyAndReturnArgs>(args?: SelectSubset<T, DsoBaselineCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DsoBaseline.
+     * @param {DsoBaselineDeleteArgs} args - Arguments to delete one DsoBaseline.
+     * @example
+     * // Delete one DsoBaseline
+     * const DsoBaseline = await prisma.dsoBaseline.delete({
+     *   where: {
+     *     // ... filter to delete one DsoBaseline
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DsoBaselineDeleteArgs>(args: SelectSubset<T, DsoBaselineDeleteArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DsoBaseline.
+     * @param {DsoBaselineUpdateArgs} args - Arguments to update one DsoBaseline.
+     * @example
+     * // Update one DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DsoBaselineUpdateArgs>(args: SelectSubset<T, DsoBaselineUpdateArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DsoBaselines.
+     * @param {DsoBaselineDeleteManyArgs} args - Arguments to filter DsoBaselines to delete.
+     * @example
+     * // Delete a few DsoBaselines
+     * const { count } = await prisma.dsoBaseline.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DsoBaselineDeleteManyArgs>(args?: SelectSubset<T, DsoBaselineDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DsoBaselines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DsoBaselines
+     * const dsoBaseline = await prisma.dsoBaseline.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DsoBaselineUpdateManyArgs>(args: SelectSubset<T, DsoBaselineUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DsoBaselines and returns the data updated in the database.
+     * @param {DsoBaselineUpdateManyAndReturnArgs} args - Arguments to update many DsoBaselines.
+     * @example
+     * // Update many DsoBaselines
+     * const dsoBaseline = await prisma.dsoBaseline.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DsoBaselines and only return the `id`
+     * const dsoBaselineWithIdOnly = await prisma.dsoBaseline.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DsoBaselineUpdateManyAndReturnArgs>(args: SelectSubset<T, DsoBaselineUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DsoBaseline.
+     * @param {DsoBaselineUpsertArgs} args - Arguments to update or create a DsoBaseline.
+     * @example
+     * // Update or create a DsoBaseline
+     * const dsoBaseline = await prisma.dsoBaseline.upsert({
+     *   create: {
+     *     // ... data to create a DsoBaseline
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DsoBaseline we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DsoBaselineUpsertArgs>(args: SelectSubset<T, DsoBaselineUpsertArgs<ExtArgs>>): Prisma__DsoBaselineClient<$Result.GetResult<Prisma.$DsoBaselinePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DsoBaselines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineCountArgs} args - Arguments to filter DsoBaselines to count.
+     * @example
+     * // Count the number of DsoBaselines
+     * const count = await prisma.dsoBaseline.count({
+     *   where: {
+     *     // ... the filter for the DsoBaselines we want to count
+     *   }
+     * })
+    **/
+    count<T extends DsoBaselineCountArgs>(
+      args?: Subset<T, DsoBaselineCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DsoBaselineCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DsoBaseline.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DsoBaselineAggregateArgs>(args: Subset<T, DsoBaselineAggregateArgs>): Prisma.PrismaPromise<GetDsoBaselineAggregateType<T>>
+
+    /**
+     * Group by DsoBaseline.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DsoBaselineGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DsoBaselineGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DsoBaselineGroupByArgs['orderBy'] }
+        : { orderBy?: DsoBaselineGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DsoBaselineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDsoBaselineGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DsoBaseline model
+   */
+  readonly fields: DsoBaselineFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DsoBaseline.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DsoBaselineClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DsoBaseline model
+   */
+  interface DsoBaselineFieldRefs {
+    readonly id: FieldRef<"DsoBaseline", 'String'>
+    readonly organizationId: FieldRef<"DsoBaseline", 'String'>
+    readonly method: FieldRef<"DsoBaseline", 'DsoBaselineMethod'>
+    readonly dsoDays: FieldRef<"DsoBaseline", 'Int'>
+    readonly periodStart: FieldRef<"DsoBaseline", 'DateTime'>
+    readonly periodEnd: FieldRef<"DsoBaseline", 'DateTime'>
+    readonly invoicedRevenue: FieldRef<"DsoBaseline", 'BigInt'>
+    readonly averageReceivable: FieldRef<"DsoBaseline", 'BigInt'>
+    readonly invoiceCount: FieldRef<"DsoBaseline", 'Int'>
+    readonly statedUnprompted: FieldRef<"DsoBaseline", 'Boolean'>
+    readonly note: FieldRef<"DsoBaseline", 'String'>
+    readonly createdById: FieldRef<"DsoBaseline", 'String'>
+    readonly createdAt: FieldRef<"DsoBaseline", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DsoBaseline findUnique
+   */
+  export type DsoBaselineFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter, which DsoBaseline to fetch.
+     */
+    where: DsoBaselineWhereUniqueInput
+  }
+
+  /**
+   * DsoBaseline findUniqueOrThrow
+   */
+  export type DsoBaselineFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter, which DsoBaseline to fetch.
+     */
+    where: DsoBaselineWhereUniqueInput
+  }
+
+  /**
+   * DsoBaseline findFirst
+   */
+  export type DsoBaselineFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter, which DsoBaseline to fetch.
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DsoBaselines to fetch.
+     */
+    orderBy?: DsoBaselineOrderByWithRelationInput | DsoBaselineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DsoBaselines.
+     */
+    cursor?: DsoBaselineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DsoBaselines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DsoBaselines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DsoBaselines.
+     */
+    distinct?: DsoBaselineScalarFieldEnum | DsoBaselineScalarFieldEnum[]
+  }
+
+  /**
+   * DsoBaseline findFirstOrThrow
+   */
+  export type DsoBaselineFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter, which DsoBaseline to fetch.
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DsoBaselines to fetch.
+     */
+    orderBy?: DsoBaselineOrderByWithRelationInput | DsoBaselineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DsoBaselines.
+     */
+    cursor?: DsoBaselineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DsoBaselines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DsoBaselines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DsoBaselines.
+     */
+    distinct?: DsoBaselineScalarFieldEnum | DsoBaselineScalarFieldEnum[]
+  }
+
+  /**
+   * DsoBaseline findMany
+   */
+  export type DsoBaselineFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter, which DsoBaselines to fetch.
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DsoBaselines to fetch.
+     */
+    orderBy?: DsoBaselineOrderByWithRelationInput | DsoBaselineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DsoBaselines.
+     */
+    cursor?: DsoBaselineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DsoBaselines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DsoBaselines.
+     */
+    skip?: number
+    distinct?: DsoBaselineScalarFieldEnum | DsoBaselineScalarFieldEnum[]
+  }
+
+  /**
+   * DsoBaseline create
+   */
+  export type DsoBaselineCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DsoBaseline.
+     */
+    data: XOR<DsoBaselineCreateInput, DsoBaselineUncheckedCreateInput>
+  }
+
+  /**
+   * DsoBaseline createMany
+   */
+  export type DsoBaselineCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DsoBaselines.
+     */
+    data: DsoBaselineCreateManyInput | DsoBaselineCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DsoBaseline createManyAndReturn
+   */
+  export type DsoBaselineCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * The data used to create many DsoBaselines.
+     */
+    data: DsoBaselineCreateManyInput | DsoBaselineCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DsoBaseline update
+   */
+  export type DsoBaselineUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DsoBaseline.
+     */
+    data: XOR<DsoBaselineUpdateInput, DsoBaselineUncheckedUpdateInput>
+    /**
+     * Choose, which DsoBaseline to update.
+     */
+    where: DsoBaselineWhereUniqueInput
+  }
+
+  /**
+   * DsoBaseline updateMany
+   */
+  export type DsoBaselineUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DsoBaselines.
+     */
+    data: XOR<DsoBaselineUpdateManyMutationInput, DsoBaselineUncheckedUpdateManyInput>
+    /**
+     * Filter which DsoBaselines to update
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * Limit how many DsoBaselines to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DsoBaseline updateManyAndReturn
+   */
+  export type DsoBaselineUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * The data used to update DsoBaselines.
+     */
+    data: XOR<DsoBaselineUpdateManyMutationInput, DsoBaselineUncheckedUpdateManyInput>
+    /**
+     * Filter which DsoBaselines to update
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * Limit how many DsoBaselines to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DsoBaseline upsert
+   */
+  export type DsoBaselineUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DsoBaseline to update in case it exists.
+     */
+    where: DsoBaselineWhereUniqueInput
+    /**
+     * In case the DsoBaseline found by the `where` argument doesn't exist, create a new DsoBaseline with this data.
+     */
+    create: XOR<DsoBaselineCreateInput, DsoBaselineUncheckedCreateInput>
+    /**
+     * In case the DsoBaseline was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DsoBaselineUpdateInput, DsoBaselineUncheckedUpdateInput>
+  }
+
+  /**
+   * DsoBaseline delete
+   */
+  export type DsoBaselineDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+    /**
+     * Filter which DsoBaseline to delete.
+     */
+    where: DsoBaselineWhereUniqueInput
+  }
+
+  /**
+   * DsoBaseline deleteMany
+   */
+  export type DsoBaselineDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DsoBaselines to delete
+     */
+    where?: DsoBaselineWhereInput
+    /**
+     * Limit how many DsoBaselines to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DsoBaseline without action
+   */
+  export type DsoBaselineDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DsoBaseline
+     */
+    select?: DsoBaselineSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DsoBaseline
+     */
+    omit?: DsoBaselineOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DsoBaselineInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model HistoricalInvoice
+   */
+
+  export type AggregateHistoricalInvoice = {
+    _count: HistoricalInvoiceCountAggregateOutputType | null
+    _avg: HistoricalInvoiceAvgAggregateOutputType | null
+    _sum: HistoricalInvoiceSumAggregateOutputType | null
+    _min: HistoricalInvoiceMinAggregateOutputType | null
+    _max: HistoricalInvoiceMaxAggregateOutputType | null
+  }
+
+  export type HistoricalInvoiceAvgAggregateOutputType = {
+    amountRupiah: number | null
+  }
+
+  export type HistoricalInvoiceSumAggregateOutputType = {
+    amountRupiah: bigint | null
+  }
+
+  export type HistoricalInvoiceMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    nomorInvoice: string | null
+    shipperName: string | null
+    issueDate: Date | null
+    paymentDate: Date | null
+    amountRupiah: bigint | null
+    createdAt: Date | null
+  }
+
+  export type HistoricalInvoiceMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    nomorInvoice: string | null
+    shipperName: string | null
+    issueDate: Date | null
+    paymentDate: Date | null
+    amountRupiah: bigint | null
+    createdAt: Date | null
+  }
+
+  export type HistoricalInvoiceCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    nomorInvoice: number
+    shipperName: number
+    issueDate: number
+    paymentDate: number
+    amountRupiah: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type HistoricalInvoiceAvgAggregateInputType = {
+    amountRupiah?: true
+  }
+
+  export type HistoricalInvoiceSumAggregateInputType = {
+    amountRupiah?: true
+  }
+
+  export type HistoricalInvoiceMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorInvoice?: true
+    shipperName?: true
+    issueDate?: true
+    paymentDate?: true
+    amountRupiah?: true
+    createdAt?: true
+  }
+
+  export type HistoricalInvoiceMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorInvoice?: true
+    shipperName?: true
+    issueDate?: true
+    paymentDate?: true
+    amountRupiah?: true
+    createdAt?: true
+  }
+
+  export type HistoricalInvoiceCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorInvoice?: true
+    shipperName?: true
+    issueDate?: true
+    paymentDate?: true
+    amountRupiah?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type HistoricalInvoiceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HistoricalInvoice to aggregate.
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalInvoices to fetch.
+     */
+    orderBy?: HistoricalInvoiceOrderByWithRelationInput | HistoricalInvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HistoricalInvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalInvoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalInvoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned HistoricalInvoices
+    **/
+    _count?: true | HistoricalInvoiceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: HistoricalInvoiceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: HistoricalInvoiceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HistoricalInvoiceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HistoricalInvoiceMaxAggregateInputType
+  }
+
+  export type GetHistoricalInvoiceAggregateType<T extends HistoricalInvoiceAggregateArgs> = {
+        [P in keyof T & keyof AggregateHistoricalInvoice]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHistoricalInvoice[P]>
+      : GetScalarType<T[P], AggregateHistoricalInvoice[P]>
+  }
+
+
+
+
+  export type HistoricalInvoiceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HistoricalInvoiceWhereInput
+    orderBy?: HistoricalInvoiceOrderByWithAggregationInput | HistoricalInvoiceOrderByWithAggregationInput[]
+    by: HistoricalInvoiceScalarFieldEnum[] | HistoricalInvoiceScalarFieldEnum
+    having?: HistoricalInvoiceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HistoricalInvoiceCountAggregateInputType | true
+    _avg?: HistoricalInvoiceAvgAggregateInputType
+    _sum?: HistoricalInvoiceSumAggregateInputType
+    _min?: HistoricalInvoiceMinAggregateInputType
+    _max?: HistoricalInvoiceMaxAggregateInputType
+  }
+
+  export type HistoricalInvoiceGroupByOutputType = {
+    id: string
+    organizationId: string
+    nomorInvoice: string
+    shipperName: string | null
+    issueDate: Date
+    paymentDate: Date | null
+    amountRupiah: bigint
+    createdAt: Date
+    _count: HistoricalInvoiceCountAggregateOutputType | null
+    _avg: HistoricalInvoiceAvgAggregateOutputType | null
+    _sum: HistoricalInvoiceSumAggregateOutputType | null
+    _min: HistoricalInvoiceMinAggregateOutputType | null
+    _max: HistoricalInvoiceMaxAggregateOutputType | null
+  }
+
+  type GetHistoricalInvoiceGroupByPayload<T extends HistoricalInvoiceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HistoricalInvoiceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HistoricalInvoiceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HistoricalInvoiceGroupByOutputType[P]>
+            : GetScalarType<T[P], HistoricalInvoiceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HistoricalInvoiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorInvoice?: boolean
+    shipperName?: boolean
+    issueDate?: boolean
+    paymentDate?: boolean
+    amountRupiah?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["historicalInvoice"]>
+
+  export type HistoricalInvoiceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorInvoice?: boolean
+    shipperName?: boolean
+    issueDate?: boolean
+    paymentDate?: boolean
+    amountRupiah?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["historicalInvoice"]>
+
+  export type HistoricalInvoiceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorInvoice?: boolean
+    shipperName?: boolean
+    issueDate?: boolean
+    paymentDate?: boolean
+    amountRupiah?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["historicalInvoice"]>
+
+  export type HistoricalInvoiceSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    nomorInvoice?: boolean
+    shipperName?: boolean
+    issueDate?: boolean
+    paymentDate?: boolean
+    amountRupiah?: boolean
+    createdAt?: boolean
+  }
+
+  export type HistoricalInvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "nomorInvoice" | "shipperName" | "issueDate" | "paymentDate" | "amountRupiah" | "createdAt", ExtArgs["result"]["historicalInvoice"]>
+  export type HistoricalInvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type HistoricalInvoiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type HistoricalInvoiceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $HistoricalInvoicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "HistoricalInvoice"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      nomorInvoice: string
+      shipperName: string | null
+      issueDate: Date
+      /**
+       * Null when the invoice was still unpaid at import. Unpaid invoices are
+       * excluded from the computation rather than counted as paid on day zero.
+       */
+      paymentDate: Date | null
+      amountRupiah: bigint
+      createdAt: Date
+    }, ExtArgs["result"]["historicalInvoice"]>
+    composites: {}
+  }
+
+  type HistoricalInvoiceGetPayload<S extends boolean | null | undefined | HistoricalInvoiceDefaultArgs> = $Result.GetResult<Prisma.$HistoricalInvoicePayload, S>
+
+  type HistoricalInvoiceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<HistoricalInvoiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: HistoricalInvoiceCountAggregateInputType | true
+    }
+
+  export interface HistoricalInvoiceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['HistoricalInvoice'], meta: { name: 'HistoricalInvoice' } }
+    /**
+     * Find zero or one HistoricalInvoice that matches the filter.
+     * @param {HistoricalInvoiceFindUniqueArgs} args - Arguments to find a HistoricalInvoice
+     * @example
+     * // Get one HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HistoricalInvoiceFindUniqueArgs>(args: SelectSubset<T, HistoricalInvoiceFindUniqueArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one HistoricalInvoice that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {HistoricalInvoiceFindUniqueOrThrowArgs} args - Arguments to find a HistoricalInvoice
+     * @example
+     * // Get one HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HistoricalInvoiceFindUniqueOrThrowArgs>(args: SelectSubset<T, HistoricalInvoiceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HistoricalInvoice that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceFindFirstArgs} args - Arguments to find a HistoricalInvoice
+     * @example
+     * // Get one HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HistoricalInvoiceFindFirstArgs>(args?: SelectSubset<T, HistoricalInvoiceFindFirstArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HistoricalInvoice that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceFindFirstOrThrowArgs} args - Arguments to find a HistoricalInvoice
+     * @example
+     * // Get one HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HistoricalInvoiceFindFirstOrThrowArgs>(args?: SelectSubset<T, HistoricalInvoiceFindFirstOrThrowArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more HistoricalInvoices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HistoricalInvoices
+     * const historicalInvoices = await prisma.historicalInvoice.findMany()
+     * 
+     * // Get first 10 HistoricalInvoices
+     * const historicalInvoices = await prisma.historicalInvoice.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const historicalInvoiceWithIdOnly = await prisma.historicalInvoice.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HistoricalInvoiceFindManyArgs>(args?: SelectSubset<T, HistoricalInvoiceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a HistoricalInvoice.
+     * @param {HistoricalInvoiceCreateArgs} args - Arguments to create a HistoricalInvoice.
+     * @example
+     * // Create one HistoricalInvoice
+     * const HistoricalInvoice = await prisma.historicalInvoice.create({
+     *   data: {
+     *     // ... data to create a HistoricalInvoice
+     *   }
+     * })
+     * 
+     */
+    create<T extends HistoricalInvoiceCreateArgs>(args: SelectSubset<T, HistoricalInvoiceCreateArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many HistoricalInvoices.
+     * @param {HistoricalInvoiceCreateManyArgs} args - Arguments to create many HistoricalInvoices.
+     * @example
+     * // Create many HistoricalInvoices
+     * const historicalInvoice = await prisma.historicalInvoice.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HistoricalInvoiceCreateManyArgs>(args?: SelectSubset<T, HistoricalInvoiceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many HistoricalInvoices and returns the data saved in the database.
+     * @param {HistoricalInvoiceCreateManyAndReturnArgs} args - Arguments to create many HistoricalInvoices.
+     * @example
+     * // Create many HistoricalInvoices
+     * const historicalInvoice = await prisma.historicalInvoice.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many HistoricalInvoices and only return the `id`
+     * const historicalInvoiceWithIdOnly = await prisma.historicalInvoice.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends HistoricalInvoiceCreateManyAndReturnArgs>(args?: SelectSubset<T, HistoricalInvoiceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a HistoricalInvoice.
+     * @param {HistoricalInvoiceDeleteArgs} args - Arguments to delete one HistoricalInvoice.
+     * @example
+     * // Delete one HistoricalInvoice
+     * const HistoricalInvoice = await prisma.historicalInvoice.delete({
+     *   where: {
+     *     // ... filter to delete one HistoricalInvoice
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HistoricalInvoiceDeleteArgs>(args: SelectSubset<T, HistoricalInvoiceDeleteArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one HistoricalInvoice.
+     * @param {HistoricalInvoiceUpdateArgs} args - Arguments to update one HistoricalInvoice.
+     * @example
+     * // Update one HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HistoricalInvoiceUpdateArgs>(args: SelectSubset<T, HistoricalInvoiceUpdateArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more HistoricalInvoices.
+     * @param {HistoricalInvoiceDeleteManyArgs} args - Arguments to filter HistoricalInvoices to delete.
+     * @example
+     * // Delete a few HistoricalInvoices
+     * const { count } = await prisma.historicalInvoice.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HistoricalInvoiceDeleteManyArgs>(args?: SelectSubset<T, HistoricalInvoiceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HistoricalInvoices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HistoricalInvoices
+     * const historicalInvoice = await prisma.historicalInvoice.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HistoricalInvoiceUpdateManyArgs>(args: SelectSubset<T, HistoricalInvoiceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HistoricalInvoices and returns the data updated in the database.
+     * @param {HistoricalInvoiceUpdateManyAndReturnArgs} args - Arguments to update many HistoricalInvoices.
+     * @example
+     * // Update many HistoricalInvoices
+     * const historicalInvoice = await prisma.historicalInvoice.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more HistoricalInvoices and only return the `id`
+     * const historicalInvoiceWithIdOnly = await prisma.historicalInvoice.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends HistoricalInvoiceUpdateManyAndReturnArgs>(args: SelectSubset<T, HistoricalInvoiceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one HistoricalInvoice.
+     * @param {HistoricalInvoiceUpsertArgs} args - Arguments to update or create a HistoricalInvoice.
+     * @example
+     * // Update or create a HistoricalInvoice
+     * const historicalInvoice = await prisma.historicalInvoice.upsert({
+     *   create: {
+     *     // ... data to create a HistoricalInvoice
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HistoricalInvoice we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HistoricalInvoiceUpsertArgs>(args: SelectSubset<T, HistoricalInvoiceUpsertArgs<ExtArgs>>): Prisma__HistoricalInvoiceClient<$Result.GetResult<Prisma.$HistoricalInvoicePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of HistoricalInvoices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceCountArgs} args - Arguments to filter HistoricalInvoices to count.
+     * @example
+     * // Count the number of HistoricalInvoices
+     * const count = await prisma.historicalInvoice.count({
+     *   where: {
+     *     // ... the filter for the HistoricalInvoices we want to count
+     *   }
+     * })
+    **/
+    count<T extends HistoricalInvoiceCountArgs>(
+      args?: Subset<T, HistoricalInvoiceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HistoricalInvoiceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HistoricalInvoice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HistoricalInvoiceAggregateArgs>(args: Subset<T, HistoricalInvoiceAggregateArgs>): Prisma.PrismaPromise<GetHistoricalInvoiceAggregateType<T>>
+
+    /**
+     * Group by HistoricalInvoice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalInvoiceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HistoricalInvoiceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HistoricalInvoiceGroupByArgs['orderBy'] }
+        : { orderBy?: HistoricalInvoiceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HistoricalInvoiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHistoricalInvoiceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the HistoricalInvoice model
+   */
+  readonly fields: HistoricalInvoiceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for HistoricalInvoice.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HistoricalInvoiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the HistoricalInvoice model
+   */
+  interface HistoricalInvoiceFieldRefs {
+    readonly id: FieldRef<"HistoricalInvoice", 'String'>
+    readonly organizationId: FieldRef<"HistoricalInvoice", 'String'>
+    readonly nomorInvoice: FieldRef<"HistoricalInvoice", 'String'>
+    readonly shipperName: FieldRef<"HistoricalInvoice", 'String'>
+    readonly issueDate: FieldRef<"HistoricalInvoice", 'DateTime'>
+    readonly paymentDate: FieldRef<"HistoricalInvoice", 'DateTime'>
+    readonly amountRupiah: FieldRef<"HistoricalInvoice", 'BigInt'>
+    readonly createdAt: FieldRef<"HistoricalInvoice", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * HistoricalInvoice findUnique
+   */
+  export type HistoricalInvoiceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalInvoice to fetch.
+     */
+    where: HistoricalInvoiceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalInvoice findUniqueOrThrow
+   */
+  export type HistoricalInvoiceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalInvoice to fetch.
+     */
+    where: HistoricalInvoiceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalInvoice findFirst
+   */
+  export type HistoricalInvoiceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalInvoice to fetch.
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalInvoices to fetch.
+     */
+    orderBy?: HistoricalInvoiceOrderByWithRelationInput | HistoricalInvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HistoricalInvoices.
+     */
+    cursor?: HistoricalInvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalInvoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalInvoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HistoricalInvoices.
+     */
+    distinct?: HistoricalInvoiceScalarFieldEnum | HistoricalInvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalInvoice findFirstOrThrow
+   */
+  export type HistoricalInvoiceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalInvoice to fetch.
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalInvoices to fetch.
+     */
+    orderBy?: HistoricalInvoiceOrderByWithRelationInput | HistoricalInvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HistoricalInvoices.
+     */
+    cursor?: HistoricalInvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalInvoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalInvoices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HistoricalInvoices.
+     */
+    distinct?: HistoricalInvoiceScalarFieldEnum | HistoricalInvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalInvoice findMany
+   */
+  export type HistoricalInvoiceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalInvoices to fetch.
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalInvoices to fetch.
+     */
+    orderBy?: HistoricalInvoiceOrderByWithRelationInput | HistoricalInvoiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing HistoricalInvoices.
+     */
+    cursor?: HistoricalInvoiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalInvoices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalInvoices.
+     */
+    skip?: number
+    distinct?: HistoricalInvoiceScalarFieldEnum | HistoricalInvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalInvoice create
+   */
+  export type HistoricalInvoiceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a HistoricalInvoice.
+     */
+    data: XOR<HistoricalInvoiceCreateInput, HistoricalInvoiceUncheckedCreateInput>
+  }
+
+  /**
+   * HistoricalInvoice createMany
+   */
+  export type HistoricalInvoiceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many HistoricalInvoices.
+     */
+    data: HistoricalInvoiceCreateManyInput | HistoricalInvoiceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * HistoricalInvoice createManyAndReturn
+   */
+  export type HistoricalInvoiceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * The data used to create many HistoricalInvoices.
+     */
+    data: HistoricalInvoiceCreateManyInput | HistoricalInvoiceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HistoricalInvoice update
+   */
+  export type HistoricalInvoiceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a HistoricalInvoice.
+     */
+    data: XOR<HistoricalInvoiceUpdateInput, HistoricalInvoiceUncheckedUpdateInput>
+    /**
+     * Choose, which HistoricalInvoice to update.
+     */
+    where: HistoricalInvoiceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalInvoice updateMany
+   */
+  export type HistoricalInvoiceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update HistoricalInvoices.
+     */
+    data: XOR<HistoricalInvoiceUpdateManyMutationInput, HistoricalInvoiceUncheckedUpdateManyInput>
+    /**
+     * Filter which HistoricalInvoices to update
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * Limit how many HistoricalInvoices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * HistoricalInvoice updateManyAndReturn
+   */
+  export type HistoricalInvoiceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * The data used to update HistoricalInvoices.
+     */
+    data: XOR<HistoricalInvoiceUpdateManyMutationInput, HistoricalInvoiceUncheckedUpdateManyInput>
+    /**
+     * Filter which HistoricalInvoices to update
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * Limit how many HistoricalInvoices to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HistoricalInvoice upsert
+   */
+  export type HistoricalInvoiceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the HistoricalInvoice to update in case it exists.
+     */
+    where: HistoricalInvoiceWhereUniqueInput
+    /**
+     * In case the HistoricalInvoice found by the `where` argument doesn't exist, create a new HistoricalInvoice with this data.
+     */
+    create: XOR<HistoricalInvoiceCreateInput, HistoricalInvoiceUncheckedCreateInput>
+    /**
+     * In case the HistoricalInvoice was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HistoricalInvoiceUpdateInput, HistoricalInvoiceUncheckedUpdateInput>
+  }
+
+  /**
+   * HistoricalInvoice delete
+   */
+  export type HistoricalInvoiceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+    /**
+     * Filter which HistoricalInvoice to delete.
+     */
+    where: HistoricalInvoiceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalInvoice deleteMany
+   */
+  export type HistoricalInvoiceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HistoricalInvoices to delete
+     */
+    where?: HistoricalInvoiceWhereInput
+    /**
+     * Limit how many HistoricalInvoices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * HistoricalInvoice without action
+   */
+  export type HistoricalInvoiceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalInvoice
+     */
+    select?: HistoricalInvoiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HistoricalInvoice
+     */
+    omit?: HistoricalInvoiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalInvoiceInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -21232,6 +23870,39 @@ export namespace Prisma {
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+  export const DsoBaselineScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    method: 'method',
+    dsoDays: 'dsoDays',
+    periodStart: 'periodStart',
+    periodEnd: 'periodEnd',
+    invoicedRevenue: 'invoicedRevenue',
+    averageReceivable: 'averageReceivable',
+    invoiceCount: 'invoiceCount',
+    statedUnprompted: 'statedUnprompted',
+    note: 'note',
+    createdById: 'createdById',
+    createdAt: 'createdAt'
+  };
+
+  export type DsoBaselineScalarFieldEnum = (typeof DsoBaselineScalarFieldEnum)[keyof typeof DsoBaselineScalarFieldEnum]
+
+
+  export const HistoricalInvoiceScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    nomorInvoice: 'nomorInvoice',
+    shipperName: 'shipperName',
+    issueDate: 'issueDate',
+    paymentDate: 'paymentDate',
+    amountRupiah: 'amountRupiah',
+    createdAt: 'createdAt'
+  };
+
+  export type HistoricalInvoiceScalarFieldEnum = (typeof HistoricalInvoiceScalarFieldEnum)[keyof typeof HistoricalInvoiceScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -21419,6 +24090,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'DsoBaselineMethod'
+   */
+  export type EnumDsoBaselineMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DsoBaselineMethod'>
+    
+
+
+  /**
+   * Reference to a field of type 'DsoBaselineMethod[]'
+   */
+  export type ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DsoBaselineMethod[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -21456,6 +24141,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileListRelationFilter
     drivers?: DriverListRelationFilter
     orders?: OrderListRelationFilter
+    dsoBaselines?: DsoBaselineListRelationFilter
+    historicalInvoices?: HistoricalInvoiceListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -21476,6 +24163,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileOrderByRelationAggregateInput
     drivers?: DriverOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
+    dsoBaselines?: DsoBaselineOrderByRelationAggregateInput
+    historicalInvoices?: HistoricalInvoiceOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -21499,6 +24188,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileListRelationFilter
     drivers?: DriverListRelationFilter
     orders?: OrderListRelationFilter
+    dsoBaselines?: DsoBaselineListRelationFilter
+    historicalInvoices?: HistoricalInvoiceListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -22675,6 +25366,177 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
 
+  export type DsoBaselineWhereInput = {
+    AND?: DsoBaselineWhereInput | DsoBaselineWhereInput[]
+    OR?: DsoBaselineWhereInput[]
+    NOT?: DsoBaselineWhereInput | DsoBaselineWhereInput[]
+    id?: StringFilter<"DsoBaseline"> | string
+    organizationId?: StringFilter<"DsoBaseline"> | string
+    method?: EnumDsoBaselineMethodFilter<"DsoBaseline"> | $Enums.DsoBaselineMethod
+    dsoDays?: IntFilter<"DsoBaseline"> | number
+    periodStart?: DateTimeFilter<"DsoBaseline"> | Date | string
+    periodEnd?: DateTimeFilter<"DsoBaseline"> | Date | string
+    invoicedRevenue?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    averageReceivable?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    invoiceCount?: IntNullableFilter<"DsoBaseline"> | number | null
+    statedUnprompted?: BoolNullableFilter<"DsoBaseline"> | boolean | null
+    note?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdById?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdAt?: DateTimeFilter<"DsoBaseline"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type DsoBaselineOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    method?: SortOrder
+    dsoDays?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    invoicedRevenue?: SortOrderInput | SortOrder
+    averageReceivable?: SortOrderInput | SortOrder
+    invoiceCount?: SortOrderInput | SortOrder
+    statedUnprompted?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type DsoBaselineWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_method?: DsoBaselineOrganizationIdMethodCompoundUniqueInput
+    AND?: DsoBaselineWhereInput | DsoBaselineWhereInput[]
+    OR?: DsoBaselineWhereInput[]
+    NOT?: DsoBaselineWhereInput | DsoBaselineWhereInput[]
+    organizationId?: StringFilter<"DsoBaseline"> | string
+    method?: EnumDsoBaselineMethodFilter<"DsoBaseline"> | $Enums.DsoBaselineMethod
+    dsoDays?: IntFilter<"DsoBaseline"> | number
+    periodStart?: DateTimeFilter<"DsoBaseline"> | Date | string
+    periodEnd?: DateTimeFilter<"DsoBaseline"> | Date | string
+    invoicedRevenue?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    averageReceivable?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    invoiceCount?: IntNullableFilter<"DsoBaseline"> | number | null
+    statedUnprompted?: BoolNullableFilter<"DsoBaseline"> | boolean | null
+    note?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdById?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdAt?: DateTimeFilter<"DsoBaseline"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_method">
+
+  export type DsoBaselineOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    method?: SortOrder
+    dsoDays?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    invoicedRevenue?: SortOrderInput | SortOrder
+    averageReceivable?: SortOrderInput | SortOrder
+    invoiceCount?: SortOrderInput | SortOrder
+    statedUnprompted?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: DsoBaselineCountOrderByAggregateInput
+    _avg?: DsoBaselineAvgOrderByAggregateInput
+    _max?: DsoBaselineMaxOrderByAggregateInput
+    _min?: DsoBaselineMinOrderByAggregateInput
+    _sum?: DsoBaselineSumOrderByAggregateInput
+  }
+
+  export type DsoBaselineScalarWhereWithAggregatesInput = {
+    AND?: DsoBaselineScalarWhereWithAggregatesInput | DsoBaselineScalarWhereWithAggregatesInput[]
+    OR?: DsoBaselineScalarWhereWithAggregatesInput[]
+    NOT?: DsoBaselineScalarWhereWithAggregatesInput | DsoBaselineScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DsoBaseline"> | string
+    organizationId?: StringWithAggregatesFilter<"DsoBaseline"> | string
+    method?: EnumDsoBaselineMethodWithAggregatesFilter<"DsoBaseline"> | $Enums.DsoBaselineMethod
+    dsoDays?: IntWithAggregatesFilter<"DsoBaseline"> | number
+    periodStart?: DateTimeWithAggregatesFilter<"DsoBaseline"> | Date | string
+    periodEnd?: DateTimeWithAggregatesFilter<"DsoBaseline"> | Date | string
+    invoicedRevenue?: BigIntNullableWithAggregatesFilter<"DsoBaseline"> | bigint | number | null
+    averageReceivable?: BigIntNullableWithAggregatesFilter<"DsoBaseline"> | bigint | number | null
+    invoiceCount?: IntNullableWithAggregatesFilter<"DsoBaseline"> | number | null
+    statedUnprompted?: BoolNullableWithAggregatesFilter<"DsoBaseline"> | boolean | null
+    note?: StringNullableWithAggregatesFilter<"DsoBaseline"> | string | null
+    createdById?: StringNullableWithAggregatesFilter<"DsoBaseline"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DsoBaseline"> | Date | string
+  }
+
+  export type HistoricalInvoiceWhereInput = {
+    AND?: HistoricalInvoiceWhereInput | HistoricalInvoiceWhereInput[]
+    OR?: HistoricalInvoiceWhereInput[]
+    NOT?: HistoricalInvoiceWhereInput | HistoricalInvoiceWhereInput[]
+    id?: StringFilter<"HistoricalInvoice"> | string
+    organizationId?: StringFilter<"HistoricalInvoice"> | string
+    nomorInvoice?: StringFilter<"HistoricalInvoice"> | string
+    shipperName?: StringNullableFilter<"HistoricalInvoice"> | string | null
+    issueDate?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+    paymentDate?: DateTimeNullableFilter<"HistoricalInvoice"> | Date | string | null
+    amountRupiah?: BigIntFilter<"HistoricalInvoice"> | bigint | number
+    createdAt?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type HistoricalInvoiceOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorInvoice?: SortOrder
+    shipperName?: SortOrderInput | SortOrder
+    issueDate?: SortOrder
+    paymentDate?: SortOrderInput | SortOrder
+    amountRupiah?: SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type HistoricalInvoiceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_nomorInvoice?: HistoricalInvoiceOrganizationIdNomorInvoiceCompoundUniqueInput
+    AND?: HistoricalInvoiceWhereInput | HistoricalInvoiceWhereInput[]
+    OR?: HistoricalInvoiceWhereInput[]
+    NOT?: HistoricalInvoiceWhereInput | HistoricalInvoiceWhereInput[]
+    organizationId?: StringFilter<"HistoricalInvoice"> | string
+    nomorInvoice?: StringFilter<"HistoricalInvoice"> | string
+    shipperName?: StringNullableFilter<"HistoricalInvoice"> | string | null
+    issueDate?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+    paymentDate?: DateTimeNullableFilter<"HistoricalInvoice"> | Date | string | null
+    amountRupiah?: BigIntFilter<"HistoricalInvoice"> | bigint | number
+    createdAt?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "organizationId_nomorInvoice">
+
+  export type HistoricalInvoiceOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorInvoice?: SortOrder
+    shipperName?: SortOrderInput | SortOrder
+    issueDate?: SortOrder
+    paymentDate?: SortOrderInput | SortOrder
+    amountRupiah?: SortOrder
+    createdAt?: SortOrder
+    _count?: HistoricalInvoiceCountOrderByAggregateInput
+    _avg?: HistoricalInvoiceAvgOrderByAggregateInput
+    _max?: HistoricalInvoiceMaxOrderByAggregateInput
+    _min?: HistoricalInvoiceMinOrderByAggregateInput
+    _sum?: HistoricalInvoiceSumOrderByAggregateInput
+  }
+
+  export type HistoricalInvoiceScalarWhereWithAggregatesInput = {
+    AND?: HistoricalInvoiceScalarWhereWithAggregatesInput | HistoricalInvoiceScalarWhereWithAggregatesInput[]
+    OR?: HistoricalInvoiceScalarWhereWithAggregatesInput[]
+    NOT?: HistoricalInvoiceScalarWhereWithAggregatesInput | HistoricalInvoiceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"HistoricalInvoice"> | string
+    organizationId?: StringWithAggregatesFilter<"HistoricalInvoice"> | string
+    nomorInvoice?: StringWithAggregatesFilter<"HistoricalInvoice"> | string
+    shipperName?: StringNullableWithAggregatesFilter<"HistoricalInvoice"> | string | null
+    issueDate?: DateTimeWithAggregatesFilter<"HistoricalInvoice"> | Date | string
+    paymentDate?: DateTimeNullableWithAggregatesFilter<"HistoricalInvoice"> | Date | string | null
+    amountRupiah?: BigIntWithAggregatesFilter<"HistoricalInvoice"> | bigint | number
+    createdAt?: DateTimeWithAggregatesFilter<"HistoricalInvoice"> | Date | string
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -22693,6 +25555,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -22713,6 +25577,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -22733,6 +25599,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -22753,6 +25621,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -24011,6 +26881,193 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DsoBaselineCreateInput = {
+    id?: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDsoBaselinesInput
+  }
+
+  export type DsoBaselineUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DsoBaselineUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDsoBaselinesNestedInput
+  }
+
+  export type DsoBaselineUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DsoBaselineCreateManyInput = {
+    id?: string
+    organizationId: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DsoBaselineUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DsoBaselineUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceCreateInput = {
+    id?: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutHistoricalInvoicesInput
+  }
+
+  export type HistoricalInvoiceUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
+  }
+
+  export type HistoricalInvoiceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutHistoricalInvoicesNestedInput
+  }
+
+  export type HistoricalInvoiceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceCreateManyInput = {
+    id?: string
+    organizationId: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
+  }
+
+  export type HistoricalInvoiceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -24115,6 +27172,18 @@ export namespace Prisma {
     none?: OrderWhereInput
   }
 
+  export type DsoBaselineListRelationFilter = {
+    every?: DsoBaselineWhereInput
+    some?: DsoBaselineWhereInput
+    none?: DsoBaselineWhereInput
+  }
+
+  export type HistoricalInvoiceListRelationFilter = {
+    every?: HistoricalInvoiceWhereInput
+    some?: HistoricalInvoiceWhereInput
+    none?: HistoricalInvoiceWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -24157,6 +27226,14 @@ export namespace Prisma {
   }
 
   export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DsoBaselineOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type HistoricalInvoiceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25244,6 +28321,149 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
+  export type EnumDsoBaselineMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.DsoBaselineMethod | EnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumDsoBaselineMethodFilter<$PrismaModel> | $Enums.DsoBaselineMethod
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type DsoBaselineOrganizationIdMethodCompoundUniqueInput = {
+    organizationId: string
+    method: $Enums.DsoBaselineMethod
+  }
+
+  export type DsoBaselineCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    method?: SortOrder
+    dsoDays?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    invoicedRevenue?: SortOrder
+    averageReceivable?: SortOrder
+    invoiceCount?: SortOrder
+    statedUnprompted?: SortOrder
+    note?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DsoBaselineAvgOrderByAggregateInput = {
+    dsoDays?: SortOrder
+    invoicedRevenue?: SortOrder
+    averageReceivable?: SortOrder
+    invoiceCount?: SortOrder
+  }
+
+  export type DsoBaselineMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    method?: SortOrder
+    dsoDays?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    invoicedRevenue?: SortOrder
+    averageReceivable?: SortOrder
+    invoiceCount?: SortOrder
+    statedUnprompted?: SortOrder
+    note?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DsoBaselineMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    method?: SortOrder
+    dsoDays?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    invoicedRevenue?: SortOrder
+    averageReceivable?: SortOrder
+    invoiceCount?: SortOrder
+    statedUnprompted?: SortOrder
+    note?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DsoBaselineSumOrderByAggregateInput = {
+    dsoDays?: SortOrder
+    invoicedRevenue?: SortOrder
+    averageReceivable?: SortOrder
+    invoiceCount?: SortOrder
+  }
+
+  export type EnumDsoBaselineMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DsoBaselineMethod | EnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumDsoBaselineMethodWithAggregatesFilter<$PrismaModel> | $Enums.DsoBaselineMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDsoBaselineMethodFilter<$PrismaModel>
+    _max?: NestedEnumDsoBaselineMethodFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type HistoricalInvoiceOrganizationIdNomorInvoiceCompoundUniqueInput = {
+    organizationId: string
+    nomorInvoice: string
+  }
+
+  export type HistoricalInvoiceCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorInvoice?: SortOrder
+    shipperName?: SortOrder
+    issueDate?: SortOrder
+    paymentDate?: SortOrder
+    amountRupiah?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalInvoiceAvgOrderByAggregateInput = {
+    amountRupiah?: SortOrder
+  }
+
+  export type HistoricalInvoiceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorInvoice?: SortOrder
+    shipperName?: SortOrder
+    issueDate?: SortOrder
+    paymentDate?: SortOrder
+    amountRupiah?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalInvoiceMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorInvoice?: SortOrder
+    shipperName?: SortOrder
+    issueDate?: SortOrder
+    paymentDate?: SortOrder
+    amountRupiah?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalInvoiceSumOrderByAggregateInput = {
+    amountRupiah?: SortOrder
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -25314,6 +28534,20 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type DsoBaselineCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput> | DsoBaselineCreateWithoutOrganizationInput[] | DsoBaselineUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DsoBaselineCreateOrConnectWithoutOrganizationInput | DsoBaselineCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DsoBaselineCreateManyOrganizationInputEnvelope
+    connect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+  }
+
+  export type HistoricalInvoiceCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput> | HistoricalInvoiceCreateWithoutOrganizationInput[] | HistoricalInvoiceUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HistoricalInvoiceCreateOrConnectWithoutOrganizationInput | HistoricalInvoiceCreateOrConnectWithoutOrganizationInput[]
+    createMany?: HistoricalInvoiceCreateManyOrganizationInputEnvelope
+    connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -25382,6 +28616,20 @@ export namespace Prisma {
     connectOrCreate?: OrderCreateOrConnectWithoutOrganizationInput | OrderCreateOrConnectWithoutOrganizationInput[]
     createMany?: OrderCreateManyOrganizationInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput> | DsoBaselineCreateWithoutOrganizationInput[] | DsoBaselineUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DsoBaselineCreateOrConnectWithoutOrganizationInput | DsoBaselineCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DsoBaselineCreateManyOrganizationInputEnvelope
+    connect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+  }
+
+  export type HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput> | HistoricalInvoiceCreateWithoutOrganizationInput[] | HistoricalInvoiceUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HistoricalInvoiceCreateOrConnectWithoutOrganizationInput | HistoricalInvoiceCreateOrConnectWithoutOrganizationInput[]
+    createMany?: HistoricalInvoiceCreateManyOrganizationInputEnvelope
+    connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -25544,6 +28792,34 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type DsoBaselineUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput> | DsoBaselineCreateWithoutOrganizationInput[] | DsoBaselineUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DsoBaselineCreateOrConnectWithoutOrganizationInput | DsoBaselineCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DsoBaselineUpsertWithWhereUniqueWithoutOrganizationInput | DsoBaselineUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DsoBaselineCreateManyOrganizationInputEnvelope
+    set?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    disconnect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    delete?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    connect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    update?: DsoBaselineUpdateWithWhereUniqueWithoutOrganizationInput | DsoBaselineUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DsoBaselineUpdateManyWithWhereWithoutOrganizationInput | DsoBaselineUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DsoBaselineScalarWhereInput | DsoBaselineScalarWhereInput[]
+  }
+
+  export type HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput> | HistoricalInvoiceCreateWithoutOrganizationInput[] | HistoricalInvoiceUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HistoricalInvoiceCreateOrConnectWithoutOrganizationInput | HistoricalInvoiceCreateOrConnectWithoutOrganizationInput[]
+    upsert?: HistoricalInvoiceUpsertWithWhereUniqueWithoutOrganizationInput | HistoricalInvoiceUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: HistoricalInvoiceCreateManyOrganizationInputEnvelope
+    set?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    disconnect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    delete?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    update?: HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput | HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput | HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -25682,6 +28958,34 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutOrganizationInput | OrderUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutOrganizationInput | OrderUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput> | DsoBaselineCreateWithoutOrganizationInput[] | DsoBaselineUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DsoBaselineCreateOrConnectWithoutOrganizationInput | DsoBaselineCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DsoBaselineUpsertWithWhereUniqueWithoutOrganizationInput | DsoBaselineUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DsoBaselineCreateManyOrganizationInputEnvelope
+    set?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    disconnect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    delete?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    connect?: DsoBaselineWhereUniqueInput | DsoBaselineWhereUniqueInput[]
+    update?: DsoBaselineUpdateWithWhereUniqueWithoutOrganizationInput | DsoBaselineUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DsoBaselineUpdateManyWithWhereWithoutOrganizationInput | DsoBaselineUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DsoBaselineScalarWhereInput | DsoBaselineScalarWhereInput[]
+  }
+
+  export type HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput> | HistoricalInvoiceCreateWithoutOrganizationInput[] | HistoricalInvoiceUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: HistoricalInvoiceCreateOrConnectWithoutOrganizationInput | HistoricalInvoiceCreateOrConnectWithoutOrganizationInput[]
+    upsert?: HistoricalInvoiceUpsertWithWhereUniqueWithoutOrganizationInput | HistoricalInvoiceUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: HistoricalInvoiceCreateManyOrganizationInputEnvelope
+    set?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    disconnect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    delete?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    connect?: HistoricalInvoiceWhereUniqueInput | HistoricalInvoiceWhereUniqueInput[]
+    update?: HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput | HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput | HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -26266,6 +29570,42 @@ export namespace Prisma {
     update?: XOR<XOR<DriverUpdateToOneWithWhereWithoutOrdersInput, DriverUpdateWithoutOrdersInput>, DriverUncheckedUpdateWithoutOrdersInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutDsoBaselinesInput = {
+    create?: XOR<OrganizationCreateWithoutDsoBaselinesInput, OrganizationUncheckedCreateWithoutDsoBaselinesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDsoBaselinesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type EnumDsoBaselineMethodFieldUpdateOperationsInput = {
+    set?: $Enums.DsoBaselineMethod
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutDsoBaselinesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutDsoBaselinesInput, OrganizationUncheckedCreateWithoutDsoBaselinesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDsoBaselinesInput
+    upsert?: OrganizationUpsertWithoutDsoBaselinesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDsoBaselinesInput, OrganizationUpdateWithoutDsoBaselinesInput>, OrganizationUncheckedUpdateWithoutDsoBaselinesInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutHistoricalInvoicesInput = {
+    create?: XOR<OrganizationCreateWithoutHistoricalInvoicesInput, OrganizationUncheckedCreateWithoutHistoricalInvoicesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutHistoricalInvoicesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutHistoricalInvoicesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutHistoricalInvoicesInput, OrganizationUncheckedCreateWithoutHistoricalInvoicesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutHistoricalInvoicesInput
+    upsert?: OrganizationUpsertWithoutHistoricalInvoicesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutHistoricalInvoicesInput, OrganizationUpdateWithoutHistoricalInvoicesInput>, OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26635,6 +29975,36 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumDsoBaselineMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.DsoBaselineMethod | EnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumDsoBaselineMethodFilter<$PrismaModel> | $Enums.DsoBaselineMethod
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedEnumDsoBaselineMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DsoBaselineMethod | EnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DsoBaselineMethod[] | ListEnumDsoBaselineMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumDsoBaselineMethodWithAggregatesFilter<$PrismaModel> | $Enums.DsoBaselineMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDsoBaselineMethodFilter<$PrismaModel>
+    _max?: NestedEnumDsoBaselineMethodFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type MembershipCreateWithoutOrganizationInput = {
     id?: string
     role: $Enums.MembershipRole
@@ -26979,6 +30349,76 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DsoBaselineCreateWithoutOrganizationInput = {
+    id?: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DsoBaselineUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type DsoBaselineCreateOrConnectWithoutOrganizationInput = {
+    where: DsoBaselineWhereUniqueInput
+    create: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DsoBaselineCreateManyOrganizationInputEnvelope = {
+    data: DsoBaselineCreateManyOrganizationInput | DsoBaselineCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type HistoricalInvoiceCreateWithoutOrganizationInput = {
+    id?: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
+  }
+
+  export type HistoricalInvoiceUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
+  }
+
+  export type HistoricalInvoiceCreateOrConnectWithoutOrganizationInput = {
+    where: HistoricalInvoiceWhereUniqueInput
+    create: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type HistoricalInvoiceCreateManyOrganizationInputEnvelope = {
+    data: HistoricalInvoiceCreateManyOrganizationInput | HistoricalInvoiceCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MembershipUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: MembershipWhereUniqueInput
     update: XOR<MembershipUpdateWithoutOrganizationInput, MembershipUncheckedUpdateWithoutOrganizationInput>
@@ -27296,6 +30736,71 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+  }
+
+  export type DsoBaselineUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: DsoBaselineWhereUniqueInput
+    update: XOR<DsoBaselineUpdateWithoutOrganizationInput, DsoBaselineUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<DsoBaselineCreateWithoutOrganizationInput, DsoBaselineUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DsoBaselineUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: DsoBaselineWhereUniqueInput
+    data: XOR<DsoBaselineUpdateWithoutOrganizationInput, DsoBaselineUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DsoBaselineUpdateManyWithWhereWithoutOrganizationInput = {
+    where: DsoBaselineScalarWhereInput
+    data: XOR<DsoBaselineUpdateManyMutationInput, DsoBaselineUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type DsoBaselineScalarWhereInput = {
+    AND?: DsoBaselineScalarWhereInput | DsoBaselineScalarWhereInput[]
+    OR?: DsoBaselineScalarWhereInput[]
+    NOT?: DsoBaselineScalarWhereInput | DsoBaselineScalarWhereInput[]
+    id?: StringFilter<"DsoBaseline"> | string
+    organizationId?: StringFilter<"DsoBaseline"> | string
+    method?: EnumDsoBaselineMethodFilter<"DsoBaseline"> | $Enums.DsoBaselineMethod
+    dsoDays?: IntFilter<"DsoBaseline"> | number
+    periodStart?: DateTimeFilter<"DsoBaseline"> | Date | string
+    periodEnd?: DateTimeFilter<"DsoBaseline"> | Date | string
+    invoicedRevenue?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    averageReceivable?: BigIntNullableFilter<"DsoBaseline"> | bigint | number | null
+    invoiceCount?: IntNullableFilter<"DsoBaseline"> | number | null
+    statedUnprompted?: BoolNullableFilter<"DsoBaseline"> | boolean | null
+    note?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdById?: StringNullableFilter<"DsoBaseline"> | string | null
+    createdAt?: DateTimeFilter<"DsoBaseline"> | Date | string
+  }
+
+  export type HistoricalInvoiceUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: HistoricalInvoiceWhereUniqueInput
+    update: XOR<HistoricalInvoiceUpdateWithoutOrganizationInput, HistoricalInvoiceUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<HistoricalInvoiceCreateWithoutOrganizationInput, HistoricalInvoiceUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type HistoricalInvoiceUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: HistoricalInvoiceWhereUniqueInput
+    data: XOR<HistoricalInvoiceUpdateWithoutOrganizationInput, HistoricalInvoiceUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type HistoricalInvoiceUpdateManyWithWhereWithoutOrganizationInput = {
+    where: HistoricalInvoiceScalarWhereInput
+    data: XOR<HistoricalInvoiceUpdateManyMutationInput, HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type HistoricalInvoiceScalarWhereInput = {
+    AND?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
+    OR?: HistoricalInvoiceScalarWhereInput[]
+    NOT?: HistoricalInvoiceScalarWhereInput | HistoricalInvoiceScalarWhereInput[]
+    id?: StringFilter<"HistoricalInvoice"> | string
+    organizationId?: StringFilter<"HistoricalInvoice"> | string
+    nomorInvoice?: StringFilter<"HistoricalInvoice"> | string
+    shipperName?: StringNullableFilter<"HistoricalInvoice"> | string | null
+    issueDate?: DateTimeFilter<"HistoricalInvoice"> | Date | string
+    paymentDate?: DateTimeNullableFilter<"HistoricalInvoice"> | Date | string | null
+    amountRupiah?: BigIntFilter<"HistoricalInvoice"> | bigint | number
+    createdAt?: DateTimeFilter<"HistoricalInvoice"> | Date | string
   }
 
   export type UserCreateWithoutPostsInput = {
@@ -27735,6 +31240,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -27754,6 +31261,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -27822,6 +31331,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -27841,6 +31352,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -27860,6 +31373,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -27879,6 +31394,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -27914,6 +31431,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -27933,6 +31452,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -27952,6 +31473,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -27971,6 +31494,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -28006,6 +31531,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -28025,6 +31552,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -28044,6 +31573,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -28063,6 +31594,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -28098,6 +31631,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -28117,6 +31652,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -28136,6 +31673,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -28155,6 +31694,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -28190,6 +31731,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -28209,6 +31752,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -28228,6 +31773,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -28247,6 +31794,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -28282,6 +31831,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -28301,6 +31852,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutShippersInput = {
@@ -28320,6 +31873,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutShippersInput = {
@@ -28339,6 +31894,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutShippersInput = {
@@ -28452,6 +32009,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutShippersInput = {
@@ -28471,6 +32030,8 @@ export namespace Prisma {
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
@@ -28522,6 +32083,8 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
@@ -28541,6 +32104,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
@@ -28609,6 +32174,8 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -28628,6 +32195,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutRequirementProfilesInput = {
@@ -28686,6 +32255,8 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDriversInput = {
@@ -28705,6 +32276,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDriversInput = {
@@ -28786,6 +32359,8 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDriversInput = {
@@ -28805,6 +32380,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutDriverInput = {
@@ -28840,6 +32417,8 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOrdersInput = {
@@ -28859,6 +32438,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOrdersInput = {
@@ -28954,6 +32535,8 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOrdersInput = {
@@ -28973,6 +32556,8 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutOrdersInput = {
@@ -29045,6 +32630,206 @@ export namespace Prisma {
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrganizationCreateWithoutDsoBaselinesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutDsoBaselinesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    historicalInvoices?: HistoricalInvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutDsoBaselinesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutDsoBaselinesInput, OrganizationUncheckedCreateWithoutDsoBaselinesInput>
+  }
+
+  export type OrganizationUpsertWithoutDsoBaselinesInput = {
+    update: XOR<OrganizationUpdateWithoutDsoBaselinesInput, OrganizationUncheckedUpdateWithoutDsoBaselinesInput>
+    create: XOR<OrganizationCreateWithoutDsoBaselinesInput, OrganizationUncheckedCreateWithoutDsoBaselinesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutDsoBaselinesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutDsoBaselinesInput, OrganizationUncheckedUpdateWithoutDsoBaselinesInput>
+  }
+
+  export type OrganizationUpdateWithoutDsoBaselinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutDsoBaselinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    historicalInvoices?: HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutHistoricalInvoicesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutHistoricalInvoicesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
+    dsoBaselines?: DsoBaselineUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutHistoricalInvoicesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutHistoricalInvoicesInput, OrganizationUncheckedCreateWithoutHistoricalInvoicesInput>
+  }
+
+  export type OrganizationUpsertWithoutHistoricalInvoicesInput = {
+    update: XOR<OrganizationUpdateWithoutHistoricalInvoicesInput, OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput>
+    create: XOR<OrganizationCreateWithoutHistoricalInvoicesInput, OrganizationUncheckedCreateWithoutHistoricalInvoicesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutHistoricalInvoicesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutHistoricalInvoicesInput, OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput>
+  }
+
+  export type OrganizationUpdateWithoutHistoricalInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutHistoricalInvoicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+    dsoBaselines?: DsoBaselineUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -29164,6 +32949,31 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type DsoBaselineCreateManyOrganizationInput = {
+    id?: string
+    method: $Enums.DsoBaselineMethod
+    dsoDays: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    invoicedRevenue?: bigint | number | null
+    averageReceivable?: bigint | number | null
+    invoiceCount?: number | null
+    statedUnprompted?: boolean | null
+    note?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type HistoricalInvoiceCreateManyOrganizationInput = {
+    id?: string
+    nomorInvoice: string
+    shipperName?: string | null
+    issueDate: Date | string
+    paymentDate?: Date | string | null
+    amountRupiah: bigint | number
+    createdAt?: Date | string
   }
 
   export type MembershipUpdateWithoutOrganizationInput = {
@@ -29527,6 +33337,81 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DsoBaselineUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DsoBaselineUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DsoBaselineUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    method?: EnumDsoBaselineMethodFieldUpdateOperationsInput | $Enums.DsoBaselineMethod
+    dsoDays?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoicedRevenue?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    averageReceivable?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    invoiceCount?: NullableIntFieldUpdateOperationsInput | number | null
+    statedUnprompted?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalInvoiceUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorInvoice?: StringFieldUpdateOperationsInput | string
+    shipperName?: NullableStringFieldUpdateOperationsInput | string | null
+    issueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    amountRupiah?: BigIntFieldUpdateOperationsInput | bigint | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountCreateManyUserInput = {
