@@ -149,6 +149,38 @@ describe("domain import guardrails", () => {
     expect(hasErrorContaining(messages, "~/server/jobs")).toBe(true);
   });
 
+  it("rejects the Baileys vendor from the domain layer", async () => {
+    const scopedMessages = await lintFixture(
+      "src/server/domain/ports/channel-fixture.ts",
+      'import makeWASocket from "@whiskeysockets/baileys";\nvoid makeWASocket;',
+    );
+    const unscopedMessages = await lintFixture(
+      "src/server/domain/ports/channel-fixture.ts",
+      'import makeWASocket from "baileys";\nvoid makeWASocket;',
+    );
+
+    expect(hasErrorContaining(scopedMessages, "@whiskeysockets/baileys")).toBe(
+      true,
+    );
+    expect(hasErrorContaining(unscopedMessages, "baileys")).toBe(true);
+  });
+
+  it("rejects QR rendering packages from the domain layer", async () => {
+    const qrcodeMessages = await lintFixture(
+      "src/server/domain/ports/channel-fixture.ts",
+      'import QRCode from "qrcode";\nvoid QRCode;',
+    );
+    const qrcodeTerminalMessages = await lintFixture(
+      "src/server/domain/ports/channel-fixture.ts",
+      'import qrcodeTerminal from "qrcode-terminal";\nvoid qrcodeTerminal;',
+    );
+
+    expect(hasErrorContaining(qrcodeMessages, "qrcode")).toBe(true);
+    expect(hasErrorContaining(qrcodeTerminalMessages, "qrcode-terminal")).toBe(
+      true,
+    );
+  });
+
   it("allows pure domain imports in the domain layer", async () => {
     const messages = await lintFixture(
       "src/server/domain/invoice.ts",
