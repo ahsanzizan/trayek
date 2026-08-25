@@ -7,7 +7,10 @@ import {
   hashThrottleBucket,
   hashUploadToken,
 } from "~/server/domain/pod-link/token";
-import { recordPodSubmissionPage } from "~/server/pod-link/submission";
+import {
+  findOrOpenPodSubmission,
+  recordPodSubmissionPage,
+} from "~/server/pod-link/submission";
 import { authorizePodUpload, podUploadInput } from "~/server/storage/router";
 
 /**
@@ -67,17 +70,19 @@ async function uploadBatch(label: string, quality: QualityEntry[]) {
   await createLink(token);
 
   const metadata = await authorizePodUpload({
-    input: { token, quality },
+    input: { token, quality, idempotencyKey: `q-${suffix}-${label}` },
     files: quality.map((entry) => ({ name: entry.fileName })),
   });
 
-  createdSubmissionIds.push(metadata.podSubmissionId);
+  const podSubmissionId = await findOrOpenPodSubmission({ db, ...metadata });
+
+  createdSubmissionIds.push(podSubmissionId);
 
   for (const [index, entry] of quality.entries()) {
     await recordPodSubmissionPage({
       db,
       organizationId: metadata.organizationId,
-      podSubmissionId: metadata.podSubmissionId,
+      podSubmissionId,
       storageKey: `key-${suffix}-${label}-${index}`,
       fileName: entry.fileName,
       contentType: "image/jpeg",
@@ -87,7 +92,7 @@ async function uploadBatch(label: string, quality: QualityEntry[]) {
     });
   }
 
-  return metadata.podSubmissionId;
+  return podSubmissionId;
 }
 
 function entry(
@@ -206,16 +211,18 @@ describe("storing a quality score", () => {
     await createLink(token);
 
     const metadata = await authorizePodUpload({
-      input: { token },
+      input: { token, idempotencyKey: `q-${suffix}-noquality` },
       files: [{ name: "pod.jpg" }],
     });
 
-    createdSubmissionIds.push(metadata.podSubmissionId);
+    const podSubmissionId = await findOrOpenPodSubmission({ db, ...metadata });
+
+    createdSubmissionIds.push(podSubmissionId);
 
     await recordPodSubmissionPage({
       db,
       organizationId: metadata.organizationId,
-      podSubmissionId: metadata.podSubmissionId,
+      podSubmissionId,
       storageKey: `key-${suffix}-noquality`,
       fileName: "pod.jpg",
       contentType: "image/jpeg",
@@ -224,7 +231,7 @@ describe("storing a quality score", () => {
     });
 
     const page = await db.podSubmissionPage.findFirstOrThrow({
-      where: { podSubmissionId: metadata.podSubmissionId },
+      where: { podSubmissionId },
       select: { qualityScore: true, qualityOverridden: true },
     });
 
@@ -250,6 +257,7 @@ describe("the score is advisory, never a gate", () => {
     expect(() =>
       podUploadInput.parse({
         token: "TRAYEKSEEDA000000001",
+        idempotencyKey: "batch-0000000001",
         quality: [
           { fileName: "a.jpg", score: 140, overridden: false, checks: [] },
         ],

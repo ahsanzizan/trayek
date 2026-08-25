@@ -30,42 +30,88 @@ export type OpenSubmissionInput = {
   organizationId: string;
   orderId: string;
   podUploadLinkId: string;
+  /** One per capture attempt, from the browser. See `PodSubmission`. */
+  idempotencyKey: string;
   attestation?: CaptureAttestation | null;
 };
 
+/** Postgres unique violation, surfaced by Prisma as a known request error. */
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
 /**
- * Opens the submission a batch of photographs will hang off.
+ * Finds the submission for this capture attempt, or opens it.
  *
- * Created before the first byte arrives, because the pages need a parent to
- * attach to and the upload middleware is the last point that sees the batch
- * as a whole. A submission that ends up with no pages means every photograph
- * in the batch failed, which is worth being able to see.
+ * Called when a photograph arrives, not when the upload is authorized. That
+ * ordering is deliberate and it is what stops a failed upload leaving a
+ * submission behind with no pages: no bytes, no row. An empty submission is
+ * worse than untidy — TRK-041 triggers extraction on submission creation, so
+ * an orphan would queue a job to read a POD that does not exist.
+ *
+ * Keyed by the client's idempotency key, so a driver whose connection dropped
+ * mid-batch retries onto the same submission rather than beside it.
  */
-export async function openPodSubmission({
+export async function findOrOpenPodSubmission({
   db,
   organizationId,
   orderId,
   podUploadLinkId,
+  idempotencyKey,
   attestation = null,
 }: OpenSubmissionInput): Promise<string> {
-  const submission = await db.podSubmission.create({
-    data: {
-      organizationId,
-      orderId,
-      podUploadLinkId,
-      // A refused prompt still records its refusal. Storing nothing would make
-      // "the driver said no" indistinguishable from "we never asked", and only
-      // one of those is worth anything to a fraud reviewer.
-      geolocationPermission: attestation?.permission ?? null,
-      captureLatitude: attestation?.latitude ?? null,
-      captureLongitude: attestation?.longitude ?? null,
-      captureAccuracyMeters: attestation?.accuracyMeters ?? null,
-      capturedAt: attestation ? new Date(attestation.capturedAt) : null,
-    },
+  const existing = await db.podSubmission.findFirst({
+    where: { organizationId, idempotencyKey },
     select: { id: true },
   });
 
-  return submission.id;
+  if (existing) {
+    return existing.id;
+  }
+
+  try {
+    const created = await db.podSubmission.create({
+      data: {
+        organizationId,
+        orderId,
+        podUploadLinkId,
+        idempotencyKey,
+        // A refused prompt still records its refusal. Storing nothing would
+        // make "the driver said no" indistinguishable from "we never asked",
+        // and only one of those is worth anything to a fraud reviewer.
+        geolocationPermission: attestation?.permission ?? null,
+        captureLatitude: attestation?.latitude ?? null,
+        captureLongitude: attestation?.longitude ?? null,
+        captureAccuracyMeters: attestation?.accuracyMeters ?? null,
+        capturedAt: attestation ? new Date(attestation.capturedAt) : null,
+      },
+      select: { id: true },
+    });
+
+    return created.id;
+  } catch (error) {
+    if (!isUniqueViolation(error)) {
+      throw error;
+    }
+
+    // Two photographs of the same batch landed at once and both tried to open
+    // the submission. The unique index settled it; this one reads the winner.
+    const winner = await db.podSubmission.findFirst({
+      where: { organizationId, idempotencyKey },
+      select: { id: true },
+    });
+
+    if (!winner) {
+      throw error;
+    }
+
+    return winner.id;
+  }
 }
 
 /**
@@ -115,11 +161,27 @@ export async function recordPodSubmissionPage({
     pageIndex ??
     (await db.podSubmissionPage.count({ where: { podSubmissionId } }));
 
-  const page = await db.podSubmissionPage.create({
-    data: {
+  // Upsert, not create: a retry re-uploads the whole batch, because the
+  // UploadThing client offers no way to resume a partial transfer. The same
+  // page arriving twice must replace itself rather than duplicate or throw.
+  // The superseded object is left in storage — TRK-141 owns reclaiming it.
+  const page = await db.podSubmissionPage.upsert({
+    where: {
+      podSubmissionId_pageIndex: { podSubmissionId, pageIndex: resolvedIndex },
+    },
+    create: {
       organizationId,
       podSubmissionId,
       pageIndex: resolvedIndex,
+      storageKey,
+      fileName,
+      contentType,
+      sizeBytes,
+      qualityScore: quality?.score ?? null,
+      qualityChecks: quality?.checks ?? undefined,
+      qualityOverridden: quality?.overridden ?? false,
+    },
+    update: {
       storageKey,
       fileName,
       contentType,

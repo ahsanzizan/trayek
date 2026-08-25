@@ -94,7 +94,12 @@ test.describe("driver POD upload on 3G", () => {
 
     await expect(page.getByAltText("Foto POD halaman 1")).toBeVisible();
 
-    await page.getByRole("button", { name: /^Kirim 1 foto$/ }).click();
+    // Either label is correct: the fixture is a 1x1 image, so the quality
+    // guard may finish measuring it before the click and flip the button to
+    // the override wording (TRK-031). The send is one tap regardless.
+    await page
+      .getByRole("button", { name: /^(Kirim|Tetap kirim) 1 foto$/ })
+      .click();
 
     await expect(page.getByText("POD sudah terkirim")).toBeVisible({
       timeout: UPLOAD_BUDGET_MS,
@@ -129,7 +134,7 @@ test.describe("driver POD upload on 3G", () => {
     await expect(page.getByAltText("Foto POD halaman 1")).toBeVisible();
     await expect(page.getByAltText("Foto POD halaman 2")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /^Kirim 2 foto$/ }),
+      page.getByRole("button", { name: /^(Kirim|Tetap kirim) 2 foto$/ }),
     ).toBeVisible();
   });
 

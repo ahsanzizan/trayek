@@ -21,15 +21,32 @@ vi.mock("~/server/observability/reporter", () => ({
 }));
 
 describe("UploadThing file route input validation", () => {
-  it("accepts the upload token, which is all a POD upload carries", () => {
-    expect(podUploadInput.parse({ token: "TRAYEKSEEDA000000001" })).toEqual({
+  it("accepts the upload token and the capture-attempt key", () => {
+    // TRK-033 added the idempotency key, so a retry after a dropped
+    // connection lands on the submission the first attempt opened.
+    expect(
+      podUploadInput.parse({
+        token: "TRAYEKSEEDA000000001",
+        idempotencyKey: "capture-attempt-0001",
+      }),
+    ).toEqual({
       token: "TRAYEKSEEDA000000001",
+      idempotencyKey: "capture-attempt-0001",
     });
   });
 
   it("rejects a POD upload with no token", () => {
     expect(() => podUploadInput.parse({})).toThrow();
-    expect(() => podUploadInput.parse({ token: "" })).toThrow();
+    expect(() =>
+      podUploadInput.parse({ token: "", idempotencyKey: "capture-0001" }),
+    ).toThrow();
+  });
+
+  it("rejects a POD upload with no capture-attempt key", () => {
+    // Without one, a retry would open a second submission beside the first.
+    expect(() =>
+      podUploadInput.parse({ token: "TRAYEKSEEDA000000001" }),
+    ).toThrow();
   });
 
   it("gives the caller no way to name the tenant it writes to", () => {
@@ -39,11 +56,15 @@ describe("UploadThing file route input validation", () => {
     // token server-side, and anything else the client sends is dropped here.
     const parsed = podUploadInput.parse({
       token: "TRAYEKSEEDA000000001",
+      idempotencyKey: "capture-attempt-0001",
       organizationId: "org-forwarder-b",
       loadId: "order-b-only",
     });
 
-    expect(parsed).toEqual({ token: "TRAYEKSEEDA000000001" });
+    expect(parsed).toEqual({
+      token: "TRAYEKSEEDA000000001",
+      idempotencyKey: "capture-attempt-0001",
+    });
     expect(parsed).not.toHaveProperty("organizationId");
     expect(parsed).not.toHaveProperty("loadId");
   });

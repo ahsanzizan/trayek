@@ -384,6 +384,7 @@ exports.Prisma.PodSubmissionScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
   orderId: 'orderId',
+  idempotencyKey: 'idempotencyKey',
   podUploadLinkId: 'podUploadLinkId',
   receivedAt: 'receivedAt',
   createdAt: 'createdAt',

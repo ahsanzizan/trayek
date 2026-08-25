@@ -11,6 +11,7 @@ import {
   hashThrottleBucket,
   hashUploadToken,
 } from "~/server/domain/pod-link/token";
+import { findOrOpenPodSubmission } from "~/server/pod-link/submission";
 import { authorizePodUpload, podUploadInput } from "~/server/storage/router";
 
 /**
@@ -76,12 +77,16 @@ async function upload(label: string, attestation?: Attestation) {
   await createLink(token);
 
   const metadata = await authorizePodUpload({
-    input: { token, attestation },
+    input: { token, attestation, idempotencyKey: `att-${suffix}-${label}` },
     files: [{ name: "pod.jpg" }],
   });
 
-  createdSubmissionIds.push(metadata.podSubmissionId);
-  return metadata.podSubmissionId;
+  // Authorization no longer opens a submission (TRK-033); the upload path
+  // does it when the first photograph arrives.
+  const submissionId = await findOrOpenPodSubmission({ db, ...metadata });
+
+  createdSubmissionIds.push(submissionId);
+  return submissionId;
 }
 
 afterAll(async () => {
@@ -247,6 +252,7 @@ describe("what the input will accept", () => {
       expect(() =>
         podUploadInput.parse({
           token: "TRAYEKSEEDA000000001",
+          idempotencyKey: "batch-0000000001",
           attestation: {
             permission: "GRANTED",
             accuracyMeters: 10,
@@ -262,6 +268,7 @@ describe("what the input will accept", () => {
     expect(() =>
       podUploadInput.parse({
         token: "TRAYEKSEEDA000000001",
+        idempotencyKey: "batch-0000000001",
         attestation: { ...PRIOK, accuracyMeters: -5 },
       }),
     ).toThrow();
@@ -271,6 +278,7 @@ describe("what the input will accept", () => {
     expect(
       podUploadInput.parse({
         token: "TRAYEKSEEDA000000001",
+        idempotencyKey: "batch-0000000001",
         attestation: PRIOK,
       }).attestation?.latitude,
     ).toBeCloseTo(-6.1045, 4);

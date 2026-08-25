@@ -9,6 +9,7 @@ import {
 import { authorizePodUpload } from "~/server/storage/router";
 import {
   discardEmptyPodSubmission,
+  findOrOpenPodSubmission,
   recordPodSubmissionPage,
 } from "~/server/pod-link/submission";
 
@@ -70,19 +71,47 @@ async function createLink(
   return link;
 }
 
-function authorize(token: string, fileNames = ["pod.jpg"]) {
+let keySeed = 0;
+
+/** A fresh capture-attempt key, unless a test is deliberately replaying one. */
+function newKey(label = "batch"): string {
+  keySeed += 1;
+  return `${label}-${suffix}-${keySeed}`;
+}
+
+function authorize(
+  token: string,
+  fileNames = ["pod.jpg"],
+  idempotencyKey = newKey(),
+) {
   return authorizePodUpload({
-    input: { token },
+    input: { token, idempotencyKey },
     files: fileNames.map((name) => ({ name })),
   });
 }
 
-async function track<T extends { podSubmissionId: string }>(
-  result: Promise<T>,
-): Promise<T> {
-  const resolved = await result;
-  createdSubmissionIds.push(resolved.podSubmissionId);
-  return resolved;
+/**
+ * Opens the submission the way `onUploadComplete` does.
+ *
+ * Authorization no longer opens one (TRK-033): a submission exists only once
+ * a photograph has actually arrived, so tests that need one have to ask for
+ * it the same way the upload path does.
+ */
+async function openFor(metadata: {
+  organizationId: string;
+  orderId: string;
+  podUploadLinkId: string;
+  idempotencyKey: string;
+}): Promise<string> {
+  const id = await findOrOpenPodSubmission({ db, ...metadata });
+
+  createdSubmissionIds.push(id);
+  return id;
+}
+
+/** Kept for call sites that only care that authorization succeeded. */
+async function track<T>(result: Promise<T>): Promise<T> {
+  return result;
 }
 
 afterAll(async () => {
@@ -104,7 +133,7 @@ describe("authorizing an upload", () => {
     const token = tokenFor("AUTH");
     const link = await createLink(token);
 
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
 
     expect(metadata.organizationId).toBe(orderA.organizationId);
     expect(metadata.orderId).toBe(orderA.id);
@@ -115,12 +144,11 @@ describe("authorizing an upload", () => {
     const token = tokenFor("BATCH");
     await createLink(token);
 
-    const metadata = await track(
-      authorize(token, ["depan.jpg", "belakang.jpg"]),
-    );
+    const metadata = await authorize(token, ["depan.jpg", "belakang.jpg"]);
+    const submissionId = await openFor(metadata);
 
     const submission = await db.podSubmission.findUniqueOrThrow({
-      where: { id: metadata.podSubmissionId },
+      where: { id: submissionId },
       select: { orderId: true, organizationId: true },
     });
 
@@ -132,9 +160,11 @@ describe("authorizing an upload", () => {
     const token = tokenFor("ORDERED");
     await createLink(token);
 
-    const metadata = await track(
-      authorize(token, ["halaman-1.jpg", "halaman-2.jpg", "halaman-3.jpg"]),
-    );
+    const metadata = await authorize(token, [
+      "halaman-1.jpg",
+      "halaman-2.jpg",
+      "halaman-3.jpg",
+    ]);
 
     expect(metadata.pageIndexByName).toEqual({
       "halaman-1.jpg": 0,
@@ -169,7 +199,7 @@ describe("a link used more than once", () => {
     const link = await createLink(token, { useBudget: 4 });
 
     for (let attempt = 1; attempt <= 4; attempt += 1) {
-      const metadata = await track(authorize(token, [`foto-${attempt}.jpg`]));
+      const metadata = await authorize(token, [`foto-${attempt}.jpg`]);
 
       expect(
         metadata.orderId,
@@ -199,7 +229,7 @@ describe("a link used more than once", () => {
     const token = tokenFor("PARTIAL");
     await createLink(token, { useBudget: 10, useCount: 6 });
 
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
 
     expect(metadata.orderId).toBe(orderA.id);
   });
@@ -268,7 +298,7 @@ describe("tenant isolation on upload", () => {
       orderId: orderB.id,
     });
 
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
 
     expect(metadata.organizationId).toBe(orderB.organizationId);
     expect(metadata.orderId).toBe(orderB.id);
@@ -282,12 +312,13 @@ describe("tenant isolation on upload", () => {
       orderId: orderB.id,
     });
 
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
+    const submissionId = await openFor(metadata);
 
     await recordPodSubmissionPage({
       db,
       organizationId: metadata.organizationId,
-      podSubmissionId: metadata.podSubmissionId,
+      podSubmissionId: submissionId,
       storageKey: `key-${suffix}-org`,
       fileName: "pod.jpg",
       contentType: "image/jpeg",
@@ -296,7 +327,7 @@ describe("tenant isolation on upload", () => {
     });
 
     const page = await db.podSubmissionPage.findFirstOrThrow({
-      where: { podSubmissionId: metadata.podSubmissionId },
+      where: { podSubmissionId: submissionId },
       select: { organizationId: true },
     });
 
@@ -308,13 +339,14 @@ describe("recording the photographs", () => {
   it("stores each page against the submission in capture order", async () => {
     const token = tokenFor("PAGES");
     await createLink(token);
-    const metadata = await track(authorize(token, ["satu.jpg", "dua.jpg"]));
+    const metadata = await authorize(token, ["satu.jpg", "dua.jpg"]);
+    const submissionId = await openFor(metadata);
 
     for (const [index, name] of ["satu.jpg", "dua.jpg"].entries()) {
       await recordPodSubmissionPage({
         db,
         organizationId: metadata.organizationId,
-        podSubmissionId: metadata.podSubmissionId,
+        podSubmissionId: submissionId,
         storageKey: `key-${suffix}-${index}`,
         fileName: name,
         contentType: "image/jpeg",
@@ -324,7 +356,7 @@ describe("recording the photographs", () => {
     }
 
     const pages = await db.podSubmissionPage.findMany({
-      where: { podSubmissionId: metadata.podSubmissionId },
+      where: { podSubmissionId: submissionId },
       orderBy: { pageIndex: "asc" },
       select: { pageIndex: true, fileName: true },
     });
@@ -338,13 +370,14 @@ describe("recording the photographs", () => {
   it("falls back to arrival order when the batch could not name the page", async () => {
     const token = tokenFor("FALLBACK");
     await createLink(token);
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
+    const submissionId = await openFor(metadata);
 
     for (let index = 0; index < 3; index += 1) {
       await recordPodSubmissionPage({
         db,
         organizationId: metadata.organizationId,
-        podSubmissionId: metadata.podSubmissionId,
+        podSubmissionId: submissionId,
         storageKey: `key-${suffix}-fb-${index}`,
         fileName: `tanpa-nama-${index}.jpg`,
         contentType: "image/jpeg",
@@ -354,7 +387,7 @@ describe("recording the photographs", () => {
     }
 
     const indexes = await db.podSubmissionPage.findMany({
-      where: { podSubmissionId: metadata.podSubmissionId },
+      where: { podSubmissionId: submissionId },
       orderBy: { pageIndex: "asc" },
       select: { pageIndex: true },
     });
@@ -362,34 +395,47 @@ describe("recording the photographs", () => {
     expect(indexes.map((row) => row.pageIndex)).toEqual([0, 1, 2]);
   });
 
-  it("discards a submission whose every upload failed", async () => {
+  it("no longer opens a submission when the upload never delivers a page", async () => {
+    // The orphan defect, closed at the root (TRK-033). Authorization used to
+    // open the submission before any byte arrived, so every failed upload left
+    // a page-less row behind — and TRK-041 triggers extraction on submission
+    // creation, so each orphan would queue a job to read a POD that does not
+    // exist. Nothing is created until a photograph actually lands.
     const token = tokenFor("EMPTY");
-    await createLink(token);
-    const metadata = await track(authorize(token));
+    const link = await createLink(token);
+
+    await authorize(token);
 
     expect(
-      await discardEmptyPodSubmission({
-        db,
-        podSubmissionId: metadata.podSubmissionId,
-      }),
+      await db.podSubmission.count({ where: { podUploadLinkId: link.id } }),
+    ).toBe(0);
+  });
+
+  it("still discards an empty submission if one is ever created", async () => {
+    const token = tokenFor("REAP");
+    await createLink(token);
+    const metadata = await authorize(token);
+    const submissionId = await openFor(metadata);
+
+    expect(
+      await discardEmptyPodSubmission({ db, podSubmissionId: submissionId }),
     ).toBe(true);
 
     expect(
-      await db.podSubmission.findUnique({
-        where: { id: metadata.podSubmissionId },
-      }),
+      await db.podSubmission.findUnique({ where: { id: submissionId } }),
     ).toBeNull();
   });
 
   it("keeps a submission that received at least one page", async () => {
     const token = tokenFor("KEEP");
     await createLink(token);
-    const metadata = await track(authorize(token));
+    const metadata = await authorize(token);
+    const submissionId = await openFor(metadata);
 
     await recordPodSubmissionPage({
       db,
       organizationId: metadata.organizationId,
-      podSubmissionId: metadata.podSubmissionId,
+      podSubmissionId: submissionId,
       storageKey: `key-${suffix}-keep`,
       fileName: "pod.jpg",
       contentType: "image/jpeg",
@@ -398,10 +444,7 @@ describe("recording the photographs", () => {
     });
 
     expect(
-      await discardEmptyPodSubmission({
-        db,
-        podSubmissionId: metadata.podSubmissionId,
-      }),
+      await discardEmptyPodSubmission({ db, podSubmissionId: submissionId }),
     ).toBe(false);
   });
 

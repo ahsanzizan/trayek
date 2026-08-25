@@ -11,6 +11,13 @@ import {
   type CaptureAttestation,
 } from "./capture-location";
 import { measurePhoto } from "./measure-photo";
+import {
+  backoffDelayMs,
+  isOffline,
+  MAX_UPLOAD_ATTEMPTS,
+  shouldRetry,
+  waitBeforeRetry,
+} from "./upload-retry";
 
 /**
  * The capture screen (TRK-030), with the quality guard (TRK-031).
@@ -65,6 +72,15 @@ export function PodCapture({ token }: { token: string }) {
   const [attestation, setAttestation] = useState<CaptureAttestation | null>(
     null,
   );
+  /**
+   * One key per capture attempt (TRK-033). Held across retries so the second
+   * attempt lands on the submission the first opened, and replaced only after
+   * a batch has actually been accepted.
+   */
+  const [idempotencyKey, setIdempotencyKey] = useState(() =>
+    crypto.randomUUID(),
+  );
+  const [attempt, setAttempt] = useState(1);
 
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
@@ -150,47 +166,71 @@ export function PodCapture({ token }: { token: string }) {
     setMessage(null);
     setProgress(0);
 
-    try {
-      await uploadFiles("podUploader", {
-        files: selected.map((item) => item.file),
-        input: {
-          token,
-          // Recorded whether or not a fix was obtained: the absence of a
-          // location is itself worth knowing, and TRK-062 reads both.
-          attestation: attestation ?? unavailableAttestation(),
-          // Advisory only. The server stores this for the TRK-044 correlation
-          // and must never let it decide whether a write is allowed.
-          quality: selected.map((item) => ({
-            fileName: item.file.name,
-            score: item.quality?.score ?? null,
-            overridden: isWarned(item),
-            checks:
-              item.quality?.checks.map((check) => ({
-                id: check.id,
-                passed: check.passed,
-                value: check.value,
-              })) ?? [],
-          })),
-        },
-        onUploadProgress: ({ progress: percent }) => {
-          setProgress(Math.round(percent));
-        },
-      });
+    const payload = {
+      files: selected.map((item) => item.file),
+      input: {
+        token,
+        idempotencyKey,
+        // Recorded whether or not a fix was obtained: the absence of a
+        // location is itself worth knowing, and TRK-062 reads both.
+        attestation: attestation ?? unavailableAttestation(),
+        // Advisory only. The server stores this for the TRK-044 correlation
+        // and must never let it decide whether a write is allowed.
+        quality: selected.map((item) => ({
+          fileName: item.file.name,
+          score: item.quality?.score ?? null,
+          overridden: isWarned(item),
+          checks:
+            item.quality?.checks.map((check) => ({
+              id: check.id,
+              passed: check.passed,
+              value: check.value,
+            })) ?? [],
+        })),
+      },
+      onUploadProgress: ({ progress: percent }: { progress: number }) => {
+        setProgress(Math.round(percent));
+      },
+    };
 
-      for (const item of selected) {
-        URL.revokeObjectURL(item.previewUrl);
+    for (let current = 1; current <= MAX_UPLOAD_ATTEMPTS; current += 1) {
+      setAttempt(current);
+
+      // Skip an attempt the browser already knows will fail, but still count
+      // it: waiting for `online` is the retry, and it is not free.
+      if (!isOffline()) {
+        try {
+          await uploadFiles("podUploader", payload);
+
+          for (const item of selected) {
+            URL.revokeObjectURL(item.previewUrl);
+          }
+
+          // Only now. The success screen appears after the server has taken
+          // the batch, never after the last byte left the phone — a driver
+          // who is told it worked will not send it again.
+          setIdempotencyKey(crypto.randomUUID());
+          setPhase("berhasil");
+          return;
+        } catch {
+          // The reason is deliberately not surfaced: it is either a network
+          // fault that retrying answers, or a link problem the admin has to
+          // fix. Neither is improved by an English string from a library.
+        }
       }
 
-      setPhase("berhasil");
-    } catch {
-      // The reason is deliberately not surfaced: it is either a network fault
-      // the driver can only retry, or a link problem the admin has to fix.
-      // Neither is improved by an English error string from a library.
-      setPhase("gagal");
-      setMessage(
-        "Foto gagal terkirim. Periksa sinyal Anda, lalu coba kirim lagi.",
-      );
+      if (shouldRetry(current)) {
+        setMessage(
+          `Sinyal terputus. Mencoba mengirim ulang secara otomatis (${current} dari ${MAX_UPLOAD_ATTEMPTS})…`,
+        );
+        await waitBeforeRetry(backoffDelayMs(current));
+      }
     }
+
+    setPhase("gagal");
+    setMessage(
+      "Foto belum terkirim setelah beberapa kali percobaan. Periksa sinyal Anda, lalu tekan Kirim ulang.",
+    );
   }
 
   if (phase === "berhasil") {
@@ -335,10 +375,12 @@ export function PodCapture({ token }: { token: string }) {
           className="bg-primary text-primary-foreground mt-6 min-h-14 w-full rounded-lg px-4 text-base font-medium disabled:opacity-50"
         >
           {phase === "mengunggah"
-            ? `Mengirim… ${progress}%`
-            : warnings.length > 0
-              ? `Tetap kirim ${selected.length} foto`
-              : `Kirim ${selected.length} foto`}
+            ? `Mengirim… ${progress}% (percobaan ${attempt})`
+            : phase === "gagal"
+              ? "Kirim ulang"
+              : warnings.length > 0
+                ? `Tetap kirim ${selected.length} foto`
+                : `Kirim ${selected.length} foto`}
         </button>
       )}
 
