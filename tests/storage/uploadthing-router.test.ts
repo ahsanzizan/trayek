@@ -21,27 +21,31 @@ vi.mock("~/server/observability/reporter", () => ({
 }));
 
 describe("UploadThing file route input validation", () => {
-  it("accepts the tenant metadata required for a POD upload", () => {
-    expect(
-      podUploadInput.parse({
-        organizationId: "org_123",
-        loadId: "load_123",
-        driverToken: "driver_token",
-      }),
-    ).toEqual({
-      organizationId: "org_123",
-      loadId: "load_123",
-      driverToken: "driver_token",
+  it("accepts the upload token, which is all a POD upload carries", () => {
+    expect(podUploadInput.parse({ token: "TRAYEKSEEDA000000001" })).toEqual({
+      token: "TRAYEKSEEDA000000001",
     });
   });
 
-  it("rejects a POD upload without organization or load metadata", () => {
-    expect(() =>
-      podUploadInput.parse({ organizationId: "", loadId: "load_123" }),
-    ).toThrow();
-    expect(() =>
-      podUploadInput.parse({ organizationId: "org_123", loadId: "" }),
-    ).toThrow();
+  it("rejects a POD upload with no token", () => {
+    expect(() => podUploadInput.parse({})).toThrow();
+    expect(() => podUploadInput.parse({ token: "" })).toThrow();
+  });
+
+  it("gives the caller no way to name the tenant it writes to", () => {
+    // TRK-030 moved this: `organizationId` and `loadId` used to arrive from
+    // the client with the driver token optional and unchecked, so any caller
+    // could upload against any organization. Both are now derived from the
+    // token server-side, and anything else the client sends is dropped here.
+    const parsed = podUploadInput.parse({
+      token: "TRAYEKSEEDA000000001",
+      organizationId: "org-forwarder-b",
+      loadId: "order-b-only",
+    });
+
+    expect(parsed).toEqual({ token: "TRAYEKSEEDA000000001" });
+    expect(parsed).not.toHaveProperty("organizationId");
+    expect(parsed).not.toHaveProperty("loadId");
   });
 
   it("accepts and normalizes the organization metadata for invoices", () => {
@@ -79,12 +83,15 @@ describe("UploadThing file route input validation", () => {
       return;
     }
 
+    // A multi-page POD is several captures of one document (TRK-030), so the
+    // count is above one by design. `private` is the part that must not move:
+    // a POD carries a signature, and a public object is a UU PDP incident.
     expect(podRoute.config.image).toMatchObject({
-      maxFileCount: 1,
+      maxFileCount: 6,
       acl: "private",
     });
     expect(podRoute.config.pdf).toMatchObject({
-      maxFileCount: 1,
+      maxFileCount: 6,
       acl: "private",
     });
     expect(invoiceRoute.config.pdf).toMatchObject({

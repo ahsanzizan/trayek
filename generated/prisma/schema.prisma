@@ -101,6 +101,9 @@ model Organization {
   historicalInvoices        HistoricalInvoice[]
   messageLogs               MessageLog[]
   channelConnections        ChannelConnection[]
+  podUploadLinks            PodUploadLink[]
+  podSubmissions            PodSubmission[]
+  podSubmissionPages        PodSubmissionPage[]
 }
 
 model Post {
@@ -441,9 +444,11 @@ model Order {
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  shipper      Shipper      @relation(fields: [shipperId], references: [id], onDelete: Restrict)
-  driver       Driver?      @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  shipper        Shipper         @relation(fields: [shipperId], references: [id], onDelete: Restrict)
+  driver         Driver?         @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  podUploadLinks PodUploadLink[]
+  podSubmissions PodSubmission[]
 
   @@unique([organizationId, nomorSuratJalan])
   @@index([organizationId, status])
@@ -506,4 +511,115 @@ model HistoricalInvoice {
 
   @@unique([organizationId, nomorInvoice])
   @@index([organizationId, issueDate])
+}
+
+/// A signed link that lets one driver upload a POD for exactly one order
+/// without an account (TRK-024).
+///
+/// The token itself is never stored, only its SHA-256 digest, so a database
+/// dump yields nothing replayable. It is an opaque random string checked
+/// against this table rather than a self-describing signed blob because both
+/// revocation and the use budget need server state anyway: a stateless token
+/// can prove it was issued, but not that it is still allowed.
+model PodUploadLink {
+  id             String    @id @default(cuid())
+  organizationId String
+  orderId        String
+  /// SHA-256 of the token, hex. Unique, so resolving a link is one indexed
+  /// read and two links can never collide on the same secret.
+  tokenHash      String    @unique
+  expiresAt      DateTime
+  /// A driver retakes photos, so one link is worth several uploads. Not
+  /// unlimited: an exhausted budget is what keeps a leaked link from being a
+  /// standing write endpoint.
+  useBudget      Int
+  useCount       Int       @default(0)
+  lastUsedAt     DateTime?
+  /// Set by revocation and by rotation, which revokes the link it replaces.
+  /// Nulling this again is never correct — issue a new link instead.
+  revokedAt      DateTime?
+  /// Null when a link was issued by a job rather than by a person.
+  createdById    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  submissions  PodSubmission[]
+
+  @@index([organizationId, orderId])
+  @@index([organizationId, expiresAt])
+}
+
+/// Fixed-window request counters for the public POD upload route (TRK-024).
+///
+/// Deliberately not tenant-scoped: an IP bucket belongs to no organization,
+/// and the route is reached before any tenant is known. Only digests are
+/// stored. A raw IP is personal data under UU PDP, and a raw token here would
+/// undo the point of hashing it on `PodUploadLink`.
+model PodUploadThrottle {
+  bucket          String   @id
+  windowStartedAt DateTime
+  count           Int
+  updatedAt       DateTime @updatedAt
+
+  @@index([windowStartedAt])
+}
+
+/// One POD as the driver submitted it (TRK-030).
+///
+/// A submission is the logical document, not the photograph: a `surat jalan`
+/// with a continuation sheet is one POD in two captures, and extraction
+/// (TRK-041) reads it as one. The photographs hang off `pages`.
+///
+/// Nothing here is ever overwritten. A driver who re-uploads because he was
+/// unsure creates a second submission, and that duplication is a fraud signal
+/// (TRK-060), not a row to reconcile away.
+model PodSubmission {
+  id              String   @id @default(cuid())
+  organizationId  String
+  orderId         String
+  /// The link the driver came through. Kept so a submission can be traced
+  /// back to who issued the link and when, which is the only identity a
+  /// driver has (TRK-024).
+  podUploadLinkId String
+  /// When the server accepted it. The client's own clock is captured
+  /// separately by TRK-032, because the two disagreeing is itself a signal.
+  receivedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  organization  Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  order         Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  podUploadLink PodUploadLink       @relation(fields: [podUploadLinkId], references: [id], onDelete: Restrict)
+  pages         PodSubmissionPage[]
+
+  @@index([organizationId, orderId])
+  @@index([organizationId, receivedAt])
+}
+
+/// One photograph of a POD, in the order the driver captured it (TRK-030).
+///
+/// `storageKey` is the original bytes, untouched. Preprocessing (TRK-042)
+/// writes its derivative to its own key and never here: fraud forensics
+/// (TRK-061) reads EXIF off the original, and a rotated, recompressed copy
+/// has none left to read.
+model PodSubmissionPage {
+  id              String   @id @default(cuid())
+  organizationId  String
+  podSubmissionId String
+  /// Zero-based, the order the driver took them in.
+  pageIndex       Int
+  /// Opaque storage key. Never logged, never put in a URL that outlives its
+  /// purpose: a POD carries a signature, which is personal data under UU PDP.
+  storageKey      String
+  fileName        String
+  contentType     String
+  sizeBytes       Int
+  createdAt       DateTime @default(now())
+
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  podSubmission PodSubmission @relation(fields: [podSubmissionId], references: [id], onDelete: Cascade)
+
+  @@unique([podSubmissionId, pageIndex])
+  @@index([organizationId, podSubmissionId])
 }

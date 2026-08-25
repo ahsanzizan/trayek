@@ -14,6 +14,23 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const config = {
   outputFileTracingRoot: projectRoot,
   serverExternalPackages: ["@whiskeysockets/baileys", "sharp"],
+
+  async headers() {
+    return [
+      {
+        // The POD upload token lives in this path (TRK-024). `no-referrer`
+        // keeps it out of the Referer header of anything the page requests,
+        // and `noindex` keeps a forwarded link out of a search index. Both are
+        // acceptance criteria, not hardening.
+        source: "/pod/:token*",
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "no-store, max-age=0" },
+        ],
+      },
+    ];
+  },
 };
 
 export const sentryBuildOptions = {

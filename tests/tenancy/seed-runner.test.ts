@@ -41,6 +41,11 @@ describe("seed runner", () => {
           operations.push("order");
         },
       },
+      podUploadLink: {
+        upsert: async () => {
+          operations.push("podUploadLink");
+        },
+      },
     };
     const database: SeedDatabase = {
       ...writer,
@@ -88,6 +93,8 @@ describe("seed runner", () => {
       "order",
       "order",
       "order",
+      "podUploadLink",
+      "podUploadLink",
       "commit",
     ]);
   });
