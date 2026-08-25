@@ -47,6 +47,8 @@ model Organization {
   humanFallbackEvents       HumanFallbackEvent[]
   llmCallLogs               LlmCallLog[]
   auditLogs                 AuditLog[]
+  shippers                  Shipper[]
+  requirementProfiles       RequirementProfile[]
 }
 
 model Post {
@@ -225,4 +227,63 @@ model AuditLog {
 
   @@index([organizationId, entityType, entityId])
   @@index([organizationId, createdAt])
+}
+
+/// A shipper this forwarder bills (TRK-010).
+///
+/// Payment terms are deliberately absent here: they live on the versioned
+/// RequirementProfile. Terms on the shipper would be a single mutable value,
+/// so changing them would silently re-date every packet already assembled
+/// under the old terms.
+model Shipper {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  name                String
+  /// Tax ID. Optional because a design partner rarely has it to hand on day
+  /// one, and blocking shipper creation on it stops onboarding.
+  npwp                String?
+  financeContactName  String?
+  financeContactEmail String?
+  financeContactPhone String?
+  address             String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requirementProfiles RequirementProfile[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+/// What a shipper requires before it accepts a `berkas tagih`, versioned.
+///
+/// A version is immutable once written: editing means creating the next
+/// version and stamping this one `supersededAt`. A database trigger rejects an
+/// UPDATE to any column other than `supersededAt`, so a packet assembled under
+/// version 3 can always be re-explained by reading version 3 (TRK-010, INV-7).
+///
+/// `rules` is JSON rather than columns because adding a new requirement type
+/// must not need a migration. It is validated by the Zod schema in
+/// `~/server/domain/shipper/requirement-rules` at write time.
+model RequirementProfile {
+  id             String    @id @default(cuid())
+  organizationId String
+  shipperId      String
+  version        Int
+  rules          Json
+  /// Why this version exists, shown beside the diff against its predecessor.
+  changeNote     String?
+  /// Null for seeded profiles, which no user authored.
+  createdById    String?
+  createdAt      DateTime  @default(now())
+  /// Null for the one active version. Set when a newer version replaces it,
+  /// which a partial unique index enforces.
+  supersededAt   DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  shipper      Shipper      @relation(fields: [shipperId], references: [id], onDelete: Cascade)
+
+  @@unique([shipperId, version])
+  @@index([organizationId, shipperId])
 }

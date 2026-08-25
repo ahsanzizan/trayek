@@ -41,7 +41,7 @@ Trayek Settle: a receivables product for Indonesian freight forwarders. It captu
 These take precedence over any stylistic preference. Each exists because breaking it is how this codebase would rot.
 
 1. **One data path.** Server Components call `api.*` from `~/trpc/server`. Client Components call `api.*` hooks from `~/trpc/react`. Do not add `fetch` calls to our own routes, SWR, axios, or Redux — the type safety comes from there being exactly one path.
-2. **No new dependency without asking.** This includes a form library and a state library. Vitest and Playwright are already here — do not add a third runner. Propose anything new and say why the existing tools can't do it.
+2. **No new dependency without asking.** `react-hook-form` + `@hookform/resolvers` are already here for forms, and there is no state library — do not add one. Vitest and Playwright are already here — do not add a third runner. Propose anything new and say why the existing tools can't do it.
 3. **Abstraction requires a second caller.** No service layer, wrapper, factory, or barrel file for a single call site. A three-line tRPC resolver stays in the router. Extract when the second caller actually appears — not in anticipation of it.
 4. **Extend, don't parallel.** A new procedure goes in the existing router in `src/server/api/routers/`. Create a new router only for a genuinely new entity, and register it in `src/server/api/root.ts`. Never build a second mechanism alongside one that already works.
 5. **Match the file you're in.** Follow local style over personal preference. Don't reformat, rename, or "improve" code you weren't asked to touch.
@@ -103,7 +103,7 @@ What exists today:
 ```
 prisma/
   migrations/            # committed, forward-only
-  schema.prisma          # Organization, Membership, User, Account, Session, Post
+  schema.prisma          # identity, tenancy, jobs, audit, Shipper + RequirementProfile
   seed.ts                # multi-org fixtures the tenancy tests rely on
 docs/
   INVARIANTS.md          # the eight product invariants — authoritative
@@ -112,6 +112,7 @@ eslint-rules/
 src/
   app/
     _components/         # login-form, org-switcher, sign-out-form, utility-bar
+    shippers/            # shipper registry + requirement profile admin UI
     api/
       auth/[...nextauth]/route.ts   # re-exports handlers from ~/server/auth
       trpc/[trpc]/route.ts          # tRPC fetch adapter
@@ -121,7 +122,7 @@ src/
     page.tsx             # home page
   server/
     api/
-      routers/           # one router per entity: organization.ts, post.ts
+      routers/           # one router per entity: organization.ts, post.ts, audit.ts, shipper.ts
       root.ts            # appRouter + createCaller
       trpc.ts            # context, publicProcedure, protectedProcedure, orgProcedure, roleProcedure
       tenant-extension.ts # Prisma extension that pre-filters by organizationId
@@ -130,6 +131,9 @@ src/
       index.ts           # exports auth, handlers, signIn, signOut
       membership.ts      # membership resolution
     domain/
+      audit/entry.ts     # actor union + pure row flattening
+      jobs/              # retry policy, registry, runner — all IO-free
+      shipper/           # requirement rule schema + version diff
       ports/storage.ts   # StoragePort — the domain owns the interface
     storage/             # UploadThing implementation of StoragePort
     db.ts                # Prisma client singleton
@@ -143,7 +147,7 @@ src/
 tests/
   invariants/            # one file per INV-1..INV-8, wired into `pnpm check`
   guardrails/            # architectural assertions (domain boundaries)
-  auth/ storage/ tenancy/  # mirror the source path
+  auth/ storage/ tenancy/ audit/ jobs/ shipper/  # mirror the source path
   e2e/                   # Playwright specs
 components.json          # shadcn config — style, aliases, baseColor
 trayek-settle-mvp-backlog.md  # the backlog and the build order
@@ -192,6 +196,7 @@ Route-specific components live in `src/app/<route>/_components/`, mirroring `src
 - **Anything tenant-scoped uses `orgProcedure`, not `protectedProcedure`.** It resolves the active membership and replaces `ctx.db` with a tenant-scoped client that pre-filters every scoped model by `organizationId` (`src/server/api/tenant-extension.ts`). Never hand-roll an `organizationId` filter and never reach past `ctx.db` to the raw client inside a resolver — that is the INV-5 hole.
 - `roleProcedure(role)` gates approval-style actions; OWNER always passes. Roles are enforced server side. Hiding a button is not enforcement.
 - A cross-tenant miss returns `NOT_FOUND`, never `FORBIDDEN`. Do not leak whether a resource exists.
+- **Use `findFirst`, not `findUnique`, on a tenant-scoped model.** The extension services `findUnique` through the *unextended* client, which has two consequences: inside a transaction it reads outside that transaction and silently misses uncommitted writes, and a compound unique key (`where: { org_field: {...} }`) throws, because the rewritten `findFirst` cannot parse it. Both are open defects in the extension, not intended behaviour.
 - Give procedures an output schema as well as an input schema.
 - Access the database as `ctx.db`. Don't import `db` directly inside a procedure.
 - Keep `select`/`include` narrow and explicit. Don't return a Prisma model with relations you didn't intend to expose.

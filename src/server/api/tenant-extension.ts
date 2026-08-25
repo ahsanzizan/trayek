@@ -12,6 +12,8 @@ export const TENANT_SCOPED_MODELS = new Set<string>([
   "DeadLetterJob",
   "HumanFallbackEvent",
   "AuditLog",
+  "Shipper",
+  "RequirementProfile",
 ]);
 const UNSCOPED_MODELS = new Set(["User", "Organization", "Membership", "Post"]);
 
@@ -227,10 +229,19 @@ function modelDelegate(database: PrismaClient, model: string): TenantDelegate {
   return candidate;
 }
 
+/**
+ * A PrismaClient that pre-filters every tenant-scoped model by organization.
+ *
+ * Declared as `PrismaClient` rather than the inferred `$extends` type. The two
+ * are structurally different — the extension type drops `$on` and reshapes the
+ * transaction client — so without this every caller would need its own cast to
+ * use the client with Prisma's own input types. The behaviour is a drop-in
+ * replacement, so the type says so once, here, instead of at each call site.
+ */
 export function createTenantScopedDb(
   database: PrismaClient,
   organizationId: string,
-) {
+): PrismaClient {
   return database.$extends({
     name: "tenant-scope",
     query: {
@@ -307,5 +318,5 @@ export function createTenantScopedDb(
         },
       },
     },
-  });
+  }) as unknown as PrismaClient;
 }

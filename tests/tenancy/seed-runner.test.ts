@@ -21,6 +21,16 @@ describe("seed runner", () => {
           operations.push("membership");
         },
       },
+      shipper: {
+        upsert: async () => {
+          operations.push("shipper");
+        },
+      },
+      requirementProfile: {
+        upsert: async () => {
+          operations.push("requirementProfile");
+        },
+      },
     };
     const database: SeedDatabase = {
       ...writer,
@@ -53,6 +63,12 @@ describe("seed runner", () => {
       "membership",
       "membership",
       "membership",
+      "shipper",
+      "shipper",
+      "shipper",
+      "requirementProfile",
+      "requirementProfile",
+      "requirementProfile",
       "commit",
     ]);
   });

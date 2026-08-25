@@ -78,6 +78,30 @@ export type LlmCallLog = $Result.DefaultSelection<Prisma.$LlmCallLogPayload>
  * so UPDATE and DELETE are blocked by a database trigger, not by convention.
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model Shipper
+ * A shipper this forwarder bills (TRK-010).
+ * 
+ * Payment terms are deliberately absent here: they live on the versioned
+ * RequirementProfile. Terms on the shipper would be a single mutable value,
+ * so changing them would silently re-date every packet already assembled
+ * under the old terms.
+ */
+export type Shipper = $Result.DefaultSelection<Prisma.$ShipperPayload>
+/**
+ * Model RequirementProfile
+ * What a shipper requires before it accepts a `berkas tagih`, versioned.
+ * 
+ * A version is immutable once written: editing means creating the next
+ * version and stamping this one `supersededAt`. A database trigger rejects an
+ * UPDATE to any column other than `supersededAt`, so a packet assembled under
+ * version 3 can always be re-explained by reading version 3 (TRK-010, INV-7).
+ * 
+ * `rules` is JSON rather than columns because adding a new requirement type
+ * must not need a migration. It is validated by the Zod schema in
+ * `~/server/domain/shipper/requirement-rules` at write time.
+ */
+export type RequirementProfile = $Result.DefaultSelection<Prisma.$RequirementProfilePayload>
 
 /**
  * Enums
@@ -360,6 +384,26 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.shipper`: Exposes CRUD operations for the **Shipper** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Shippers
+    * const shippers = await prisma.shipper.findMany()
+    * ```
+    */
+  get shipper(): Prisma.ShipperDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.requirementProfile`: Exposes CRUD operations for the **RequirementProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RequirementProfiles
+    * const requirementProfiles = await prisma.requirementProfile.findMany()
+    * ```
+    */
+  get requirementProfile(): Prisma.RequirementProfileDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -812,7 +856,9 @@ export namespace Prisma {
     DeadLetterJob: 'DeadLetterJob',
     HumanFallbackEvent: 'HumanFallbackEvent',
     LlmCallLog: 'LlmCallLog',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    Shipper: 'Shipper',
+    RequirementProfile: 'RequirementProfile'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -831,7 +877,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1723,6 +1769,154 @@ export namespace Prisma {
           }
         }
       }
+      Shipper: {
+        payload: Prisma.$ShipperPayload<ExtArgs>
+        fields: Prisma.ShipperFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ShipperFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ShipperFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          findFirst: {
+            args: Prisma.ShipperFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ShipperFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          findMany: {
+            args: Prisma.ShipperFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>[]
+          }
+          create: {
+            args: Prisma.ShipperCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          createMany: {
+            args: Prisma.ShipperCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ShipperCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>[]
+          }
+          delete: {
+            args: Prisma.ShipperDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          update: {
+            args: Prisma.ShipperUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          deleteMany: {
+            args: Prisma.ShipperDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ShipperUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ShipperUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>[]
+          }
+          upsert: {
+            args: Prisma.ShipperUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShipperPayload>
+          }
+          aggregate: {
+            args: Prisma.ShipperAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShipper>
+          }
+          groupBy: {
+            args: Prisma.ShipperGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ShipperGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ShipperCountArgs<ExtArgs>
+            result: $Utils.Optional<ShipperCountAggregateOutputType> | number
+          }
+        }
+      }
+      RequirementProfile: {
+        payload: Prisma.$RequirementProfilePayload<ExtArgs>
+        fields: Prisma.RequirementProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RequirementProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RequirementProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.RequirementProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RequirementProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          findMany: {
+            args: Prisma.RequirementProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>[]
+          }
+          create: {
+            args: Prisma.RequirementProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          createMany: {
+            args: Prisma.RequirementProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RequirementProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.RequirementProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          update: {
+            args: Prisma.RequirementProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.RequirementProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RequirementProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RequirementProfileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>[]
+          }
+          upsert: {
+            args: Prisma.RequirementProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequirementProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.RequirementProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRequirementProfile>
+          }
+          groupBy: {
+            args: Prisma.RequirementProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RequirementProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RequirementProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<RequirementProfileCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1831,6 +2025,8 @@ export namespace Prisma {
     humanFallbackEvent?: HumanFallbackEventOmit
     llmCallLog?: LlmCallLogOmit
     auditLog?: AuditLogOmit
+    shipper?: ShipperOmit
+    requirementProfile?: RequirementProfileOmit
   }
 
   /* Types for Logging */
@@ -1917,6 +2113,8 @@ export namespace Prisma {
     humanFallbackEvents: number
     llmCallLogs: number
     auditLogs: number
+    shippers: number
+    requirementProfiles: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1926,6 +2124,8 @@ export namespace Prisma {
     humanFallbackEvents?: boolean | OrganizationCountOutputTypeCountHumanFallbackEventsArgs
     llmCallLogs?: boolean | OrganizationCountOutputTypeCountLlmCallLogsArgs
     auditLogs?: boolean | OrganizationCountOutputTypeCountAuditLogsArgs
+    shippers?: boolean | OrganizationCountOutputTypeCountShippersArgs
+    requirementProfiles?: boolean | OrganizationCountOutputTypeCountRequirementProfilesArgs
   }
 
   // Custom InputTypes
@@ -1979,6 +2179,20 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountShippersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShipperWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountRequirementProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RequirementProfileWhereInput
   }
 
 
@@ -2037,6 +2251,37 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MembershipWhereInput
+  }
+
+
+  /**
+   * Count Type ShipperCountOutputType
+   */
+
+  export type ShipperCountOutputType = {
+    requirementProfiles: number
+  }
+
+  export type ShipperCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    requirementProfiles?: boolean | ShipperCountOutputTypeCountRequirementProfilesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ShipperCountOutputType without action
+   */
+  export type ShipperCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShipperCountOutputType
+     */
+    select?: ShipperCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ShipperCountOutputType without action
+   */
+  export type ShipperCountOutputTypeCountRequirementProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RequirementProfileWhereInput
   }
 
 
@@ -2268,6 +2513,8 @@ export namespace Prisma {
     humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
     llmCallLogs?: boolean | Organization$llmCallLogsArgs<ExtArgs>
     auditLogs?: boolean | Organization$auditLogsArgs<ExtArgs>
+    shippers?: boolean | Organization$shippersArgs<ExtArgs>
+    requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -2309,6 +2556,8 @@ export namespace Prisma {
     humanFallbackEvents?: boolean | Organization$humanFallbackEventsArgs<ExtArgs>
     llmCallLogs?: boolean | Organization$llmCallLogsArgs<ExtArgs>
     auditLogs?: boolean | Organization$auditLogsArgs<ExtArgs>
+    shippers?: boolean | Organization$shippersArgs<ExtArgs>
+    requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2323,6 +2572,8 @@ export namespace Prisma {
       humanFallbackEvents: Prisma.$HumanFallbackEventPayload<ExtArgs>[]
       llmCallLogs: Prisma.$LlmCallLogPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      shippers: Prisma.$ShipperPayload<ExtArgs>[]
+      requirementProfiles: Prisma.$RequirementProfilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2732,6 +2983,8 @@ export namespace Prisma {
     humanFallbackEvents<T extends Organization$humanFallbackEventsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$humanFallbackEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HumanFallbackEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     llmCallLogs<T extends Organization$llmCallLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$llmCallLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LlmCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends Organization$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shippers<T extends Organization$shippersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$shippersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    requirementProfiles<T extends Organization$requirementProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$requirementProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3297,6 +3550,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.shippers
+   */
+  export type Organization$shippersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    where?: ShipperWhereInput
+    orderBy?: ShipperOrderByWithRelationInput | ShipperOrderByWithRelationInput[]
+    cursor?: ShipperWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShipperScalarFieldEnum | ShipperScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.requirementProfiles
+   */
+  export type Organization$requirementProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    where?: RequirementProfileWhereInput
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    cursor?: RequirementProfileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
   }
 
   /**
@@ -15586,6 +15887,2321 @@ export namespace Prisma {
 
 
   /**
+   * Model Shipper
+   */
+
+  export type AggregateShipper = {
+    _count: ShipperCountAggregateOutputType | null
+    _min: ShipperMinAggregateOutputType | null
+    _max: ShipperMaxAggregateOutputType | null
+  }
+
+  export type ShipperMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    npwp: string | null
+    financeContactName: string | null
+    financeContactEmail: string | null
+    financeContactPhone: string | null
+    address: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ShipperMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    name: string | null
+    npwp: string | null
+    financeContactName: string | null
+    financeContactEmail: string | null
+    financeContactPhone: string | null
+    address: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ShipperCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    name: number
+    npwp: number
+    financeContactName: number
+    financeContactEmail: number
+    financeContactPhone: number
+    address: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ShipperMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    npwp?: true
+    financeContactName?: true
+    financeContactEmail?: true
+    financeContactPhone?: true
+    address?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ShipperMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    npwp?: true
+    financeContactName?: true
+    financeContactEmail?: true
+    financeContactPhone?: true
+    address?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ShipperCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    name?: true
+    npwp?: true
+    financeContactName?: true
+    financeContactEmail?: true
+    financeContactPhone?: true
+    address?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ShipperAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shipper to aggregate.
+     */
+    where?: ShipperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shippers to fetch.
+     */
+    orderBy?: ShipperOrderByWithRelationInput | ShipperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ShipperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shippers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shippers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Shippers
+    **/
+    _count?: true | ShipperCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ShipperMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ShipperMaxAggregateInputType
+  }
+
+  export type GetShipperAggregateType<T extends ShipperAggregateArgs> = {
+        [P in keyof T & keyof AggregateShipper]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShipper[P]>
+      : GetScalarType<T[P], AggregateShipper[P]>
+  }
+
+
+
+
+  export type ShipperGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShipperWhereInput
+    orderBy?: ShipperOrderByWithAggregationInput | ShipperOrderByWithAggregationInput[]
+    by: ShipperScalarFieldEnum[] | ShipperScalarFieldEnum
+    having?: ShipperScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ShipperCountAggregateInputType | true
+    _min?: ShipperMinAggregateInputType
+    _max?: ShipperMaxAggregateInputType
+  }
+
+  export type ShipperGroupByOutputType = {
+    id: string
+    organizationId: string
+    name: string
+    npwp: string | null
+    financeContactName: string | null
+    financeContactEmail: string | null
+    financeContactPhone: string | null
+    address: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ShipperCountAggregateOutputType | null
+    _min: ShipperMinAggregateOutputType | null
+    _max: ShipperMaxAggregateOutputType | null
+  }
+
+  type GetShipperGroupByPayload<T extends ShipperGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ShipperGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ShipperGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ShipperGroupByOutputType[P]>
+            : GetScalarType<T[P], ShipperGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ShipperSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    npwp?: boolean
+    financeContactName?: boolean
+    financeContactEmail?: boolean
+    financeContactPhone?: boolean
+    address?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    requirementProfiles?: boolean | Shipper$requirementProfilesArgs<ExtArgs>
+    _count?: boolean | ShipperCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shipper"]>
+
+  export type ShipperSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    npwp?: boolean
+    financeContactName?: boolean
+    financeContactEmail?: boolean
+    financeContactPhone?: boolean
+    address?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shipper"]>
+
+  export type ShipperSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    npwp?: boolean
+    financeContactName?: boolean
+    financeContactEmail?: boolean
+    financeContactPhone?: boolean
+    address?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shipper"]>
+
+  export type ShipperSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    name?: boolean
+    npwp?: boolean
+    financeContactName?: boolean
+    financeContactEmail?: boolean
+    financeContactPhone?: boolean
+    address?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ShipperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "npwp" | "financeContactName" | "financeContactEmail" | "financeContactPhone" | "address" | "createdAt" | "updatedAt", ExtArgs["result"]["shipper"]>
+  export type ShipperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    requirementProfiles?: boolean | Shipper$requirementProfilesArgs<ExtArgs>
+    _count?: boolean | ShipperCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ShipperIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type ShipperIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $ShipperPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Shipper"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      requirementProfiles: Prisma.$RequirementProfilePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      name: string
+      /**
+       * Tax ID. Optional because a design partner rarely has it to hand on day
+       * one, and blocking shipper creation on it stops onboarding.
+       */
+      npwp: string | null
+      financeContactName: string | null
+      financeContactEmail: string | null
+      financeContactPhone: string | null
+      address: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["shipper"]>
+    composites: {}
+  }
+
+  type ShipperGetPayload<S extends boolean | null | undefined | ShipperDefaultArgs> = $Result.GetResult<Prisma.$ShipperPayload, S>
+
+  type ShipperCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ShipperFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ShipperCountAggregateInputType | true
+    }
+
+  export interface ShipperDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Shipper'], meta: { name: 'Shipper' } }
+    /**
+     * Find zero or one Shipper that matches the filter.
+     * @param {ShipperFindUniqueArgs} args - Arguments to find a Shipper
+     * @example
+     * // Get one Shipper
+     * const shipper = await prisma.shipper.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ShipperFindUniqueArgs>(args: SelectSubset<T, ShipperFindUniqueArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Shipper that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ShipperFindUniqueOrThrowArgs} args - Arguments to find a Shipper
+     * @example
+     * // Get one Shipper
+     * const shipper = await prisma.shipper.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ShipperFindUniqueOrThrowArgs>(args: SelectSubset<T, ShipperFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shipper that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperFindFirstArgs} args - Arguments to find a Shipper
+     * @example
+     * // Get one Shipper
+     * const shipper = await prisma.shipper.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ShipperFindFirstArgs>(args?: SelectSubset<T, ShipperFindFirstArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Shipper that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperFindFirstOrThrowArgs} args - Arguments to find a Shipper
+     * @example
+     * // Get one Shipper
+     * const shipper = await prisma.shipper.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ShipperFindFirstOrThrowArgs>(args?: SelectSubset<T, ShipperFindFirstOrThrowArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Shippers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Shippers
+     * const shippers = await prisma.shipper.findMany()
+     * 
+     * // Get first 10 Shippers
+     * const shippers = await prisma.shipper.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shipperWithIdOnly = await prisma.shipper.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ShipperFindManyArgs>(args?: SelectSubset<T, ShipperFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Shipper.
+     * @param {ShipperCreateArgs} args - Arguments to create a Shipper.
+     * @example
+     * // Create one Shipper
+     * const Shipper = await prisma.shipper.create({
+     *   data: {
+     *     // ... data to create a Shipper
+     *   }
+     * })
+     * 
+     */
+    create<T extends ShipperCreateArgs>(args: SelectSubset<T, ShipperCreateArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Shippers.
+     * @param {ShipperCreateManyArgs} args - Arguments to create many Shippers.
+     * @example
+     * // Create many Shippers
+     * const shipper = await prisma.shipper.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ShipperCreateManyArgs>(args?: SelectSubset<T, ShipperCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Shippers and returns the data saved in the database.
+     * @param {ShipperCreateManyAndReturnArgs} args - Arguments to create many Shippers.
+     * @example
+     * // Create many Shippers
+     * const shipper = await prisma.shipper.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Shippers and only return the `id`
+     * const shipperWithIdOnly = await prisma.shipper.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ShipperCreateManyAndReturnArgs>(args?: SelectSubset<T, ShipperCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Shipper.
+     * @param {ShipperDeleteArgs} args - Arguments to delete one Shipper.
+     * @example
+     * // Delete one Shipper
+     * const Shipper = await prisma.shipper.delete({
+     *   where: {
+     *     // ... filter to delete one Shipper
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ShipperDeleteArgs>(args: SelectSubset<T, ShipperDeleteArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Shipper.
+     * @param {ShipperUpdateArgs} args - Arguments to update one Shipper.
+     * @example
+     * // Update one Shipper
+     * const shipper = await prisma.shipper.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ShipperUpdateArgs>(args: SelectSubset<T, ShipperUpdateArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Shippers.
+     * @param {ShipperDeleteManyArgs} args - Arguments to filter Shippers to delete.
+     * @example
+     * // Delete a few Shippers
+     * const { count } = await prisma.shipper.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ShipperDeleteManyArgs>(args?: SelectSubset<T, ShipperDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shippers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Shippers
+     * const shipper = await prisma.shipper.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ShipperUpdateManyArgs>(args: SelectSubset<T, ShipperUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Shippers and returns the data updated in the database.
+     * @param {ShipperUpdateManyAndReturnArgs} args - Arguments to update many Shippers.
+     * @example
+     * // Update many Shippers
+     * const shipper = await prisma.shipper.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Shippers and only return the `id`
+     * const shipperWithIdOnly = await prisma.shipper.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ShipperUpdateManyAndReturnArgs>(args: SelectSubset<T, ShipperUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Shipper.
+     * @param {ShipperUpsertArgs} args - Arguments to update or create a Shipper.
+     * @example
+     * // Update or create a Shipper
+     * const shipper = await prisma.shipper.upsert({
+     *   create: {
+     *     // ... data to create a Shipper
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Shipper we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ShipperUpsertArgs>(args: SelectSubset<T, ShipperUpsertArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Shippers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperCountArgs} args - Arguments to filter Shippers to count.
+     * @example
+     * // Count the number of Shippers
+     * const count = await prisma.shipper.count({
+     *   where: {
+     *     // ... the filter for the Shippers we want to count
+     *   }
+     * })
+    **/
+    count<T extends ShipperCountArgs>(
+      args?: Subset<T, ShipperCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ShipperCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Shipper.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ShipperAggregateArgs>(args: Subset<T, ShipperAggregateArgs>): Prisma.PrismaPromise<GetShipperAggregateType<T>>
+
+    /**
+     * Group by Shipper.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShipperGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ShipperGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ShipperGroupByArgs['orderBy'] }
+        : { orderBy?: ShipperGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ShipperGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShipperGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Shipper model
+   */
+  readonly fields: ShipperFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Shipper.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ShipperClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requirementProfiles<T extends Shipper$requirementProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Shipper$requirementProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Shipper model
+   */
+  interface ShipperFieldRefs {
+    readonly id: FieldRef<"Shipper", 'String'>
+    readonly organizationId: FieldRef<"Shipper", 'String'>
+    readonly name: FieldRef<"Shipper", 'String'>
+    readonly npwp: FieldRef<"Shipper", 'String'>
+    readonly financeContactName: FieldRef<"Shipper", 'String'>
+    readonly financeContactEmail: FieldRef<"Shipper", 'String'>
+    readonly financeContactPhone: FieldRef<"Shipper", 'String'>
+    readonly address: FieldRef<"Shipper", 'String'>
+    readonly createdAt: FieldRef<"Shipper", 'DateTime'>
+    readonly updatedAt: FieldRef<"Shipper", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Shipper findUnique
+   */
+  export type ShipperFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter, which Shipper to fetch.
+     */
+    where: ShipperWhereUniqueInput
+  }
+
+  /**
+   * Shipper findUniqueOrThrow
+   */
+  export type ShipperFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter, which Shipper to fetch.
+     */
+    where: ShipperWhereUniqueInput
+  }
+
+  /**
+   * Shipper findFirst
+   */
+  export type ShipperFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter, which Shipper to fetch.
+     */
+    where?: ShipperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shippers to fetch.
+     */
+    orderBy?: ShipperOrderByWithRelationInput | ShipperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shippers.
+     */
+    cursor?: ShipperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shippers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shippers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shippers.
+     */
+    distinct?: ShipperScalarFieldEnum | ShipperScalarFieldEnum[]
+  }
+
+  /**
+   * Shipper findFirstOrThrow
+   */
+  export type ShipperFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter, which Shipper to fetch.
+     */
+    where?: ShipperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shippers to fetch.
+     */
+    orderBy?: ShipperOrderByWithRelationInput | ShipperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Shippers.
+     */
+    cursor?: ShipperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shippers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shippers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Shippers.
+     */
+    distinct?: ShipperScalarFieldEnum | ShipperScalarFieldEnum[]
+  }
+
+  /**
+   * Shipper findMany
+   */
+  export type ShipperFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter, which Shippers to fetch.
+     */
+    where?: ShipperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Shippers to fetch.
+     */
+    orderBy?: ShipperOrderByWithRelationInput | ShipperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Shippers.
+     */
+    cursor?: ShipperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Shippers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Shippers.
+     */
+    skip?: number
+    distinct?: ShipperScalarFieldEnum | ShipperScalarFieldEnum[]
+  }
+
+  /**
+   * Shipper create
+   */
+  export type ShipperCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Shipper.
+     */
+    data: XOR<ShipperCreateInput, ShipperUncheckedCreateInput>
+  }
+
+  /**
+   * Shipper createMany
+   */
+  export type ShipperCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Shippers.
+     */
+    data: ShipperCreateManyInput | ShipperCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Shipper createManyAndReturn
+   */
+  export type ShipperCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * The data used to create many Shippers.
+     */
+    data: ShipperCreateManyInput | ShipperCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Shipper update
+   */
+  export type ShipperUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Shipper.
+     */
+    data: XOR<ShipperUpdateInput, ShipperUncheckedUpdateInput>
+    /**
+     * Choose, which Shipper to update.
+     */
+    where: ShipperWhereUniqueInput
+  }
+
+  /**
+   * Shipper updateMany
+   */
+  export type ShipperUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Shippers.
+     */
+    data: XOR<ShipperUpdateManyMutationInput, ShipperUncheckedUpdateManyInput>
+    /**
+     * Filter which Shippers to update
+     */
+    where?: ShipperWhereInput
+    /**
+     * Limit how many Shippers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shipper updateManyAndReturn
+   */
+  export type ShipperUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * The data used to update Shippers.
+     */
+    data: XOR<ShipperUpdateManyMutationInput, ShipperUncheckedUpdateManyInput>
+    /**
+     * Filter which Shippers to update
+     */
+    where?: ShipperWhereInput
+    /**
+     * Limit how many Shippers to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Shipper upsert
+   */
+  export type ShipperUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Shipper to update in case it exists.
+     */
+    where: ShipperWhereUniqueInput
+    /**
+     * In case the Shipper found by the `where` argument doesn't exist, create a new Shipper with this data.
+     */
+    create: XOR<ShipperCreateInput, ShipperUncheckedCreateInput>
+    /**
+     * In case the Shipper was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ShipperUpdateInput, ShipperUncheckedUpdateInput>
+  }
+
+  /**
+   * Shipper delete
+   */
+  export type ShipperDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+    /**
+     * Filter which Shipper to delete.
+     */
+    where: ShipperWhereUniqueInput
+  }
+
+  /**
+   * Shipper deleteMany
+   */
+  export type ShipperDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Shippers to delete
+     */
+    where?: ShipperWhereInput
+    /**
+     * Limit how many Shippers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Shipper.requirementProfiles
+   */
+  export type Shipper$requirementProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    where?: RequirementProfileWhereInput
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    cursor?: RequirementProfileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Shipper without action
+   */
+  export type ShipperDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Shipper
+     */
+    select?: ShipperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Shipper
+     */
+    omit?: ShipperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShipperInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RequirementProfile
+   */
+
+  export type AggregateRequirementProfile = {
+    _count: RequirementProfileCountAggregateOutputType | null
+    _avg: RequirementProfileAvgAggregateOutputType | null
+    _sum: RequirementProfileSumAggregateOutputType | null
+    _min: RequirementProfileMinAggregateOutputType | null
+    _max: RequirementProfileMaxAggregateOutputType | null
+  }
+
+  export type RequirementProfileAvgAggregateOutputType = {
+    version: number | null
+  }
+
+  export type RequirementProfileSumAggregateOutputType = {
+    version: number | null
+  }
+
+  export type RequirementProfileMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    shipperId: string | null
+    version: number | null
+    changeNote: string | null
+    createdById: string | null
+    createdAt: Date | null
+    supersededAt: Date | null
+  }
+
+  export type RequirementProfileMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    shipperId: string | null
+    version: number | null
+    changeNote: string | null
+    createdById: string | null
+    createdAt: Date | null
+    supersededAt: Date | null
+  }
+
+  export type RequirementProfileCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    shipperId: number
+    version: number
+    rules: number
+    changeNote: number
+    createdById: number
+    createdAt: number
+    supersededAt: number
+    _all: number
+  }
+
+
+  export type RequirementProfileAvgAggregateInputType = {
+    version?: true
+  }
+
+  export type RequirementProfileSumAggregateInputType = {
+    version?: true
+  }
+
+  export type RequirementProfileMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    shipperId?: true
+    version?: true
+    changeNote?: true
+    createdById?: true
+    createdAt?: true
+    supersededAt?: true
+  }
+
+  export type RequirementProfileMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    shipperId?: true
+    version?: true
+    changeNote?: true
+    createdById?: true
+    createdAt?: true
+    supersededAt?: true
+  }
+
+  export type RequirementProfileCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    shipperId?: true
+    version?: true
+    rules?: true
+    changeNote?: true
+    createdById?: true
+    createdAt?: true
+    supersededAt?: true
+    _all?: true
+  }
+
+  export type RequirementProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RequirementProfile to aggregate.
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RequirementProfiles to fetch.
+     */
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RequirementProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RequirementProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RequirementProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RequirementProfiles
+    **/
+    _count?: true | RequirementProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RequirementProfileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RequirementProfileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RequirementProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RequirementProfileMaxAggregateInputType
+  }
+
+  export type GetRequirementProfileAggregateType<T extends RequirementProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateRequirementProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRequirementProfile[P]>
+      : GetScalarType<T[P], AggregateRequirementProfile[P]>
+  }
+
+
+
+
+  export type RequirementProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RequirementProfileWhereInput
+    orderBy?: RequirementProfileOrderByWithAggregationInput | RequirementProfileOrderByWithAggregationInput[]
+    by: RequirementProfileScalarFieldEnum[] | RequirementProfileScalarFieldEnum
+    having?: RequirementProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RequirementProfileCountAggregateInputType | true
+    _avg?: RequirementProfileAvgAggregateInputType
+    _sum?: RequirementProfileSumAggregateInputType
+    _min?: RequirementProfileMinAggregateInputType
+    _max?: RequirementProfileMaxAggregateInputType
+  }
+
+  export type RequirementProfileGroupByOutputType = {
+    id: string
+    organizationId: string
+    shipperId: string
+    version: number
+    rules: JsonValue
+    changeNote: string | null
+    createdById: string | null
+    createdAt: Date
+    supersededAt: Date | null
+    _count: RequirementProfileCountAggregateOutputType | null
+    _avg: RequirementProfileAvgAggregateOutputType | null
+    _sum: RequirementProfileSumAggregateOutputType | null
+    _min: RequirementProfileMinAggregateOutputType | null
+    _max: RequirementProfileMaxAggregateOutputType | null
+  }
+
+  type GetRequirementProfileGroupByPayload<T extends RequirementProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RequirementProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RequirementProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RequirementProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], RequirementProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RequirementProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    shipperId?: boolean
+    version?: boolean
+    rules?: boolean
+    changeNote?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    supersededAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requirementProfile"]>
+
+  export type RequirementProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    shipperId?: boolean
+    version?: boolean
+    rules?: boolean
+    changeNote?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    supersededAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requirementProfile"]>
+
+  export type RequirementProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    shipperId?: boolean
+    version?: boolean
+    rules?: boolean
+    changeNote?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    supersededAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requirementProfile"]>
+
+  export type RequirementProfileSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    shipperId?: boolean
+    version?: boolean
+    rules?: boolean
+    changeNote?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    supersededAt?: boolean
+  }
+
+  export type RequirementProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "shipperId" | "version" | "rules" | "changeNote" | "createdById" | "createdAt" | "supersededAt", ExtArgs["result"]["requirementProfile"]>
+  export type RequirementProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }
+  export type RequirementProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }
+  export type RequirementProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+  }
+
+  export type $RequirementProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RequirementProfile"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      shipper: Prisma.$ShipperPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      shipperId: string
+      version: number
+      rules: Prisma.JsonValue
+      /**
+       * Why this version exists, shown beside the diff against its predecessor.
+       */
+      changeNote: string | null
+      /**
+       * Null for seeded profiles, which no user authored.
+       */
+      createdById: string | null
+      createdAt: Date
+      /**
+       * Null for the one active version. Set when a newer version replaces it,
+       * which a partial unique index enforces.
+       */
+      supersededAt: Date | null
+    }, ExtArgs["result"]["requirementProfile"]>
+    composites: {}
+  }
+
+  type RequirementProfileGetPayload<S extends boolean | null | undefined | RequirementProfileDefaultArgs> = $Result.GetResult<Prisma.$RequirementProfilePayload, S>
+
+  type RequirementProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RequirementProfileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RequirementProfileCountAggregateInputType | true
+    }
+
+  export interface RequirementProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RequirementProfile'], meta: { name: 'RequirementProfile' } }
+    /**
+     * Find zero or one RequirementProfile that matches the filter.
+     * @param {RequirementProfileFindUniqueArgs} args - Arguments to find a RequirementProfile
+     * @example
+     * // Get one RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RequirementProfileFindUniqueArgs>(args: SelectSubset<T, RequirementProfileFindUniqueArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RequirementProfile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RequirementProfileFindUniqueOrThrowArgs} args - Arguments to find a RequirementProfile
+     * @example
+     * // Get one RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RequirementProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, RequirementProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RequirementProfile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileFindFirstArgs} args - Arguments to find a RequirementProfile
+     * @example
+     * // Get one RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RequirementProfileFindFirstArgs>(args?: SelectSubset<T, RequirementProfileFindFirstArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RequirementProfile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileFindFirstOrThrowArgs} args - Arguments to find a RequirementProfile
+     * @example
+     * // Get one RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RequirementProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, RequirementProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RequirementProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RequirementProfiles
+     * const requirementProfiles = await prisma.requirementProfile.findMany()
+     * 
+     * // Get first 10 RequirementProfiles
+     * const requirementProfiles = await prisma.requirementProfile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const requirementProfileWithIdOnly = await prisma.requirementProfile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RequirementProfileFindManyArgs>(args?: SelectSubset<T, RequirementProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RequirementProfile.
+     * @param {RequirementProfileCreateArgs} args - Arguments to create a RequirementProfile.
+     * @example
+     * // Create one RequirementProfile
+     * const RequirementProfile = await prisma.requirementProfile.create({
+     *   data: {
+     *     // ... data to create a RequirementProfile
+     *   }
+     * })
+     * 
+     */
+    create<T extends RequirementProfileCreateArgs>(args: SelectSubset<T, RequirementProfileCreateArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RequirementProfiles.
+     * @param {RequirementProfileCreateManyArgs} args - Arguments to create many RequirementProfiles.
+     * @example
+     * // Create many RequirementProfiles
+     * const requirementProfile = await prisma.requirementProfile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RequirementProfileCreateManyArgs>(args?: SelectSubset<T, RequirementProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RequirementProfiles and returns the data saved in the database.
+     * @param {RequirementProfileCreateManyAndReturnArgs} args - Arguments to create many RequirementProfiles.
+     * @example
+     * // Create many RequirementProfiles
+     * const requirementProfile = await prisma.requirementProfile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RequirementProfiles and only return the `id`
+     * const requirementProfileWithIdOnly = await prisma.requirementProfile.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RequirementProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, RequirementProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RequirementProfile.
+     * @param {RequirementProfileDeleteArgs} args - Arguments to delete one RequirementProfile.
+     * @example
+     * // Delete one RequirementProfile
+     * const RequirementProfile = await prisma.requirementProfile.delete({
+     *   where: {
+     *     // ... filter to delete one RequirementProfile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RequirementProfileDeleteArgs>(args: SelectSubset<T, RequirementProfileDeleteArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RequirementProfile.
+     * @param {RequirementProfileUpdateArgs} args - Arguments to update one RequirementProfile.
+     * @example
+     * // Update one RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RequirementProfileUpdateArgs>(args: SelectSubset<T, RequirementProfileUpdateArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RequirementProfiles.
+     * @param {RequirementProfileDeleteManyArgs} args - Arguments to filter RequirementProfiles to delete.
+     * @example
+     * // Delete a few RequirementProfiles
+     * const { count } = await prisma.requirementProfile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RequirementProfileDeleteManyArgs>(args?: SelectSubset<T, RequirementProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RequirementProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RequirementProfiles
+     * const requirementProfile = await prisma.requirementProfile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RequirementProfileUpdateManyArgs>(args: SelectSubset<T, RequirementProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RequirementProfiles and returns the data updated in the database.
+     * @param {RequirementProfileUpdateManyAndReturnArgs} args - Arguments to update many RequirementProfiles.
+     * @example
+     * // Update many RequirementProfiles
+     * const requirementProfile = await prisma.requirementProfile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RequirementProfiles and only return the `id`
+     * const requirementProfileWithIdOnly = await prisma.requirementProfile.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RequirementProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, RequirementProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RequirementProfile.
+     * @param {RequirementProfileUpsertArgs} args - Arguments to update or create a RequirementProfile.
+     * @example
+     * // Update or create a RequirementProfile
+     * const requirementProfile = await prisma.requirementProfile.upsert({
+     *   create: {
+     *     // ... data to create a RequirementProfile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RequirementProfile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RequirementProfileUpsertArgs>(args: SelectSubset<T, RequirementProfileUpsertArgs<ExtArgs>>): Prisma__RequirementProfileClient<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RequirementProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileCountArgs} args - Arguments to filter RequirementProfiles to count.
+     * @example
+     * // Count the number of RequirementProfiles
+     * const count = await prisma.requirementProfile.count({
+     *   where: {
+     *     // ... the filter for the RequirementProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends RequirementProfileCountArgs>(
+      args?: Subset<T, RequirementProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RequirementProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RequirementProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RequirementProfileAggregateArgs>(args: Subset<T, RequirementProfileAggregateArgs>): Prisma.PrismaPromise<GetRequirementProfileAggregateType<T>>
+
+    /**
+     * Group by RequirementProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequirementProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RequirementProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RequirementProfileGroupByArgs['orderBy'] }
+        : { orderBy?: RequirementProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RequirementProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRequirementProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RequirementProfile model
+   */
+  readonly fields: RequirementProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RequirementProfile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RequirementProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    shipper<T extends ShipperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShipperDefaultArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RequirementProfile model
+   */
+  interface RequirementProfileFieldRefs {
+    readonly id: FieldRef<"RequirementProfile", 'String'>
+    readonly organizationId: FieldRef<"RequirementProfile", 'String'>
+    readonly shipperId: FieldRef<"RequirementProfile", 'String'>
+    readonly version: FieldRef<"RequirementProfile", 'Int'>
+    readonly rules: FieldRef<"RequirementProfile", 'Json'>
+    readonly changeNote: FieldRef<"RequirementProfile", 'String'>
+    readonly createdById: FieldRef<"RequirementProfile", 'String'>
+    readonly createdAt: FieldRef<"RequirementProfile", 'DateTime'>
+    readonly supersededAt: FieldRef<"RequirementProfile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RequirementProfile findUnique
+   */
+  export type RequirementProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which RequirementProfile to fetch.
+     */
+    where: RequirementProfileWhereUniqueInput
+  }
+
+  /**
+   * RequirementProfile findUniqueOrThrow
+   */
+  export type RequirementProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which RequirementProfile to fetch.
+     */
+    where: RequirementProfileWhereUniqueInput
+  }
+
+  /**
+   * RequirementProfile findFirst
+   */
+  export type RequirementProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which RequirementProfile to fetch.
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RequirementProfiles to fetch.
+     */
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RequirementProfiles.
+     */
+    cursor?: RequirementProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RequirementProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RequirementProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RequirementProfiles.
+     */
+    distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
+  }
+
+  /**
+   * RequirementProfile findFirstOrThrow
+   */
+  export type RequirementProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which RequirementProfile to fetch.
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RequirementProfiles to fetch.
+     */
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RequirementProfiles.
+     */
+    cursor?: RequirementProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RequirementProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RequirementProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RequirementProfiles.
+     */
+    distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
+  }
+
+  /**
+   * RequirementProfile findMany
+   */
+  export type RequirementProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which RequirementProfiles to fetch.
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RequirementProfiles to fetch.
+     */
+    orderBy?: RequirementProfileOrderByWithRelationInput | RequirementProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RequirementProfiles.
+     */
+    cursor?: RequirementProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RequirementProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RequirementProfiles.
+     */
+    skip?: number
+    distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
+  }
+
+  /**
+   * RequirementProfile create
+   */
+  export type RequirementProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RequirementProfile.
+     */
+    data: XOR<RequirementProfileCreateInput, RequirementProfileUncheckedCreateInput>
+  }
+
+  /**
+   * RequirementProfile createMany
+   */
+  export type RequirementProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RequirementProfiles.
+     */
+    data: RequirementProfileCreateManyInput | RequirementProfileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RequirementProfile createManyAndReturn
+   */
+  export type RequirementProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * The data used to create many RequirementProfiles.
+     */
+    data: RequirementProfileCreateManyInput | RequirementProfileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RequirementProfile update
+   */
+  export type RequirementProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RequirementProfile.
+     */
+    data: XOR<RequirementProfileUpdateInput, RequirementProfileUncheckedUpdateInput>
+    /**
+     * Choose, which RequirementProfile to update.
+     */
+    where: RequirementProfileWhereUniqueInput
+  }
+
+  /**
+   * RequirementProfile updateMany
+   */
+  export type RequirementProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RequirementProfiles.
+     */
+    data: XOR<RequirementProfileUpdateManyMutationInput, RequirementProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which RequirementProfiles to update
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * Limit how many RequirementProfiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RequirementProfile updateManyAndReturn
+   */
+  export type RequirementProfileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * The data used to update RequirementProfiles.
+     */
+    data: XOR<RequirementProfileUpdateManyMutationInput, RequirementProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which RequirementProfiles to update
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * Limit how many RequirementProfiles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RequirementProfile upsert
+   */
+  export type RequirementProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RequirementProfile to update in case it exists.
+     */
+    where: RequirementProfileWhereUniqueInput
+    /**
+     * In case the RequirementProfile found by the `where` argument doesn't exist, create a new RequirementProfile with this data.
+     */
+    create: XOR<RequirementProfileCreateInput, RequirementProfileUncheckedCreateInput>
+    /**
+     * In case the RequirementProfile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RequirementProfileUpdateInput, RequirementProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * RequirementProfile delete
+   */
+  export type RequirementProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+    /**
+     * Filter which RequirementProfile to delete.
+     */
+    where: RequirementProfileWhereUniqueInput
+  }
+
+  /**
+   * RequirementProfile deleteMany
+   */
+  export type RequirementProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RequirementProfiles to delete
+     */
+    where?: RequirementProfileWhereInput
+    /**
+     * Limit how many RequirementProfiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RequirementProfile without action
+   */
+  export type RequirementProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequirementProfile
+     */
+    select?: RequirementProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RequirementProfile
+     */
+    omit?: RequirementProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequirementProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15762,6 +18378,37 @@ export namespace Prisma {
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const ShipperScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    name: 'name',
+    npwp: 'npwp',
+    financeContactName: 'financeContactName',
+    financeContactEmail: 'financeContactEmail',
+    financeContactPhone: 'financeContactPhone',
+    address: 'address',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ShipperScalarFieldEnum = (typeof ShipperScalarFieldEnum)[keyof typeof ShipperScalarFieldEnum]
+
+
+  export const RequirementProfileScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    shipperId: 'shipperId',
+    version: 'version',
+    rules: 'rules',
+    changeNote: 'changeNote',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    supersededAt: 'supersededAt'
+  };
+
+  export type RequirementProfileScalarFieldEnum = (typeof RequirementProfileScalarFieldEnum)[keyof typeof RequirementProfileScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15970,6 +18617,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventListRelationFilter
     llmCallLogs?: LlmCallLogListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    shippers?: ShipperListRelationFilter
+    requirementProfiles?: RequirementProfileListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -15986,6 +18635,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventOrderByRelationAggregateInput
     llmCallLogs?: LlmCallLogOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    shippers?: ShipperOrderByRelationAggregateInput
+    requirementProfiles?: RequirementProfileOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -16005,6 +18656,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventListRelationFilter
     llmCallLogs?: LlmCallLogListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    shippers?: ShipperListRelationFilter
+    requirementProfiles?: RequirementProfileListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -16820,6 +19473,171 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
   }
 
+  export type ShipperWhereInput = {
+    AND?: ShipperWhereInput | ShipperWhereInput[]
+    OR?: ShipperWhereInput[]
+    NOT?: ShipperWhereInput | ShipperWhereInput[]
+    id?: StringFilter<"Shipper"> | string
+    organizationId?: StringFilter<"Shipper"> | string
+    name?: StringFilter<"Shipper"> | string
+    npwp?: StringNullableFilter<"Shipper"> | string | null
+    financeContactName?: StringNullableFilter<"Shipper"> | string | null
+    financeContactEmail?: StringNullableFilter<"Shipper"> | string | null
+    financeContactPhone?: StringNullableFilter<"Shipper"> | string | null
+    address?: StringNullableFilter<"Shipper"> | string | null
+    createdAt?: DateTimeFilter<"Shipper"> | Date | string
+    updatedAt?: DateTimeFilter<"Shipper"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    requirementProfiles?: RequirementProfileListRelationFilter
+  }
+
+  export type ShipperOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    npwp?: SortOrderInput | SortOrder
+    financeContactName?: SortOrderInput | SortOrder
+    financeContactEmail?: SortOrderInput | SortOrder
+    financeContactPhone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    requirementProfiles?: RequirementProfileOrderByRelationAggregateInput
+  }
+
+  export type ShipperWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_name?: ShipperOrganizationIdNameCompoundUniqueInput
+    AND?: ShipperWhereInput | ShipperWhereInput[]
+    OR?: ShipperWhereInput[]
+    NOT?: ShipperWhereInput | ShipperWhereInput[]
+    organizationId?: StringFilter<"Shipper"> | string
+    name?: StringFilter<"Shipper"> | string
+    npwp?: StringNullableFilter<"Shipper"> | string | null
+    financeContactName?: StringNullableFilter<"Shipper"> | string | null
+    financeContactEmail?: StringNullableFilter<"Shipper"> | string | null
+    financeContactPhone?: StringNullableFilter<"Shipper"> | string | null
+    address?: StringNullableFilter<"Shipper"> | string | null
+    createdAt?: DateTimeFilter<"Shipper"> | Date | string
+    updatedAt?: DateTimeFilter<"Shipper"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    requirementProfiles?: RequirementProfileListRelationFilter
+  }, "id" | "organizationId_name">
+
+  export type ShipperOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    npwp?: SortOrderInput | SortOrder
+    financeContactName?: SortOrderInput | SortOrder
+    financeContactEmail?: SortOrderInput | SortOrder
+    financeContactPhone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ShipperCountOrderByAggregateInput
+    _max?: ShipperMaxOrderByAggregateInput
+    _min?: ShipperMinOrderByAggregateInput
+  }
+
+  export type ShipperScalarWhereWithAggregatesInput = {
+    AND?: ShipperScalarWhereWithAggregatesInput | ShipperScalarWhereWithAggregatesInput[]
+    OR?: ShipperScalarWhereWithAggregatesInput[]
+    NOT?: ShipperScalarWhereWithAggregatesInput | ShipperScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Shipper"> | string
+    organizationId?: StringWithAggregatesFilter<"Shipper"> | string
+    name?: StringWithAggregatesFilter<"Shipper"> | string
+    npwp?: StringNullableWithAggregatesFilter<"Shipper"> | string | null
+    financeContactName?: StringNullableWithAggregatesFilter<"Shipper"> | string | null
+    financeContactEmail?: StringNullableWithAggregatesFilter<"Shipper"> | string | null
+    financeContactPhone?: StringNullableWithAggregatesFilter<"Shipper"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Shipper"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Shipper"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Shipper"> | Date | string
+  }
+
+  export type RequirementProfileWhereInput = {
+    AND?: RequirementProfileWhereInput | RequirementProfileWhereInput[]
+    OR?: RequirementProfileWhereInput[]
+    NOT?: RequirementProfileWhereInput | RequirementProfileWhereInput[]
+    id?: StringFilter<"RequirementProfile"> | string
+    organizationId?: StringFilter<"RequirementProfile"> | string
+    shipperId?: StringFilter<"RequirementProfile"> | string
+    version?: IntFilter<"RequirementProfile"> | number
+    rules?: JsonFilter<"RequirementProfile">
+    changeNote?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdById?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdAt?: DateTimeFilter<"RequirementProfile"> | Date | string
+    supersededAt?: DateTimeNullableFilter<"RequirementProfile"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
+  }
+
+  export type RequirementProfileOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    shipperId?: SortOrder
+    version?: SortOrder
+    rules?: SortOrder
+    changeNote?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    supersededAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    shipper?: ShipperOrderByWithRelationInput
+  }
+
+  export type RequirementProfileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    shipperId_version?: RequirementProfileShipperIdVersionCompoundUniqueInput
+    AND?: RequirementProfileWhereInput | RequirementProfileWhereInput[]
+    OR?: RequirementProfileWhereInput[]
+    NOT?: RequirementProfileWhereInput | RequirementProfileWhereInput[]
+    organizationId?: StringFilter<"RequirementProfile"> | string
+    shipperId?: StringFilter<"RequirementProfile"> | string
+    version?: IntFilter<"RequirementProfile"> | number
+    rules?: JsonFilter<"RequirementProfile">
+    changeNote?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdById?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdAt?: DateTimeFilter<"RequirementProfile"> | Date | string
+    supersededAt?: DateTimeNullableFilter<"RequirementProfile"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
+  }, "id" | "shipperId_version">
+
+  export type RequirementProfileOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    shipperId?: SortOrder
+    version?: SortOrder
+    rules?: SortOrder
+    changeNote?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    supersededAt?: SortOrderInput | SortOrder
+    _count?: RequirementProfileCountOrderByAggregateInput
+    _avg?: RequirementProfileAvgOrderByAggregateInput
+    _max?: RequirementProfileMaxOrderByAggregateInput
+    _min?: RequirementProfileMinOrderByAggregateInput
+    _sum?: RequirementProfileSumOrderByAggregateInput
+  }
+
+  export type RequirementProfileScalarWhereWithAggregatesInput = {
+    AND?: RequirementProfileScalarWhereWithAggregatesInput | RequirementProfileScalarWhereWithAggregatesInput[]
+    OR?: RequirementProfileScalarWhereWithAggregatesInput[]
+    NOT?: RequirementProfileScalarWhereWithAggregatesInput | RequirementProfileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RequirementProfile"> | string
+    organizationId?: StringWithAggregatesFilter<"RequirementProfile"> | string
+    shipperId?: StringWithAggregatesFilter<"RequirementProfile"> | string
+    version?: IntWithAggregatesFilter<"RequirementProfile"> | number
+    rules?: JsonWithAggregatesFilter<"RequirementProfile">
+    changeNote?: StringNullableWithAggregatesFilter<"RequirementProfile"> | string | null
+    createdById?: StringNullableWithAggregatesFilter<"RequirementProfile"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"RequirementProfile"> | Date | string
+    supersededAt?: DateTimeNullableWithAggregatesFilter<"RequirementProfile"> | Date | string | null
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -16834,6 +19652,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -16850,6 +19670,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -16866,6 +19688,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -16882,6 +19706,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -17750,6 +20576,182 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ShipperCreateInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutShippersInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutShippersNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutShipperNestedInput
+  }
+
+  export type ShipperUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput
+  }
+
+  export type ShipperCreateManyInput = {
+    id?: string
+    organizationId: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShipperUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShipperUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RequirementProfileCreateInput = {
+    id?: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutRequirementProfilesInput
+    shipper: ShipperCreateNestedOneWithoutRequirementProfilesInput
+  }
+
+  export type RequirementProfileUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    shipperId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+  }
+
+  export type RequirementProfileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutRequirementProfilesNestedInput
+    shipper?: ShipperUpdateOneRequiredWithoutRequirementProfilesNestedInput
+  }
+
+  export type RequirementProfileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RequirementProfileCreateManyInput = {
+    id?: string
+    organizationId: string
+    shipperId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+  }
+
+  export type RequirementProfileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RequirementProfileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17830,6 +20832,18 @@ export namespace Prisma {
     none?: AuditLogWhereInput
   }
 
+  export type ShipperListRelationFilter = {
+    every?: ShipperWhereInput
+    some?: ShipperWhereInput
+    none?: ShipperWhereInput
+  }
+
+  export type RequirementProfileListRelationFilter = {
+    every?: RequirementProfileWhereInput
+    some?: RequirementProfileWhereInput
+    none?: RequirementProfileWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -17856,6 +20870,14 @@ export namespace Prisma {
   }
 
   export type AuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ShipperOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RequirementProfileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18686,6 +21708,102 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type ShipperOrganizationIdNameCompoundUniqueInput = {
+    organizationId: string
+    name: string
+  }
+
+  export type ShipperCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    npwp?: SortOrder
+    financeContactName?: SortOrder
+    financeContactEmail?: SortOrder
+    financeContactPhone?: SortOrder
+    address?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShipperMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    npwp?: SortOrder
+    financeContactName?: SortOrder
+    financeContactEmail?: SortOrder
+    financeContactPhone?: SortOrder
+    address?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShipperMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    name?: SortOrder
+    npwp?: SortOrder
+    financeContactName?: SortOrder
+    financeContactEmail?: SortOrder
+    financeContactPhone?: SortOrder
+    address?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ShipperScalarRelationFilter = {
+    is?: ShipperWhereInput
+    isNot?: ShipperWhereInput
+  }
+
+  export type RequirementProfileShipperIdVersionCompoundUniqueInput = {
+    shipperId: string
+    version: number
+  }
+
+  export type RequirementProfileCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    shipperId?: SortOrder
+    version?: SortOrder
+    rules?: SortOrder
+    changeNote?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    supersededAt?: SortOrder
+  }
+
+  export type RequirementProfileAvgOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
+  export type RequirementProfileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    shipperId?: SortOrder
+    version?: SortOrder
+    changeNote?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    supersededAt?: SortOrder
+  }
+
+  export type RequirementProfileMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    shipperId?: SortOrder
+    version?: SortOrder
+    changeNote?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    supersededAt?: SortOrder
+  }
+
+  export type RequirementProfileSumOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -18728,6 +21846,20 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type ShipperCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput> | ShipperCreateWithoutOrganizationInput[] | ShipperUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrganizationInput | ShipperCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ShipperCreateManyOrganizationInputEnvelope
+    connect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+  }
+
+  export type RequirementProfileCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput> | RequirementProfileCreateWithoutOrganizationInput[] | RequirementProfileUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutOrganizationInput | RequirementProfileCreateOrConnectWithoutOrganizationInput[]
+    createMany?: RequirementProfileCreateManyOrganizationInputEnvelope
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -18768,6 +21900,20 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutOrganizationInput | AuditLogCreateOrConnectWithoutOrganizationInput[]
     createMany?: AuditLogCreateManyOrganizationInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type ShipperUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput> | ShipperCreateWithoutOrganizationInput[] | ShipperUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrganizationInput | ShipperCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ShipperCreateManyOrganizationInputEnvelope
+    connect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+  }
+
+  export type RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput> | RequirementProfileCreateWithoutOrganizationInput[] | RequirementProfileUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutOrganizationInput | RequirementProfileCreateOrConnectWithoutOrganizationInput[]
+    createMany?: RequirementProfileCreateManyOrganizationInputEnvelope
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -18874,6 +22020,34 @@ export namespace Prisma {
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
+  export type ShipperUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput> | ShipperCreateWithoutOrganizationInput[] | ShipperUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrganizationInput | ShipperCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ShipperUpsertWithWhereUniqueWithoutOrganizationInput | ShipperUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ShipperCreateManyOrganizationInputEnvelope
+    set?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    disconnect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    delete?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    connect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    update?: ShipperUpdateWithWhereUniqueWithoutOrganizationInput | ShipperUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ShipperUpdateManyWithWhereWithoutOrganizationInput | ShipperUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ShipperScalarWhereInput | ShipperScalarWhereInput[]
+  }
+
+  export type RequirementProfileUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput> | RequirementProfileCreateWithoutOrganizationInput[] | RequirementProfileUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutOrganizationInput | RequirementProfileCreateOrConnectWithoutOrganizationInput[]
+    upsert?: RequirementProfileUpsertWithWhereUniqueWithoutOrganizationInput | RequirementProfileUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: RequirementProfileCreateManyOrganizationInputEnvelope
+    set?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    disconnect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    delete?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    update?: RequirementProfileUpdateWithWhereUniqueWithoutOrganizationInput | RequirementProfileUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: RequirementProfileUpdateManyWithWhereWithoutOrganizationInput | RequirementProfileUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -18956,6 +22130,34 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutOrganizationInput | AuditLogUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutOrganizationInput | AuditLogUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type ShipperUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput> | ShipperCreateWithoutOrganizationInput[] | ShipperUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrganizationInput | ShipperCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ShipperUpsertWithWhereUniqueWithoutOrganizationInput | ShipperUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ShipperCreateManyOrganizationInputEnvelope
+    set?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    disconnect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    delete?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    connect?: ShipperWhereUniqueInput | ShipperWhereUniqueInput[]
+    update?: ShipperUpdateWithWhereUniqueWithoutOrganizationInput | ShipperUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ShipperUpdateManyWithWhereWithoutOrganizationInput | ShipperUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ShipperScalarWhereInput | ShipperScalarWhereInput[]
+  }
+
+  export type RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput> | RequirementProfileCreateWithoutOrganizationInput[] | RequirementProfileUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutOrganizationInput | RequirementProfileCreateOrConnectWithoutOrganizationInput[]
+    upsert?: RequirementProfileUpsertWithWhereUniqueWithoutOrganizationInput | RequirementProfileUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: RequirementProfileCreateManyOrganizationInputEnvelope
+    set?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    disconnect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    delete?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    update?: RequirementProfileUpdateWithWhereUniqueWithoutOrganizationInput | RequirementProfileUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: RequirementProfileUpdateManyWithWhereWithoutOrganizationInput | RequirementProfileUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -19300,6 +22502,90 @@ export namespace Prisma {
     upsert?: OrganizationUpsertWithoutAuditLogsInput
     connect?: OrganizationWhereUniqueInput
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutAuditLogsInput, OrganizationUpdateWithoutAuditLogsInput>, OrganizationUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutShippersInput = {
+    create?: XOR<OrganizationCreateWithoutShippersInput, OrganizationUncheckedCreateWithoutShippersInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutShippersInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type RequirementProfileCreateNestedManyWithoutShipperInput = {
+    create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
+    createMany?: RequirementProfileCreateManyShipperInputEnvelope
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+  }
+
+  export type RequirementProfileUncheckedCreateNestedManyWithoutShipperInput = {
+    create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
+    createMany?: RequirementProfileCreateManyShipperInputEnvelope
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutShippersNestedInput = {
+    create?: XOR<OrganizationCreateWithoutShippersInput, OrganizationUncheckedCreateWithoutShippersInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutShippersInput
+    upsert?: OrganizationUpsertWithoutShippersInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutShippersInput, OrganizationUpdateWithoutShippersInput>, OrganizationUncheckedUpdateWithoutShippersInput>
+  }
+
+  export type RequirementProfileUpdateManyWithoutShipperNestedInput = {
+    create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
+    upsert?: RequirementProfileUpsertWithWhereUniqueWithoutShipperInput | RequirementProfileUpsertWithWhereUniqueWithoutShipperInput[]
+    createMany?: RequirementProfileCreateManyShipperInputEnvelope
+    set?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    disconnect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    delete?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    update?: RequirementProfileUpdateWithWhereUniqueWithoutShipperInput | RequirementProfileUpdateWithWhereUniqueWithoutShipperInput[]
+    updateMany?: RequirementProfileUpdateManyWithWhereWithoutShipperInput | RequirementProfileUpdateManyWithWhereWithoutShipperInput[]
+    deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+  }
+
+  export type RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput = {
+    create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
+    upsert?: RequirementProfileUpsertWithWhereUniqueWithoutShipperInput | RequirementProfileUpsertWithWhereUniqueWithoutShipperInput[]
+    createMany?: RequirementProfileCreateManyShipperInputEnvelope
+    set?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    disconnect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    delete?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+    update?: RequirementProfileUpdateWithWhereUniqueWithoutShipperInput | RequirementProfileUpdateWithWhereUniqueWithoutShipperInput[]
+    updateMany?: RequirementProfileUpdateManyWithWhereWithoutShipperInput | RequirementProfileUpdateManyWithWhereWithoutShipperInput[]
+    deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutRequirementProfilesInput = {
+    create?: XOR<OrganizationCreateWithoutRequirementProfilesInput, OrganizationUncheckedCreateWithoutRequirementProfilesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutRequirementProfilesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type ShipperCreateNestedOneWithoutRequirementProfilesInput = {
+    create?: XOR<ShipperCreateWithoutRequirementProfilesInput, ShipperUncheckedCreateWithoutRequirementProfilesInput>
+    connectOrCreate?: ShipperCreateOrConnectWithoutRequirementProfilesInput
+    connect?: ShipperWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutRequirementProfilesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutRequirementProfilesInput, OrganizationUncheckedCreateWithoutRequirementProfilesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutRequirementProfilesInput
+    upsert?: OrganizationUpsertWithoutRequirementProfilesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutRequirementProfilesInput, OrganizationUpdateWithoutRequirementProfilesInput>, OrganizationUncheckedUpdateWithoutRequirementProfilesInput>
+  }
+
+  export type ShipperUpdateOneRequiredWithoutRequirementProfilesNestedInput = {
+    create?: XOR<ShipperCreateWithoutRequirementProfilesInput, ShipperUncheckedCreateWithoutRequirementProfilesInput>
+    connectOrCreate?: ShipperCreateOrConnectWithoutRequirementProfilesInput
+    upsert?: ShipperUpsertWithoutRequirementProfilesInput
+    connect?: ShipperWhereUniqueInput
+    update?: XOR<XOR<ShipperUpdateToOneWithWhereWithoutRequirementProfilesInput, ShipperUpdateWithoutRequirementProfilesInput>, ShipperUncheckedUpdateWithoutRequirementProfilesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -19823,6 +23109,74 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ShipperCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperCreateOrConnectWithoutOrganizationInput = {
+    where: ShipperWhereUniqueInput
+    create: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ShipperCreateManyOrganizationInputEnvelope = {
+    data: ShipperCreateManyOrganizationInput | ShipperCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RequirementProfileCreateWithoutOrganizationInput = {
+    id?: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+    shipper: ShipperCreateNestedOneWithoutRequirementProfilesInput
+  }
+
+  export type RequirementProfileUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    shipperId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+  }
+
+  export type RequirementProfileCreateOrConnectWithoutOrganizationInput = {
+    where: RequirementProfileWhereUniqueInput
+    create: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type RequirementProfileCreateManyOrganizationInputEnvelope = {
+    data: RequirementProfileCreateManyOrganizationInput | RequirementProfileCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MembershipUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: MembershipWhereUniqueInput
     update: XOR<MembershipUpdateWithoutOrganizationInput, MembershipUncheckedUpdateWithoutOrganizationInput>
@@ -20009,6 +23363,69 @@ export namespace Prisma {
     agentModel?: StringNullableFilter<"AuditLog"> | string | null
     agentPromptVersion?: StringNullableFilter<"AuditLog"> | string | null
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
+  export type ShipperUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: ShipperWhereUniqueInput
+    update: XOR<ShipperUpdateWithoutOrganizationInput, ShipperUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<ShipperCreateWithoutOrganizationInput, ShipperUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ShipperUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: ShipperWhereUniqueInput
+    data: XOR<ShipperUpdateWithoutOrganizationInput, ShipperUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type ShipperUpdateManyWithWhereWithoutOrganizationInput = {
+    where: ShipperScalarWhereInput
+    data: XOR<ShipperUpdateManyMutationInput, ShipperUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type ShipperScalarWhereInput = {
+    AND?: ShipperScalarWhereInput | ShipperScalarWhereInput[]
+    OR?: ShipperScalarWhereInput[]
+    NOT?: ShipperScalarWhereInput | ShipperScalarWhereInput[]
+    id?: StringFilter<"Shipper"> | string
+    organizationId?: StringFilter<"Shipper"> | string
+    name?: StringFilter<"Shipper"> | string
+    npwp?: StringNullableFilter<"Shipper"> | string | null
+    financeContactName?: StringNullableFilter<"Shipper"> | string | null
+    financeContactEmail?: StringNullableFilter<"Shipper"> | string | null
+    financeContactPhone?: StringNullableFilter<"Shipper"> | string | null
+    address?: StringNullableFilter<"Shipper"> | string | null
+    createdAt?: DateTimeFilter<"Shipper"> | Date | string
+    updatedAt?: DateTimeFilter<"Shipper"> | Date | string
+  }
+
+  export type RequirementProfileUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: RequirementProfileWhereUniqueInput
+    update: XOR<RequirementProfileUpdateWithoutOrganizationInput, RequirementProfileUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<RequirementProfileCreateWithoutOrganizationInput, RequirementProfileUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type RequirementProfileUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: RequirementProfileWhereUniqueInput
+    data: XOR<RequirementProfileUpdateWithoutOrganizationInput, RequirementProfileUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type RequirementProfileUpdateManyWithWhereWithoutOrganizationInput = {
+    where: RequirementProfileScalarWhereInput
+    data: XOR<RequirementProfileUpdateManyMutationInput, RequirementProfileUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type RequirementProfileScalarWhereInput = {
+    AND?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+    OR?: RequirementProfileScalarWhereInput[]
+    NOT?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+    id?: StringFilter<"RequirementProfile"> | string
+    organizationId?: StringFilter<"RequirementProfile"> | string
+    shipperId?: StringFilter<"RequirementProfile"> | string
+    version?: IntFilter<"RequirementProfile"> | number
+    rules?: JsonFilter<"RequirementProfile">
+    changeNote?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdById?: StringNullableFilter<"RequirementProfile"> | string | null
+    createdAt?: DateTimeFilter<"RequirementProfile"> | Date | string
+    supersededAt?: DateTimeNullableFilter<"RequirementProfile"> | Date | string | null
   }
 
   export type UserCreateWithoutPostsInput = {
@@ -20444,6 +23861,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -20459,6 +23878,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -20523,6 +23944,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -20538,6 +23961,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -20553,6 +23978,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -20568,6 +23995,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -20599,6 +24028,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -20614,6 +24045,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -20629,6 +24062,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -20644,6 +24079,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -20675,6 +24112,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -20690,6 +24129,8 @@ export namespace Prisma {
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -20705,6 +24146,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -20720,6 +24163,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -20751,6 +24196,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -20766,6 +24213,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -20781,6 +24230,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -20796,6 +24247,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -20827,6 +24280,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -20842,6 +24297,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -20857,6 +24314,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -20872,6 +24331,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
     humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
     llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -20903,6 +24364,8 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -20918,6 +24381,292 @@ export namespace Prisma {
     deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
     humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
     llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateWithoutShippersInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutShippersInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutShippersInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutShippersInput, OrganizationUncheckedCreateWithoutShippersInput>
+  }
+
+  export type RequirementProfileCreateWithoutShipperInput = {
+    id?: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutRequirementProfilesInput
+  }
+
+  export type RequirementProfileUncheckedCreateWithoutShipperInput = {
+    id?: string
+    organizationId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+  }
+
+  export type RequirementProfileCreateOrConnectWithoutShipperInput = {
+    where: RequirementProfileWhereUniqueInput
+    create: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput>
+  }
+
+  export type RequirementProfileCreateManyShipperInputEnvelope = {
+    data: RequirementProfileCreateManyShipperInput | RequirementProfileCreateManyShipperInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationUpsertWithoutShippersInput = {
+    update: XOR<OrganizationUpdateWithoutShippersInput, OrganizationUncheckedUpdateWithoutShippersInput>
+    create: XOR<OrganizationCreateWithoutShippersInput, OrganizationUncheckedCreateWithoutShippersInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutShippersInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutShippersInput, OrganizationUncheckedUpdateWithoutShippersInput>
+  }
+
+  export type OrganizationUpdateWithoutShippersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutShippersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
+    where: RequirementProfileWhereUniqueInput
+    update: XOR<RequirementProfileUpdateWithoutShipperInput, RequirementProfileUncheckedUpdateWithoutShipperInput>
+    create: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput>
+  }
+
+  export type RequirementProfileUpdateWithWhereUniqueWithoutShipperInput = {
+    where: RequirementProfileWhereUniqueInput
+    data: XOR<RequirementProfileUpdateWithoutShipperInput, RequirementProfileUncheckedUpdateWithoutShipperInput>
+  }
+
+  export type RequirementProfileUpdateManyWithWhereWithoutShipperInput = {
+    where: RequirementProfileScalarWhereInput
+    data: XOR<RequirementProfileUpdateManyMutationInput, RequirementProfileUncheckedUpdateManyWithoutShipperInput>
+  }
+
+  export type OrganizationCreateWithoutRequirementProfilesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutRequirementProfilesInput, OrganizationUncheckedCreateWithoutRequirementProfilesInput>
+  }
+
+  export type ShipperCreateWithoutRequirementProfilesInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutShippersInput
+  }
+
+  export type ShipperUncheckedCreateWithoutRequirementProfilesInput = {
+    id?: string
+    organizationId: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ShipperCreateOrConnectWithoutRequirementProfilesInput = {
+    where: ShipperWhereUniqueInput
+    create: XOR<ShipperCreateWithoutRequirementProfilesInput, ShipperUncheckedCreateWithoutRequirementProfilesInput>
+  }
+
+  export type OrganizationUpsertWithoutRequirementProfilesInput = {
+    update: XOR<OrganizationUpdateWithoutRequirementProfilesInput, OrganizationUncheckedUpdateWithoutRequirementProfilesInput>
+    create: XOR<OrganizationCreateWithoutRequirementProfilesInput, OrganizationUncheckedCreateWithoutRequirementProfilesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutRequirementProfilesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutRequirementProfilesInput, OrganizationUncheckedUpdateWithoutRequirementProfilesInput>
+  }
+
+  export type OrganizationUpdateWithoutRequirementProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type ShipperUpsertWithoutRequirementProfilesInput = {
+    update: XOR<ShipperUpdateWithoutRequirementProfilesInput, ShipperUncheckedUpdateWithoutRequirementProfilesInput>
+    create: XOR<ShipperCreateWithoutRequirementProfilesInput, ShipperUncheckedCreateWithoutRequirementProfilesInput>
+    where?: ShipperWhereInput
+  }
+
+  export type ShipperUpdateToOneWithWhereWithoutRequirementProfilesInput = {
+    where?: ShipperWhereInput
+    data: XOR<ShipperUpdateWithoutRequirementProfilesInput, ShipperUncheckedUpdateWithoutRequirementProfilesInput>
+  }
+
+  export type ShipperUpdateWithoutRequirementProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutShippersNestedInput
+  }
+
+  export type ShipperUncheckedUpdateWithoutRequirementProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -20986,6 +24735,29 @@ export namespace Prisma {
     agentModel?: string | null
     agentPromptVersion?: string | null
     createdAt?: Date | string
+  }
+
+  export type ShipperCreateManyOrganizationInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RequirementProfileCreateManyOrganizationInput = {
+    id?: string
+    shipperId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
   }
 
   export type MembershipUpdateWithoutOrganizationInput = {
@@ -21192,6 +24964,77 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ShipperUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requirementProfiles?: RequirementProfileUpdateManyWithoutShipperNestedInput
+  }
+
+  export type ShipperUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput
+  }
+
+  export type ShipperUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RequirementProfileUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    shipper?: ShipperUpdateOneRequiredWithoutRequirementProfilesNestedInput
+  }
+
+  export type RequirementProfileUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RequirementProfileUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type AccountCreateManyUserInput = {
     id?: string
     type: string
@@ -21329,6 +25172,50 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     role?: EnumMembershipRoleFieldUpdateOperationsInput | $Enums.MembershipRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RequirementProfileCreateManyShipperInput = {
+    id?: string
+    organizationId: string
+    version: number
+    rules: JsonNullValueInput | InputJsonValue
+    changeNote?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    supersededAt?: Date | string | null
+  }
+
+  export type RequirementProfileUpdateWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutRequirementProfilesNestedInput
+  }
+
+  export type RequirementProfileUncheckedUpdateWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RequirementProfileUncheckedUpdateManyWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    rules?: JsonNullValueInput | InputJsonValue
+    changeNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

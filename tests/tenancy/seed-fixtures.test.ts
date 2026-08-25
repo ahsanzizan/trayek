@@ -59,7 +59,7 @@ describe("seed fixtures", () => {
     );
   });
 
-  it("writes every fixture through the organization, user, and membership ports", async () => {
+  it("writes every fixture through its writer port, dependencies first", async () => {
     const operations: string[] = [];
     const writer: SeedWriter = {
       organization: {
@@ -77,6 +77,16 @@ describe("seed fixtures", () => {
           operations.push(`membership:${create.id}`);
         },
       },
+      shipper: {
+        upsert: async ({ create }) => {
+          operations.push(`shipper:${create.id}`);
+        },
+      },
+      requirementProfile: {
+        upsert: async ({ create }) => {
+          operations.push(`requirementProfile:${create.id}`);
+        },
+      },
     };
 
     await seedFixtures(writer);
@@ -88,6 +98,12 @@ describe("seed fixtures", () => {
       ...seedFixturesData.users.map((user) => `user:${user.id}`),
       ...seedFixturesData.memberships.map(
         (membership) => `membership:${membership.id}`,
+      ),
+      // Shippers before profiles: a profile references a shipper that must
+      // already exist.
+      ...seedFixturesData.shippers.map((shipper) => `shipper:${shipper.id}`),
+      ...seedFixturesData.requirementProfiles.map(
+        (profile) => `requirementProfile:${profile.id}`,
       ),
     ]);
   });
