@@ -103,7 +103,7 @@ What exists today:
 ```
 prisma/
   migrations/            # committed, forward-only
-  schema.prisma          # identity, tenancy, jobs, audit, Shipper + RequirementProfile
+  schema.prisma          # identity, tenancy, jobs, audit, Shipper, RequirementProfile, Driver
   seed.ts                # multi-org fixtures the tenancy tests rely on
 docs/
   INVARIANTS.md          # the eight product invariants — authoritative
@@ -122,7 +122,7 @@ src/
     page.tsx             # home page
   server/
     api/
-      routers/           # one router per entity: organization.ts, post.ts, audit.ts, shipper.ts
+      routers/           # one router per entity: organization.ts, post.ts, audit.ts, shipper.ts, driver.ts
       root.ts            # appRouter + createCaller
       trpc.ts            # context, publicProcedure, protectedProcedure, orgProcedure, roleProcedure
       tenant-extension.ts # Prisma extension that pre-filters by organizationId
@@ -133,6 +133,7 @@ src/
     domain/
       audit/entry.ts     # actor union + pure row flattening
       jobs/              # retry policy, registry, runner — all IO-free
+      driver/            # Indonesian phone normalisation to E.164
       shipper/           # requirement rule schema + version diff
       ports/storage.ts   # StoragePort — the domain owns the interface
     storage/             # UploadThing implementation of StoragePort
@@ -147,7 +148,7 @@ src/
 tests/
   invariants/            # one file per INV-1..INV-8, wired into `pnpm check`
   guardrails/            # architectural assertions (domain boundaries)
-  auth/ storage/ tenancy/ audit/ jobs/ shipper/  # mirror the source path
+  auth/ storage/ tenancy/ audit/ jobs/ shipper/ driver/  # mirror the source path
   e2e/                   # Playwright specs
 components.json          # shadcn config — style, aliases, baseColor
 trayek-settle-mvp-backlog.md  # the backlog and the build order

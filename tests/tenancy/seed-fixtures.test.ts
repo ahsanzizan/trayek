@@ -87,6 +87,11 @@ describe("seed fixtures", () => {
           operations.push(`requirementProfile:${create.id}`);
         },
       },
+      driver: {
+        upsert: async ({ create }) => {
+          operations.push(`driver:${create.id}`);
+        },
+      },
     };
 
     await seedFixtures(writer);
@@ -105,6 +110,7 @@ describe("seed fixtures", () => {
       ...seedFixturesData.requirementProfiles.map(
         (profile) => `requirementProfile:${profile.id}`,
       ),
+      ...seedFixturesData.drivers.map((driver) => `driver:${driver.id}`),
     ]);
   });
 });

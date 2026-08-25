@@ -43,6 +43,15 @@ type RequirementProfileFixture = Readonly<{
   changeNote: string;
 }>;
 
+type DriverFixture = Readonly<{
+  id: string;
+  organizationId: string;
+  name: string;
+  phone: string;
+  vehiclePlate: string | null;
+  vendorId: string | null;
+}>;
+
 export type SeedWriter = {
   organization: {
     upsert(args: {
@@ -79,6 +88,13 @@ export type SeedWriter = {
       where: { id: string };
       create: RequirementProfileFixture;
       update: Readonly<Pick<RequirementProfileFixture, "rules" | "changeNote">>;
+    }): Promise<unknown>;
+  };
+  driver: {
+    upsert(args: {
+      where: { id: string };
+      create: DriverFixture;
+      update: Readonly<Omit<DriverFixture, "id" | "organizationId">>;
     }): Promise<unknown>;
   };
 };
@@ -283,6 +299,32 @@ export const seedFixturesData = {
       changeNote: "Profil awal dari hasil wawancara onboarding.",
     },
   ],
+  drivers: [
+    {
+      id: "driver-a-herman",
+      organizationId: "org-forwarder-a",
+      name: "Pak Herman",
+      phone: "+6281234567890",
+      vehiclePlate: "B 9012 XYZ",
+      vendorId: null,
+    },
+    {
+      id: "driver-a-subcontracted",
+      organizationId: "org-forwarder-a",
+      name: "Pak Joko",
+      phone: "+6285712345678",
+      vehiclePlate: "B 3344 KLM",
+      vendorId: "VND-TRUK-SEJAHTERA",
+    },
+    {
+      id: "driver-b-only",
+      organizationId: "org-forwarder-b",
+      name: "Pak Slamet",
+      phone: "+6281812345678",
+      vehiclePlate: "L 5566 NOP",
+      vendorId: null,
+    },
+  ],
 } as const;
 
 export async function seedFixtures(writer: SeedWriter): Promise<void> {
@@ -336,6 +378,19 @@ export async function seedFixtures(writer: SeedWriter): Promise<void> {
       where: { id: profile.id },
       create: profile,
       update: { rules: profile.rules, changeNote: profile.changeNote },
+    });
+  }
+
+  for (const driver of seedFixturesData.drivers) {
+    await writer.driver.upsert({
+      where: { id: driver.id },
+      create: driver,
+      update: {
+        name: driver.name,
+        phone: driver.phone,
+        vehiclePlate: driver.vehiclePlate,
+        vendorId: driver.vendorId,
+      },
     });
   }
 }

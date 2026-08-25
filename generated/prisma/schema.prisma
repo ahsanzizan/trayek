@@ -49,6 +49,7 @@ model Organization {
   auditLogs                 AuditLog[]
   shippers                  Shipper[]
   requirementProfiles       RequirementProfile[]
+  drivers                   Driver[]
 }
 
 model Post {
@@ -286,4 +287,31 @@ model RequirementProfile {
 
   @@unique([shipperId, version])
   @@index([organizationId, shipperId])
+}
+
+/// A driver, modelled as a data source rather than a user (TRK-012).
+///
+/// Pak Herman pays nothing and installs nothing. There is deliberately no
+/// account, password, or session here: he is reached through a signed upload
+/// link, so an auth surface would be a liability with no corresponding use.
+model Driver {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  /// E.164, normalised by `~/server/domain/driver/phone` before it is stored.
+  /// The unique constraint below is what makes deduplication a guarantee
+  /// rather than a best effort in a resolver that two requests can race.
+  phone          String
+  vehiclePlate   String?
+  /// The forwarder's own code for a subcontracted trucking company.
+  /// Deliberately not a foreign key: no Vendor model exists and none appears
+  /// in the backlog, so this is an opaque external reference, not a join.
+  vendorId       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, phone])
+  @@index([organizationId])
 }
