@@ -33,6 +33,14 @@ export async function withAudit<T>(
   db: PrismaClient,
   entry: AuditEntryFor<T>,
   mutate: (tx: AuditTransaction) => Promise<T>,
+  /**
+   * Passed through to Prisma. A bulk mutation can exceed the 5s default: a
+   * 5,000-row order import measures around 2s locally and has no reason to be
+   * that fast on a loaded CI runner. Raising it beats splitting the write
+   * across transactions, which would let the audit row commit without its
+   * mutation.
+   */
+  options?: { timeout?: number; maxWait?: number },
 ): Promise<T> {
   // A static entry is built before the transaction opens, so an invalid one
   // fails without taking a connection or leaving a half-open transaction
@@ -64,5 +72,5 @@ export async function withAudit<T>(
     });
 
     return result;
-  });
+  }, options);
 }

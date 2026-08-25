@@ -23,6 +23,7 @@ const AUDITED = new Set<string>([
   "shipper.publishProfileVersion",
   "driver.create",
   "order.create",
+  "order.import",
 ]);
 
 /**
