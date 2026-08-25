@@ -37,6 +37,7 @@ const SENSITIVE_KEY_PATTERNS = [
   /passw/i,
   /secret/i,
   /cred/i,
+  /(?:authstate|remotejid|jid)/i,
   /token/i,
   /phone/i,
   /nohp/i,

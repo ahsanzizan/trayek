@@ -20,6 +20,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    BAILEYS_AUTH_DIR: z.string().optional(),
+    MAX_CHANNEL_SOCKETS: z.coerce.number().int().positive().optional(),
     SENTRY_DSN: z.string().url(),
     UPLOADTHING_TOKEN: z.string(),
   },
@@ -43,6 +45,8 @@ export const env = createEnv({
     AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
     AUTH_EMAIL_FROM: process.env.AUTH_EMAIL_FROM,
     NODE_ENV: process.env.NODE_ENV,
+    BAILEYS_AUTH_DIR: process.env.BAILEYS_AUTH_DIR,
+    MAX_CHANNEL_SOCKETS: process.env.MAX_CHANNEL_SOCKETS,
     SENTRY_DSN: process.env.SENTRY_DSN,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
   },

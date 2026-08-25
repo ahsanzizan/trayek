@@ -8,6 +8,19 @@ export type ChannelType = (typeof channelTypeValues)[number];
 
 export const channelTypeSchema = z.enum(channelTypeValues);
 
+export const channelConnectionStatusValues = [
+  "CONNECTED",
+  "DISCONNECTED",
+  "NEEDS_PAIRING",
+] as const;
+
+export type ChannelConnectionStatus =
+  (typeof channelConnectionStatusValues)[number];
+
+export const channelConnectionStatusSchema = z.enum(
+  channelConnectionStatusValues,
+);
+
 export interface InboundMessage {
   id: string;
   channel: ChannelType;
