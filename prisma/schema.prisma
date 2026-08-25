@@ -588,6 +588,16 @@ model PodSubmission {
     receivedAt     DateTime @default(now())
     createdAt      DateTime @default(now())
 
+    /// The worst page score in this submission, 0-100 (TRK-031). A rollup, not
+    /// a separate measurement: a three-page POD is only as readable as its
+    /// least readable page, and that is the page extraction will fail on.
+    /// Null when the client sent no quality data at all.
+    lowestQualityScore Int?
+    /// True when the driver was warned about any page and sent it anyway.
+    /// Not a fault: a blurry POD beats no POD, and the flag is what lets the
+    /// correlation in TRK-044 separate warned uploads from clean ones.
+    qualityOverridden  Boolean @default(false)
+
     organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     order          Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
     podUploadLink  PodUploadLink @relation(fields: [podUploadLinkId], references: [id], onDelete: Restrict)
@@ -615,6 +625,19 @@ model PodSubmissionPage {
     fileName        String
     contentType     String
     sizeBytes       Int
+    /// Capture quality for this photograph, 0-100 (TRK-031).
+    ///
+    /// Measured in the browser before upload and therefore advisory: it is
+    /// client-supplied and forgeable, so it may inform a human and feed the
+    /// TRK-044 correlation, and must never gate a write or authorize anything.
+    /// Null when the browser could not decode the image to measure it.
+    qualityScore    Int?
+    /// The individual checks and their measured values, kept so a threshold
+    /// can be retuned later against photographs already collected rather than
+    /// only against ones taken after the change.
+    qualityChecks   Json?
+    /// True when this page was warned about and sent anyway.
+    qualityOverridden Boolean @default(false)
     createdAt       DateTime @default(now())
 
     organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)

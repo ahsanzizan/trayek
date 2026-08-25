@@ -37,6 +37,13 @@ export type ResolvedUploadLink = {
   nomorSuratJalan: string;
   destination: string;
   remainingUses: number;
+  /**
+   * The link's total budget, which is what `consumeUploadLinkUse` guards
+   * against. Carried separately from `remainingUses` because the two are not
+   * interchangeable: the guard compares against the absolute `useCount`, and
+   * deriving one from the other is how a link came to work exactly once.
+   */
+  useBudget: number;
   expiresAt: Date;
 };
 
@@ -170,6 +177,7 @@ export async function resolveUploadLink({
       nomorSuratJalan: link.order.nomorSuratJalan,
       destination: link.order.destination,
       remainingUses: decision.remainingUses,
+      useBudget: link.useBudget,
       expiresAt: link.expiresAt,
     },
   };

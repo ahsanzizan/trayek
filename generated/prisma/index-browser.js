@@ -386,7 +386,9 @@ exports.Prisma.PodSubmissionScalarFieldEnum = {
   orderId: 'orderId',
   podUploadLinkId: 'podUploadLinkId',
   receivedAt: 'receivedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  lowestQualityScore: 'lowestQualityScore',
+  qualityOverridden: 'qualityOverridden'
 };
 
 exports.Prisma.PodSubmissionPageScalarFieldEnum = {
@@ -398,6 +400,9 @@ exports.Prisma.PodSubmissionPageScalarFieldEnum = {
   fileName: 'fileName',
   contentType: 'contentType',
   sizeBytes: 'sizeBytes',
+  qualityScore: 'qualityScore',
+  qualityChecks: 'qualityChecks',
+  qualityOverridden: 'qualityOverridden',
   createdAt: 'createdAt'
 };
 

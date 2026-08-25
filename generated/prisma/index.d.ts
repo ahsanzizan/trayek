@@ -29130,8 +29130,18 @@ export namespace Prisma {
 
   export type AggregatePodSubmission = {
     _count: PodSubmissionCountAggregateOutputType | null
+    _avg: PodSubmissionAvgAggregateOutputType | null
+    _sum: PodSubmissionSumAggregateOutputType | null
     _min: PodSubmissionMinAggregateOutputType | null
     _max: PodSubmissionMaxAggregateOutputType | null
+  }
+
+  export type PodSubmissionAvgAggregateOutputType = {
+    lowestQualityScore: number | null
+  }
+
+  export type PodSubmissionSumAggregateOutputType = {
+    lowestQualityScore: number | null
   }
 
   export type PodSubmissionMinAggregateOutputType = {
@@ -29141,6 +29151,8 @@ export namespace Prisma {
     podUploadLinkId: string | null
     receivedAt: Date | null
     createdAt: Date | null
+    lowestQualityScore: number | null
+    qualityOverridden: boolean | null
   }
 
   export type PodSubmissionMaxAggregateOutputType = {
@@ -29150,6 +29162,8 @@ export namespace Prisma {
     podUploadLinkId: string | null
     receivedAt: Date | null
     createdAt: Date | null
+    lowestQualityScore: number | null
+    qualityOverridden: boolean | null
   }
 
   export type PodSubmissionCountAggregateOutputType = {
@@ -29159,9 +29173,19 @@ export namespace Prisma {
     podUploadLinkId: number
     receivedAt: number
     createdAt: number
+    lowestQualityScore: number
+    qualityOverridden: number
     _all: number
   }
 
+
+  export type PodSubmissionAvgAggregateInputType = {
+    lowestQualityScore?: true
+  }
+
+  export type PodSubmissionSumAggregateInputType = {
+    lowestQualityScore?: true
+  }
 
   export type PodSubmissionMinAggregateInputType = {
     id?: true
@@ -29170,6 +29194,8 @@ export namespace Prisma {
     podUploadLinkId?: true
     receivedAt?: true
     createdAt?: true
+    lowestQualityScore?: true
+    qualityOverridden?: true
   }
 
   export type PodSubmissionMaxAggregateInputType = {
@@ -29179,6 +29205,8 @@ export namespace Prisma {
     podUploadLinkId?: true
     receivedAt?: true
     createdAt?: true
+    lowestQualityScore?: true
+    qualityOverridden?: true
   }
 
   export type PodSubmissionCountAggregateInputType = {
@@ -29188,6 +29216,8 @@ export namespace Prisma {
     podUploadLinkId?: true
     receivedAt?: true
     createdAt?: true
+    lowestQualityScore?: true
+    qualityOverridden?: true
     _all?: true
   }
 
@@ -29229,6 +29259,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: PodSubmissionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PodSubmissionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: PodSubmissionMinAggregateInputType
@@ -29259,6 +29301,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: PodSubmissionCountAggregateInputType | true
+    _avg?: PodSubmissionAvgAggregateInputType
+    _sum?: PodSubmissionSumAggregateInputType
     _min?: PodSubmissionMinAggregateInputType
     _max?: PodSubmissionMaxAggregateInputType
   }
@@ -29270,7 +29314,11 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt: Date
     createdAt: Date
+    lowestQualityScore: number | null
+    qualityOverridden: boolean
     _count: PodSubmissionCountAggregateOutputType | null
+    _avg: PodSubmissionAvgAggregateOutputType | null
+    _sum: PodSubmissionSumAggregateOutputType | null
     _min: PodSubmissionMinAggregateOutputType | null
     _max: PodSubmissionMaxAggregateOutputType | null
   }
@@ -29296,6 +29344,8 @@ export namespace Prisma {
     podUploadLinkId?: boolean
     receivedAt?: boolean
     createdAt?: boolean
+    lowestQualityScore?: boolean
+    qualityOverridden?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29310,6 +29360,8 @@ export namespace Prisma {
     podUploadLinkId?: boolean
     receivedAt?: boolean
     createdAt?: boolean
+    lowestQualityScore?: boolean
+    qualityOverridden?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29322,6 +29374,8 @@ export namespace Prisma {
     podUploadLinkId?: boolean
     receivedAt?: boolean
     createdAt?: boolean
+    lowestQualityScore?: boolean
+    qualityOverridden?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     podUploadLink?: boolean | PodUploadLinkDefaultArgs<ExtArgs>
@@ -29334,9 +29388,11 @@ export namespace Prisma {
     podUploadLinkId?: boolean
     receivedAt?: boolean
     createdAt?: boolean
+    lowestQualityScore?: boolean
+    qualityOverridden?: boolean
   }
 
-  export type PodSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "podUploadLinkId" | "receivedAt" | "createdAt", ExtArgs["result"]["podSubmission"]>
+  export type PodSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "orderId" | "podUploadLinkId" | "receivedAt" | "createdAt" | "lowestQualityScore" | "qualityOverridden", ExtArgs["result"]["podSubmission"]>
   export type PodSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -29379,6 +29435,19 @@ export namespace Prisma {
        */
       receivedAt: Date
       createdAt: Date
+      /**
+       * The worst page score in this submission, 0-100 (TRK-031). A rollup, not
+       * a separate measurement: a three-page POD is only as readable as its
+       * least readable page, and that is the page extraction will fail on.
+       * Null when the client sent no quality data at all.
+       */
+      lowestQualityScore: number | null
+      /**
+       * True when the driver was warned about any page and sent it anyway.
+       * Not a fault: a blurry POD beats no POD, and the flag is what lets the
+       * correlation in TRK-044 separate warned uploads from clean ones.
+       */
+      qualityOverridden: boolean
     }, ExtArgs["result"]["podSubmission"]>
     composites: {}
   }
@@ -29812,6 +29881,8 @@ export namespace Prisma {
     readonly podUploadLinkId: FieldRef<"PodSubmission", 'String'>
     readonly receivedAt: FieldRef<"PodSubmission", 'DateTime'>
     readonly createdAt: FieldRef<"PodSubmission", 'DateTime'>
+    readonly lowestQualityScore: FieldRef<"PodSubmission", 'Int'>
+    readonly qualityOverridden: FieldRef<"PodSubmission", 'Boolean'>
   }
     
 
@@ -30265,11 +30336,13 @@ export namespace Prisma {
   export type PodSubmissionPageAvgAggregateOutputType = {
     pageIndex: number | null
     sizeBytes: number | null
+    qualityScore: number | null
   }
 
   export type PodSubmissionPageSumAggregateOutputType = {
     pageIndex: number | null
     sizeBytes: number | null
+    qualityScore: number | null
   }
 
   export type PodSubmissionPageMinAggregateOutputType = {
@@ -30281,6 +30354,8 @@ export namespace Prisma {
     fileName: string | null
     contentType: string | null
     sizeBytes: number | null
+    qualityScore: number | null
+    qualityOverridden: boolean | null
     createdAt: Date | null
   }
 
@@ -30293,6 +30368,8 @@ export namespace Prisma {
     fileName: string | null
     contentType: string | null
     sizeBytes: number | null
+    qualityScore: number | null
+    qualityOverridden: boolean | null
     createdAt: Date | null
   }
 
@@ -30305,6 +30382,9 @@ export namespace Prisma {
     fileName: number
     contentType: number
     sizeBytes: number
+    qualityScore: number
+    qualityChecks: number
+    qualityOverridden: number
     createdAt: number
     _all: number
   }
@@ -30313,11 +30393,13 @@ export namespace Prisma {
   export type PodSubmissionPageAvgAggregateInputType = {
     pageIndex?: true
     sizeBytes?: true
+    qualityScore?: true
   }
 
   export type PodSubmissionPageSumAggregateInputType = {
     pageIndex?: true
     sizeBytes?: true
+    qualityScore?: true
   }
 
   export type PodSubmissionPageMinAggregateInputType = {
@@ -30329,6 +30411,8 @@ export namespace Prisma {
     fileName?: true
     contentType?: true
     sizeBytes?: true
+    qualityScore?: true
+    qualityOverridden?: true
     createdAt?: true
   }
 
@@ -30341,6 +30425,8 @@ export namespace Prisma {
     fileName?: true
     contentType?: true
     sizeBytes?: true
+    qualityScore?: true
+    qualityOverridden?: true
     createdAt?: true
   }
 
@@ -30353,6 +30439,9 @@ export namespace Prisma {
     fileName?: true
     contentType?: true
     sizeBytes?: true
+    qualityScore?: true
+    qualityChecks?: true
+    qualityOverridden?: true
     createdAt?: true
     _all?: true
   }
@@ -30452,6 +30541,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore: number | null
+    qualityChecks: JsonValue | null
+    qualityOverridden: boolean
     createdAt: Date
     _count: PodSubmissionPageCountAggregateOutputType | null
     _avg: PodSubmissionPageAvgAggregateOutputType | null
@@ -30483,6 +30575,9 @@ export namespace Prisma {
     fileName?: boolean
     contentType?: boolean
     sizeBytes?: boolean
+    qualityScore?: boolean
+    qualityChecks?: boolean
+    qualityOverridden?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
@@ -30497,6 +30592,9 @@ export namespace Prisma {
     fileName?: boolean
     contentType?: boolean
     sizeBytes?: boolean
+    qualityScore?: boolean
+    qualityChecks?: boolean
+    qualityOverridden?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
@@ -30511,6 +30609,9 @@ export namespace Prisma {
     fileName?: boolean
     contentType?: boolean
     sizeBytes?: boolean
+    qualityScore?: boolean
+    qualityChecks?: boolean
+    qualityOverridden?: boolean
     createdAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
@@ -30525,10 +30626,13 @@ export namespace Prisma {
     fileName?: boolean
     contentType?: boolean
     sizeBytes?: boolean
+    qualityScore?: boolean
+    qualityChecks?: boolean
+    qualityOverridden?: boolean
     createdAt?: boolean
   }
 
-  export type PodSubmissionPageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "podSubmissionId" | "pageIndex" | "storageKey" | "fileName" | "contentType" | "sizeBytes" | "createdAt", ExtArgs["result"]["podSubmissionPage"]>
+  export type PodSubmissionPageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "podSubmissionId" | "pageIndex" | "storageKey" | "fileName" | "contentType" | "sizeBytes" | "qualityScore" | "qualityChecks" | "qualityOverridden" | "createdAt", ExtArgs["result"]["podSubmissionPage"]>
   export type PodSubmissionPageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     podSubmission?: boolean | PodSubmissionDefaultArgs<ExtArgs>
@@ -30564,6 +30668,25 @@ export namespace Prisma {
       fileName: string
       contentType: string
       sizeBytes: number
+      /**
+       * Capture quality for this photograph, 0-100 (TRK-031).
+       * 
+       * Measured in the browser before upload and therefore advisory: it is
+       * client-supplied and forgeable, so it may inform a human and feed the
+       * TRK-044 correlation, and must never gate a write or authorize anything.
+       * Null when the browser could not decode the image to measure it.
+       */
+      qualityScore: number | null
+      /**
+       * The individual checks and their measured values, kept so a threshold
+       * can be retuned later against photographs already collected rather than
+       * only against ones taken after the change.
+       */
+      qualityChecks: Prisma.JsonValue | null
+      /**
+       * True when this page was warned about and sent anyway.
+       */
+      qualityOverridden: boolean
       createdAt: Date
     }, ExtArgs["result"]["podSubmissionPage"]>
     composites: {}
@@ -30998,6 +31121,9 @@ export namespace Prisma {
     readonly fileName: FieldRef<"PodSubmissionPage", 'String'>
     readonly contentType: FieldRef<"PodSubmissionPage", 'String'>
     readonly sizeBytes: FieldRef<"PodSubmissionPage", 'Int'>
+    readonly qualityScore: FieldRef<"PodSubmissionPage", 'Int'>
+    readonly qualityChecks: FieldRef<"PodSubmissionPage", 'Json'>
+    readonly qualityOverridden: FieldRef<"PodSubmissionPage", 'Boolean'>
     readonly createdAt: FieldRef<"PodSubmissionPage", 'DateTime'>
   }
     
@@ -31758,7 +31884,9 @@ export namespace Prisma {
     orderId: 'orderId',
     podUploadLinkId: 'podUploadLinkId',
     receivedAt: 'receivedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    lowestQualityScore: 'lowestQualityScore',
+    qualityOverridden: 'qualityOverridden'
   };
 
   export type PodSubmissionScalarFieldEnum = (typeof PodSubmissionScalarFieldEnum)[keyof typeof PodSubmissionScalarFieldEnum]
@@ -31773,6 +31901,9 @@ export namespace Prisma {
     fileName: 'fileName',
     contentType: 'contentType',
     sizeBytes: 'sizeBytes',
+    qualityScore: 'qualityScore',
+    qualityChecks: 'qualityChecks',
+    qualityOverridden: 'qualityOverridden',
     createdAt: 'createdAt'
   };
 
@@ -33811,6 +33942,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFilter<"PodSubmission"> | string
     receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
+    qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
@@ -33824,6 +33957,8 @@ export namespace Prisma {
     podUploadLinkId?: SortOrder
     receivedAt?: SortOrder
     createdAt?: SortOrder
+    lowestQualityScore?: SortOrderInput | SortOrder
+    qualityOverridden?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     order?: OrderOrderByWithRelationInput
     podUploadLink?: PodUploadLinkOrderByWithRelationInput
@@ -33840,6 +33975,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFilter<"PodSubmission"> | string
     receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
+    qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     podUploadLink?: XOR<PodUploadLinkScalarRelationFilter, PodUploadLinkWhereInput>
@@ -33853,9 +33990,13 @@ export namespace Prisma {
     podUploadLinkId?: SortOrder
     receivedAt?: SortOrder
     createdAt?: SortOrder
+    lowestQualityScore?: SortOrderInput | SortOrder
+    qualityOverridden?: SortOrder
     _count?: PodSubmissionCountOrderByAggregateInput
+    _avg?: PodSubmissionAvgOrderByAggregateInput
     _max?: PodSubmissionMaxOrderByAggregateInput
     _min?: PodSubmissionMinOrderByAggregateInput
+    _sum?: PodSubmissionSumOrderByAggregateInput
   }
 
   export type PodSubmissionScalarWhereWithAggregatesInput = {
@@ -33868,6 +34009,8 @@ export namespace Prisma {
     podUploadLinkId?: StringWithAggregatesFilter<"PodSubmission"> | string
     receivedAt?: DateTimeWithAggregatesFilter<"PodSubmission"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"PodSubmission"> | Date | string
+    lowestQualityScore?: IntNullableWithAggregatesFilter<"PodSubmission"> | number | null
+    qualityOverridden?: BoolWithAggregatesFilter<"PodSubmission"> | boolean
   }
 
   export type PodSubmissionPageWhereInput = {
@@ -33882,6 +34025,9 @@ export namespace Prisma {
     fileName?: StringFilter<"PodSubmissionPage"> | string
     contentType?: StringFilter<"PodSubmissionPage"> | string
     sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    qualityScore?: IntNullableFilter<"PodSubmissionPage"> | number | null
+    qualityChecks?: JsonNullableFilter<"PodSubmissionPage">
+    qualityOverridden?: BoolFilter<"PodSubmissionPage"> | boolean
     createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     podSubmission?: XOR<PodSubmissionScalarRelationFilter, PodSubmissionWhereInput>
@@ -33896,6 +34042,9 @@ export namespace Prisma {
     fileName?: SortOrder
     contentType?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrderInput | SortOrder
+    qualityChecks?: SortOrderInput | SortOrder
+    qualityOverridden?: SortOrder
     createdAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     podSubmission?: PodSubmissionOrderByWithRelationInput
@@ -33914,6 +34063,9 @@ export namespace Prisma {
     fileName?: StringFilter<"PodSubmissionPage"> | string
     contentType?: StringFilter<"PodSubmissionPage"> | string
     sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    qualityScore?: IntNullableFilter<"PodSubmissionPage"> | number | null
+    qualityChecks?: JsonNullableFilter<"PodSubmissionPage">
+    qualityOverridden?: BoolFilter<"PodSubmissionPage"> | boolean
     createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     podSubmission?: XOR<PodSubmissionScalarRelationFilter, PodSubmissionWhereInput>
@@ -33928,6 +34080,9 @@ export namespace Prisma {
     fileName?: SortOrder
     contentType?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrderInput | SortOrder
+    qualityChecks?: SortOrderInput | SortOrder
+    qualityOverridden?: SortOrder
     createdAt?: SortOrder
     _count?: PodSubmissionPageCountOrderByAggregateInput
     _avg?: PodSubmissionPageAvgOrderByAggregateInput
@@ -33948,6 +34103,9 @@ export namespace Prisma {
     fileName?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
     contentType?: StringWithAggregatesFilter<"PodSubmissionPage"> | string
     sizeBytes?: IntWithAggregatesFilter<"PodSubmissionPage"> | number
+    qualityScore?: IntNullableWithAggregatesFilter<"PodSubmissionPage"> | number | null
+    qualityChecks?: JsonNullableWithAggregatesFilter<"PodSubmissionPage">
+    qualityOverridden?: BoolWithAggregatesFilter<"PodSubmissionPage"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"PodSubmissionPage"> | Date | string
   }
 
@@ -35850,6 +36008,8 @@ export namespace Prisma {
     id?: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
@@ -35863,6 +36023,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -35870,6 +36032,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
@@ -35883,6 +36047,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -35893,12 +36059,16 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
   }
 
   export type PodSubmissionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PodSubmissionUncheckedUpdateManyInput = {
@@ -35908,6 +36078,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PodSubmissionPageCreateInput = {
@@ -35917,6 +36089,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutPodSubmissionPagesInput
     podSubmission: PodSubmissionCreateNestedOneWithoutPagesInput
@@ -35931,6 +36106,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -35941,6 +36119,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionPagesNestedInput
     podSubmission?: PodSubmissionUpdateOneRequiredWithoutPagesNestedInput
@@ -35955,6 +36136,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -35967,6 +36151,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -35977,6 +36164,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -35989,6 +36179,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -37701,6 +37894,12 @@ export namespace Prisma {
     podUploadLinkId?: SortOrder
     receivedAt?: SortOrder
     createdAt?: SortOrder
+    lowestQualityScore?: SortOrder
+    qualityOverridden?: SortOrder
+  }
+
+  export type PodSubmissionAvgOrderByAggregateInput = {
+    lowestQualityScore?: SortOrder
   }
 
   export type PodSubmissionMaxOrderByAggregateInput = {
@@ -37710,6 +37909,8 @@ export namespace Prisma {
     podUploadLinkId?: SortOrder
     receivedAt?: SortOrder
     createdAt?: SortOrder
+    lowestQualityScore?: SortOrder
+    qualityOverridden?: SortOrder
   }
 
   export type PodSubmissionMinOrderByAggregateInput = {
@@ -37719,6 +37920,12 @@ export namespace Prisma {
     podUploadLinkId?: SortOrder
     receivedAt?: SortOrder
     createdAt?: SortOrder
+    lowestQualityScore?: SortOrder
+    qualityOverridden?: SortOrder
+  }
+
+  export type PodSubmissionSumOrderByAggregateInput = {
+    lowestQualityScore?: SortOrder
   }
 
   export type PodSubmissionScalarRelationFilter = {
@@ -37740,12 +37947,16 @@ export namespace Prisma {
     fileName?: SortOrder
     contentType?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrder
+    qualityChecks?: SortOrder
+    qualityOverridden?: SortOrder
     createdAt?: SortOrder
   }
 
   export type PodSubmissionPageAvgOrderByAggregateInput = {
     pageIndex?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrder
   }
 
   export type PodSubmissionPageMaxOrderByAggregateInput = {
@@ -37757,6 +37968,8 @@ export namespace Prisma {
     fileName?: SortOrder
     contentType?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrder
+    qualityOverridden?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -37769,12 +37982,15 @@ export namespace Prisma {
     fileName?: SortOrder
     contentType?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrder
+    qualityOverridden?: SortOrder
     createdAt?: SortOrder
   }
 
   export type PodSubmissionPageSumOrderByAggregateInput = {
     pageIndex?: SortOrder
     sizeBytes?: SortOrder
+    qualityScore?: SortOrder
   }
 
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
@@ -40436,6 +40652,8 @@ export namespace Prisma {
     id?: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -40447,6 +40665,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -40467,6 +40687,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
     podSubmission: PodSubmissionCreateNestedOneWithoutPagesInput
   }
@@ -40479,6 +40702,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -41000,6 +41226,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFilter<"PodSubmission"> | string
     receivedAt?: DateTimeFilter<"PodSubmission"> | Date | string
     createdAt?: DateTimeFilter<"PodSubmission"> | Date | string
+    lowestQualityScore?: IntNullableFilter<"PodSubmission"> | number | null
+    qualityOverridden?: BoolFilter<"PodSubmission"> | boolean
   }
 
   export type PodSubmissionPageUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -41030,6 +41258,9 @@ export namespace Prisma {
     fileName?: StringFilter<"PodSubmissionPage"> | string
     contentType?: StringFilter<"PodSubmissionPage"> | string
     sizeBytes?: IntFilter<"PodSubmissionPage"> | number
+    qualityScore?: IntNullableFilter<"PodSubmissionPage"> | number | null
+    qualityChecks?: JsonNullableFilter<"PodSubmissionPage">
+    qualityOverridden?: BoolFilter<"PodSubmissionPage"> | boolean
     createdAt?: DateTimeFilter<"PodSubmissionPage"> | Date | string
   }
 
@@ -43219,6 +43450,8 @@ export namespace Prisma {
     id?: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -43230,6 +43463,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -43756,6 +43991,8 @@ export namespace Prisma {
     id?: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     pages?: PodSubmissionPageCreateNestedManyWithoutPodSubmissionInput
@@ -43767,6 +44004,8 @@ export namespace Prisma {
     orderId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     pages?: PodSubmissionPageUncheckedCreateNestedManyWithoutPodSubmissionInput
   }
 
@@ -44054,6 +44293,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutPodSubmissionPagesInput
   }
@@ -44066,6 +44308,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -44311,6 +44556,8 @@ export namespace Prisma {
     id?: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
     organization: OrganizationCreateNestedOneWithoutPodSubmissionsInput
     order: OrderCreateNestedOneWithoutPodSubmissionsInput
     podUploadLink: PodUploadLinkCreateNestedOneWithoutSubmissionsInput
@@ -44323,6 +44570,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
   }
 
   export type PodSubmissionCreateOrConnectWithoutPagesInput = {
@@ -44408,6 +44657,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
@@ -44420,6 +44671,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -44610,6 +44863,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
   }
 
   export type PodSubmissionPageCreateManyOrganizationInput = {
@@ -44620,6 +44875,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -45185,6 +45443,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45196,6 +45456,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45205,6 +45467,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PodSubmissionPageUpdateWithoutOrganizationInput = {
@@ -45214,6 +45478,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     podSubmission?: PodSubmissionUpdateOneRequiredWithoutPagesNestedInput
   }
@@ -45226,6 +45493,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -45237,6 +45507,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -45595,6 +45868,8 @@ export namespace Prisma {
     podUploadLinkId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
   }
 
   export type PodUploadLinkUpdateWithoutOrderInput = {
@@ -45645,6 +45920,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     podUploadLink?: PodUploadLinkUpdateOneRequiredWithoutSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45656,6 +45933,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45665,6 +45944,8 @@ export namespace Prisma {
     podUploadLinkId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PodSubmissionCreateManyPodUploadLinkInput = {
@@ -45673,12 +45954,16 @@ export namespace Prisma {
     orderId: string
     receivedAt?: Date | string
     createdAt?: Date | string
+    lowestQualityScore?: number | null
+    qualityOverridden?: boolean
   }
 
   export type PodSubmissionUpdateWithoutPodUploadLinkInput = {
     id?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionsNestedInput
     order?: OrderUpdateOneRequiredWithoutPodSubmissionsNestedInput
     pages?: PodSubmissionPageUpdateManyWithoutPodSubmissionNestedInput
@@ -45690,6 +45975,8 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     pages?: PodSubmissionPageUncheckedUpdateManyWithoutPodSubmissionNestedInput
   }
 
@@ -45699,6 +45986,8 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lowestQualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PodSubmissionPageCreateManyPodSubmissionInput = {
@@ -45709,6 +45998,9 @@ export namespace Prisma {
     fileName: string
     contentType: string
     sizeBytes: number
+    qualityScore?: number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: boolean
     createdAt?: Date | string
   }
 
@@ -45719,6 +46011,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutPodSubmissionPagesNestedInput
   }
@@ -45731,6 +46026,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -45742,6 +46040,9 @@ export namespace Prisma {
     fileName?: StringFieldUpdateOperationsInput | string
     contentType?: StringFieldUpdateOperationsInput | string
     sizeBytes?: IntFieldUpdateOperationsInput | number
+    qualityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    qualityChecks?: NullableJsonNullValueInput | InputJsonValue
+    qualityOverridden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
