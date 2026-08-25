@@ -20,8 +20,20 @@ export const TENANT_SCOPED_MODELS = new Set<string>([
   "HistoricalInvoice",
   "MessageLog",
   "ChannelConnection",
+  "PodUploadLink",
 ]);
-const UNSCOPED_MODELS = new Set(["User", "Organization", "Membership", "Post"]);
+/**
+ * Models with no organization column. `PodUploadThrottle` is here on purpose:
+ * its buckets are IP and token digests, reached by the public upload route
+ * before any tenant is known, and it holds no tenant data to leak.
+ */
+const UNSCOPED_MODELS = new Set([
+  "User",
+  "Organization",
+  "Membership",
+  "Post",
+  "PodUploadThrottle",
+]);
 
 type ScopeTenantOperationInput = {
   model: string;
