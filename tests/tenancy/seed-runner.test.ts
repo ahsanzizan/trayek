@@ -36,6 +36,11 @@ describe("seed runner", () => {
           operations.push("driver");
         },
       },
+      order: {
+        upsert: async () => {
+          operations.push("order");
+        },
+      },
     };
     const database: SeedDatabase = {
       ...writer,
@@ -77,6 +82,9 @@ describe("seed runner", () => {
       "driver",
       "driver",
       "driver",
+      "order",
+      "order",
+      "order",
       "commit",
     ]);
   });

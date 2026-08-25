@@ -22,6 +22,7 @@ const AUDITED = new Set<string>([
   "shipper.update",
   "shipper.publishProfileVersion",
   "driver.create",
+  "order.create",
 ]);
 
 /**
@@ -32,7 +33,8 @@ const AUDITED = new Set<string>([
 const NOT_AUDITED = new Map<string, string>([
   [
     "post.create",
-    "create-t3-app scaffold example, not a domain entity. Removed with TRK-011.",
+    "create-t3-app scaffold example, not a domain entity. Unused by any route; " +
+      "no issue currently owns removing it.",
   ],
   [
     "organization.switchOrganization",

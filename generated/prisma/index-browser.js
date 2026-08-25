@@ -286,6 +286,25 @@ exports.Prisma.DriverScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  nomorOrder: 'nomorOrder',
+  nomorSuratJalan: 'nomorSuratJalan',
+  shipperId: 'shipperId',
+  driverId: 'driverId',
+  origin: 'origin',
+  destination: 'destination',
+  plannedDeliveryDate: 'plannedDeliveryDate',
+  actualDeliveryDate: 'actualDeliveryDate',
+  jumlahKoli: 'jumlahKoli',
+  weightGram: 'weightGram',
+  nilaiTagihan: 'nilaiTagihan',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -333,6 +352,18 @@ exports.AuditActorType = exports.$Enums.AuditActorType = {
   SYSTEM: 'SYSTEM'
 };
 
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  CREATED: 'CREATED',
+  IN_TRANSIT: 'IN_TRANSIT',
+  DELIVERED: 'DELIVERED',
+  POD_RECEIVED: 'POD_RECEIVED',
+  POD_VALIDATED: 'POD_VALIDATED',
+  PACKET_READY: 'PACKET_READY',
+  INVOICED: 'INVOICED',
+  PAID: 'PAID',
+  REJECTED: 'REJECTED'
+};
+
 exports.Prisma.ModelName = {
   Organization: 'Organization',
   Post: 'Post',
@@ -348,7 +379,8 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   Shipper: 'Shipper',
   RequirementProfile: 'RequirementProfile',
-  Driver: 'Driver'
+  Driver: 'Driver',
+  Order: 'Order'
 };
 
 /**

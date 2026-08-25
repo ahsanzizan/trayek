@@ -111,6 +111,16 @@ export type RequirementProfile = $Result.DefaultSelection<Prisma.$RequirementPro
  * link, so an auth surface would be a liability with no corresponding use.
  */
 export type Driver = $Result.DefaultSelection<Prisma.$DriverPayload>
+/**
+ * Model Order
+ * One shipment, and the thing a POD is matched against (TRK-011).
+ * 
+ * `nilaiTagihan` is copied from whatever the forwarder already agreed with the
+ * shipper. It is never computed, suggested, or derived here — INV-3 — and
+ * `tests/invariants/inv-3-no-pricing` fails the build if arithmetic appears
+ * on it anywhere in the source.
+ */
+export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 
 /**
  * Enums
@@ -134,6 +144,21 @@ export const MembershipRole: {
 export type MembershipRole = (typeof MembershipRole)[keyof typeof MembershipRole]
 
 
+export const OrderStatus: {
+  CREATED: 'CREATED',
+  IN_TRANSIT: 'IN_TRANSIT',
+  DELIVERED: 'DELIVERED',
+  POD_RECEIVED: 'POD_RECEIVED',
+  POD_VALIDATED: 'POD_VALIDATED',
+  PACKET_READY: 'PACKET_READY',
+  INVOICED: 'INVOICED',
+  PAID: 'PAID',
+  REJECTED: 'REJECTED'
+};
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
 export const AuditActorType: {
   USER: 'USER',
   AGENT: 'AGENT',
@@ -151,6 +176,10 @@ export const OrganizationType: typeof $Enums.OrganizationType
 export type MembershipRole = $Enums.MembershipRole
 
 export const MembershipRole: typeof $Enums.MembershipRole
+
+export type OrderStatus = $Enums.OrderStatus
+
+export const OrderStatus: typeof $Enums.OrderStatus
 
 export type AuditActorType = $Enums.AuditActorType
 
@@ -423,6 +452,16 @@ export class PrismaClient<
     * ```
     */
   get driver(): Prisma.DriverDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.order`: Exposes CRUD operations for the **Order** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Orders
+    * const orders = await prisma.order.findMany()
+    * ```
+    */
+  get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -878,7 +917,8 @@ export namespace Prisma {
     AuditLog: 'AuditLog',
     Shipper: 'Shipper',
     RequirementProfile: 'RequirementProfile',
-    Driver: 'Driver'
+    Driver: 'Driver',
+    Order: 'Order'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -897,7 +937,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile" | "driver"
+      modelProps: "organization" | "post" | "account" | "session" | "user" | "membership" | "verificationToken" | "jobExecution" | "deadLetterJob" | "humanFallbackEvent" | "llmCallLog" | "auditLog" | "shipper" | "requirementProfile" | "driver" | "order"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2011,6 +2051,80 @@ export namespace Prisma {
           }
         }
       }
+      Order: {
+        payload: Prisma.$OrderPayload<ExtArgs>
+        fields: Prisma.OrderFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrderFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrderFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          findFirst: {
+            args: Prisma.OrderFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrderFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          findMany: {
+            args: Prisma.OrderFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>[]
+          }
+          create: {
+            args: Prisma.OrderCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          createMany: {
+            args: Prisma.OrderCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrderCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>[]
+          }
+          delete: {
+            args: Prisma.OrderDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          update: {
+            args: Prisma.OrderUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrderDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrderUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrderUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>[]
+          }
+          upsert: {
+            args: Prisma.OrderUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrderPayload>
+          }
+          aggregate: {
+            args: Prisma.OrderAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrder>
+          }
+          groupBy: {
+            args: Prisma.OrderGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrderGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrderCountArgs<ExtArgs>
+            result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2122,6 +2236,7 @@ export namespace Prisma {
     shipper?: ShipperOmit
     requirementProfile?: RequirementProfileOmit
     driver?: DriverOmit
+    order?: OrderOmit
   }
 
   /* Types for Logging */
@@ -2211,6 +2326,7 @@ export namespace Prisma {
     shippers: number
     requirementProfiles: number
     drivers: number
+    orders: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2223,6 +2339,7 @@ export namespace Prisma {
     shippers?: boolean | OrganizationCountOutputTypeCountShippersArgs
     requirementProfiles?: boolean | OrganizationCountOutputTypeCountRequirementProfilesArgs
     drivers?: boolean | OrganizationCountOutputTypeCountDriversArgs
+    orders?: boolean | OrganizationCountOutputTypeCountOrdersArgs
   }
 
   // Custom InputTypes
@@ -2299,6 +2416,13 @@ export namespace Prisma {
     where?: DriverWhereInput
   }
 
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -2364,10 +2488,12 @@ export namespace Prisma {
 
   export type ShipperCountOutputType = {
     requirementProfiles: number
+    orders: number
   }
 
   export type ShipperCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     requirementProfiles?: boolean | ShipperCountOutputTypeCountRequirementProfilesArgs
+    orders?: boolean | ShipperCountOutputTypeCountOrdersArgs
   }
 
   // Custom InputTypes
@@ -2386,6 +2512,44 @@ export namespace Prisma {
    */
   export type ShipperCountOutputTypeCountRequirementProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RequirementProfileWhereInput
+  }
+
+  /**
+   * ShipperCountOutputType without action
+   */
+  export type ShipperCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type DriverCountOutputType
+   */
+
+  export type DriverCountOutputType = {
+    orders: number
+  }
+
+  export type DriverCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | DriverCountOutputTypeCountOrdersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DriverCountOutputType without action
+   */
+  export type DriverCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverCountOutputType
+     */
+    select?: DriverCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DriverCountOutputType without action
+   */
+  export type DriverCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
   }
 
 
@@ -2620,6 +2784,7 @@ export namespace Prisma {
     shippers?: boolean | Organization$shippersArgs<ExtArgs>
     requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     drivers?: boolean | Organization$driversArgs<ExtArgs>
+    orders?: boolean | Organization$ordersArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -2664,6 +2829,7 @@ export namespace Prisma {
     shippers?: boolean | Organization$shippersArgs<ExtArgs>
     requirementProfiles?: boolean | Organization$requirementProfilesArgs<ExtArgs>
     drivers?: boolean | Organization$driversArgs<ExtArgs>
+    orders?: boolean | Organization$ordersArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2681,6 +2847,7 @@ export namespace Prisma {
       shippers: Prisma.$ShipperPayload<ExtArgs>[]
       requirementProfiles: Prisma.$RequirementProfilePayload<ExtArgs>[]
       drivers: Prisma.$DriverPayload<ExtArgs>[]
+      orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3093,6 +3260,7 @@ export namespace Prisma {
     shippers<T extends Organization$shippersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$shippersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     requirementProfiles<T extends Organization$requirementProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$requirementProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     drivers<T extends Organization$driversArgs<ExtArgs> = {}>(args?: Subset<T, Organization$driversArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    orders<T extends Organization$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3730,6 +3898,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverScalarFieldEnum | DriverScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.orders
+   */
+  export type Organization$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
   }
 
   /**
@@ -16224,6 +16416,7 @@ export namespace Prisma {
     updatedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     requirementProfiles?: boolean | Shipper$requirementProfilesArgs<ExtArgs>
+    orders?: boolean | Shipper$ordersArgs<ExtArgs>
     _count?: boolean | ShipperCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["shipper"]>
 
@@ -16272,6 +16465,7 @@ export namespace Prisma {
   export type ShipperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     requirementProfiles?: boolean | Shipper$requirementProfilesArgs<ExtArgs>
+    orders?: boolean | Shipper$ordersArgs<ExtArgs>
     _count?: boolean | ShipperCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ShipperIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16286,6 +16480,7 @@ export namespace Prisma {
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       requirementProfiles: Prisma.$RequirementProfilePayload<ExtArgs>[]
+      orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16698,6 +16893,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     requirementProfiles<T extends Shipper$requirementProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Shipper$requirementProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequirementProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    orders<T extends Shipper$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Shipper$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17154,6 +17350,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RequirementProfileScalarFieldEnum | RequirementProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Shipper.orders
+   */
+  export type Shipper$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
   }
 
   /**
@@ -18522,6 +18742,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    orders?: boolean | Driver$ordersArgs<ExtArgs>
+    _count?: boolean | DriverCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["driver"]>
 
   export type DriverSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -18562,6 +18784,8 @@ export namespace Prisma {
   export type DriverOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "phone" | "vehiclePlate" | "vendorId" | "createdAt" | "updatedAt", ExtArgs["result"]["driver"]>
   export type DriverInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    orders?: boolean | Driver$ordersArgs<ExtArgs>
+    _count?: boolean | DriverCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DriverIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -18574,6 +18798,7 @@ export namespace Prisma {
     name: "Driver"
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
+      orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18989,6 +19214,7 @@ export namespace Prisma {
   export interface Prisma__DriverClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    orders<T extends Driver$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Driver$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19422,6 +19648,30 @@ export namespace Prisma {
   }
 
   /**
+   * Driver.orders
+   */
+  export type Driver$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
    * Driver without action
    */
   export type DriverDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19437,6 +19687,1302 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: DriverInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Order
+   */
+
+  export type AggregateOrder = {
+    _count: OrderCountAggregateOutputType | null
+    _avg: OrderAvgAggregateOutputType | null
+    _sum: OrderSumAggregateOutputType | null
+    _min: OrderMinAggregateOutputType | null
+    _max: OrderMaxAggregateOutputType | null
+  }
+
+  export type OrderAvgAggregateOutputType = {
+    jumlahKoli: number | null
+    weightGram: number | null
+    nilaiTagihan: number | null
+  }
+
+  export type OrderSumAggregateOutputType = {
+    jumlahKoli: number | null
+    weightGram: number | null
+    nilaiTagihan: bigint | null
+  }
+
+  export type OrderMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    nomorOrder: string | null
+    nomorSuratJalan: string | null
+    shipperId: string | null
+    driverId: string | null
+    origin: string | null
+    destination: string | null
+    plannedDeliveryDate: Date | null
+    actualDeliveryDate: Date | null
+    jumlahKoli: number | null
+    weightGram: number | null
+    nilaiTagihan: bigint | null
+    status: $Enums.OrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrderMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    nomorOrder: string | null
+    nomorSuratJalan: string | null
+    shipperId: string | null
+    driverId: string | null
+    origin: string | null
+    destination: string | null
+    plannedDeliveryDate: Date | null
+    actualDeliveryDate: Date | null
+    jumlahKoli: number | null
+    weightGram: number | null
+    nilaiTagihan: bigint | null
+    status: $Enums.OrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrderCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    nomorOrder: number
+    nomorSuratJalan: number
+    shipperId: number
+    driverId: number
+    origin: number
+    destination: number
+    plannedDeliveryDate: number
+    actualDeliveryDate: number
+    jumlahKoli: number
+    weightGram: number
+    nilaiTagihan: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type OrderAvgAggregateInputType = {
+    jumlahKoli?: true
+    weightGram?: true
+    nilaiTagihan?: true
+  }
+
+  export type OrderSumAggregateInputType = {
+    jumlahKoli?: true
+    weightGram?: true
+    nilaiTagihan?: true
+  }
+
+  export type OrderMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorOrder?: true
+    nomorSuratJalan?: true
+    shipperId?: true
+    driverId?: true
+    origin?: true
+    destination?: true
+    plannedDeliveryDate?: true
+    actualDeliveryDate?: true
+    jumlahKoli?: true
+    weightGram?: true
+    nilaiTagihan?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrderMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorOrder?: true
+    nomorSuratJalan?: true
+    shipperId?: true
+    driverId?: true
+    origin?: true
+    destination?: true
+    plannedDeliveryDate?: true
+    actualDeliveryDate?: true
+    jumlahKoli?: true
+    weightGram?: true
+    nilaiTagihan?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrderCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    nomorOrder?: true
+    nomorSuratJalan?: true
+    shipperId?: true
+    driverId?: true
+    origin?: true
+    destination?: true
+    plannedDeliveryDate?: true
+    actualDeliveryDate?: true
+    jumlahKoli?: true
+    weightGram?: true
+    nilaiTagihan?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type OrderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Order to aggregate.
+     */
+    where?: OrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Orders to fetch.
+     */
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Orders
+    **/
+    _count?: true | OrderCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: OrderAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OrderSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrderMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrderMaxAggregateInputType
+  }
+
+  export type GetOrderAggregateType<T extends OrderAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrder]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrder[P]>
+      : GetScalarType<T[P], AggregateOrder[P]>
+  }
+
+
+
+
+  export type OrderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithAggregationInput | OrderOrderByWithAggregationInput[]
+    by: OrderScalarFieldEnum[] | OrderScalarFieldEnum
+    having?: OrderScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrderCountAggregateInputType | true
+    _avg?: OrderAvgAggregateInputType
+    _sum?: OrderSumAggregateInputType
+    _min?: OrderMinAggregateInputType
+    _max?: OrderMaxAggregateInputType
+  }
+
+  export type OrderGroupByOutputType = {
+    id: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate: Date | null
+    actualDeliveryDate: Date | null
+    jumlahKoli: number | null
+    weightGram: number | null
+    nilaiTagihan: bigint | null
+    status: $Enums.OrderStatus
+    createdAt: Date
+    updatedAt: Date
+    _count: OrderCountAggregateOutputType | null
+    _avg: OrderAvgAggregateOutputType | null
+    _sum: OrderSumAggregateOutputType | null
+    _min: OrderMinAggregateOutputType | null
+    _max: OrderMaxAggregateOutputType | null
+  }
+
+  type GetOrderGroupByPayload<T extends OrderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrderGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrderGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrderGroupByOutputType[P]>
+            : GetScalarType<T[P], OrderGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorOrder?: boolean
+    nomorSuratJalan?: boolean
+    shipperId?: boolean
+    driverId?: boolean
+    origin?: boolean
+    destination?: boolean
+    plannedDeliveryDate?: boolean
+    actualDeliveryDate?: boolean
+    jumlahKoli?: boolean
+    weightGram?: boolean
+    nilaiTagihan?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }, ExtArgs["result"]["order"]>
+
+  export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorOrder?: boolean
+    nomorSuratJalan?: boolean
+    shipperId?: boolean
+    driverId?: boolean
+    origin?: boolean
+    destination?: boolean
+    plannedDeliveryDate?: boolean
+    actualDeliveryDate?: boolean
+    jumlahKoli?: boolean
+    weightGram?: boolean
+    nilaiTagihan?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }, ExtArgs["result"]["order"]>
+
+  export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    nomorOrder?: boolean
+    nomorSuratJalan?: boolean
+    shipperId?: boolean
+    driverId?: boolean
+    origin?: boolean
+    destination?: boolean
+    plannedDeliveryDate?: boolean
+    actualDeliveryDate?: boolean
+    jumlahKoli?: boolean
+    weightGram?: boolean
+    nilaiTagihan?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }, ExtArgs["result"]["order"]>
+
+  export type OrderSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    nomorOrder?: boolean
+    nomorSuratJalan?: boolean
+    shipperId?: boolean
+    driverId?: boolean
+    origin?: boolean
+    destination?: boolean
+    plannedDeliveryDate?: boolean
+    actualDeliveryDate?: boolean
+    jumlahKoli?: boolean
+    weightGram?: boolean
+    nilaiTagihan?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "nomorOrder" | "nomorSuratJalan" | "shipperId" | "driverId" | "origin" | "destination" | "plannedDeliveryDate" | "actualDeliveryDate" | "jumlahKoli" | "weightGram" | "nilaiTagihan" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }
+  export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }
+  export type OrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    shipper?: boolean | ShipperDefaultArgs<ExtArgs>
+    driver?: boolean | Order$driverArgs<ExtArgs>
+  }
+
+  export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Order"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      shipper: Prisma.$ShipperPayload<ExtArgs>
+      driver: Prisma.$DriverPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      nomorOrder: string
+      /**
+       * Carried on the surat jalan issued before the trip; the number a POD is
+       * matched against, and the natural key an import deduplicates on.
+       */
+      nomorSuratJalan: string
+      shipperId: string
+      /**
+       * Null until a driver is assigned. An order can be planned before anyone
+       * is allocated to drive it.
+       */
+      driverId: string | null
+      origin: string
+      destination: string
+      plannedDeliveryDate: Date | null
+      actualDeliveryDate: Date | null
+      jumlahKoli: number | null
+      /**
+       * Grams, so weight is exact integer arithmetic rather than a float that
+       * drifts once it is summed across a packet.
+       */
+      weightGram: number | null
+      /**
+       * Whole rupiah, copied never computed (INV-3). Not sen: the minor unit is
+       * not used in Indonesian freight invoicing, and storing it would inflate
+       * every value 100x and force a divide on the display path — the exact
+       * arithmetic the invariant test exists to forbid.
+       */
+      nilaiTagihan: bigint | null
+      status: $Enums.OrderStatus
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["order"]>
+    composites: {}
+  }
+
+  type OrderGetPayload<S extends boolean | null | undefined | OrderDefaultArgs> = $Result.GetResult<Prisma.$OrderPayload, S>
+
+  type OrderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrderCountAggregateInputType | true
+    }
+
+  export interface OrderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Order'], meta: { name: 'Order' } }
+    /**
+     * Find zero or one Order that matches the filter.
+     * @param {OrderFindUniqueArgs} args - Arguments to find a Order
+     * @example
+     * // Get one Order
+     * const order = await prisma.order.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrderFindUniqueArgs>(args: SelectSubset<T, OrderFindUniqueArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Order that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrderFindUniqueOrThrowArgs} args - Arguments to find a Order
+     * @example
+     * // Get one Order
+     * const order = await prisma.order.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrderFindUniqueOrThrowArgs>(args: SelectSubset<T, OrderFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Order that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderFindFirstArgs} args - Arguments to find a Order
+     * @example
+     * // Get one Order
+     * const order = await prisma.order.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrderFindFirstArgs>(args?: SelectSubset<T, OrderFindFirstArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Order that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderFindFirstOrThrowArgs} args - Arguments to find a Order
+     * @example
+     * // Get one Order
+     * const order = await prisma.order.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrderFindFirstOrThrowArgs>(args?: SelectSubset<T, OrderFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Orders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Orders
+     * const orders = await prisma.order.findMany()
+     * 
+     * // Get first 10 Orders
+     * const orders = await prisma.order.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const orderWithIdOnly = await prisma.order.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrderFindManyArgs>(args?: SelectSubset<T, OrderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Order.
+     * @param {OrderCreateArgs} args - Arguments to create a Order.
+     * @example
+     * // Create one Order
+     * const Order = await prisma.order.create({
+     *   data: {
+     *     // ... data to create a Order
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrderCreateArgs>(args: SelectSubset<T, OrderCreateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Orders.
+     * @param {OrderCreateManyArgs} args - Arguments to create many Orders.
+     * @example
+     * // Create many Orders
+     * const order = await prisma.order.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrderCreateManyArgs>(args?: SelectSubset<T, OrderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Orders and returns the data saved in the database.
+     * @param {OrderCreateManyAndReturnArgs} args - Arguments to create many Orders.
+     * @example
+     * // Create many Orders
+     * const order = await prisma.order.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Orders and only return the `id`
+     * const orderWithIdOnly = await prisma.order.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrderCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Order.
+     * @param {OrderDeleteArgs} args - Arguments to delete one Order.
+     * @example
+     * // Delete one Order
+     * const Order = await prisma.order.delete({
+     *   where: {
+     *     // ... filter to delete one Order
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrderDeleteArgs>(args: SelectSubset<T, OrderDeleteArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Order.
+     * @param {OrderUpdateArgs} args - Arguments to update one Order.
+     * @example
+     * // Update one Order
+     * const order = await prisma.order.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrderUpdateArgs>(args: SelectSubset<T, OrderUpdateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Orders.
+     * @param {OrderDeleteManyArgs} args - Arguments to filter Orders to delete.
+     * @example
+     * // Delete a few Orders
+     * const { count } = await prisma.order.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrderDeleteManyArgs>(args?: SelectSubset<T, OrderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Orders
+     * const order = await prisma.order.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrderUpdateManyArgs>(args: SelectSubset<T, OrderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Orders and returns the data updated in the database.
+     * @param {OrderUpdateManyAndReturnArgs} args - Arguments to update many Orders.
+     * @example
+     * // Update many Orders
+     * const order = await prisma.order.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Orders and only return the `id`
+     * const orderWithIdOnly = await prisma.order.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrderUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Order.
+     * @param {OrderUpsertArgs} args - Arguments to update or create a Order.
+     * @example
+     * // Update or create a Order
+     * const order = await prisma.order.upsert({
+     *   create: {
+     *     // ... data to create a Order
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Order we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrderUpsertArgs>(args: SelectSubset<T, OrderUpsertArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Orders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderCountArgs} args - Arguments to filter Orders to count.
+     * @example
+     * // Count the number of Orders
+     * const count = await prisma.order.count({
+     *   where: {
+     *     // ... the filter for the Orders we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrderCountArgs>(
+      args?: Subset<T, OrderCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrderCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Order.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrderAggregateArgs>(args: Subset<T, OrderAggregateArgs>): Prisma.PrismaPromise<GetOrderAggregateType<T>>
+
+    /**
+     * Group by Order.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrderGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrderGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrderGroupByArgs['orderBy'] }
+        : { orderBy?: OrderGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrderGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Order model
+   */
+  readonly fields: OrderFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Order.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    shipper<T extends ShipperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ShipperDefaultArgs<ExtArgs>>): Prisma__ShipperClient<$Result.GetResult<Prisma.$ShipperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    driver<T extends Order$driverArgs<ExtArgs> = {}>(args?: Subset<T, Order$driverArgs<ExtArgs>>): Prisma__DriverClient<$Result.GetResult<Prisma.$DriverPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Order model
+   */
+  interface OrderFieldRefs {
+    readonly id: FieldRef<"Order", 'String'>
+    readonly organizationId: FieldRef<"Order", 'String'>
+    readonly nomorOrder: FieldRef<"Order", 'String'>
+    readonly nomorSuratJalan: FieldRef<"Order", 'String'>
+    readonly shipperId: FieldRef<"Order", 'String'>
+    readonly driverId: FieldRef<"Order", 'String'>
+    readonly origin: FieldRef<"Order", 'String'>
+    readonly destination: FieldRef<"Order", 'String'>
+    readonly plannedDeliveryDate: FieldRef<"Order", 'DateTime'>
+    readonly actualDeliveryDate: FieldRef<"Order", 'DateTime'>
+    readonly jumlahKoli: FieldRef<"Order", 'Int'>
+    readonly weightGram: FieldRef<"Order", 'Int'>
+    readonly nilaiTagihan: FieldRef<"Order", 'BigInt'>
+    readonly status: FieldRef<"Order", 'OrderStatus'>
+    readonly createdAt: FieldRef<"Order", 'DateTime'>
+    readonly updatedAt: FieldRef<"Order", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Order findUnique
+   */
+  export type OrderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter, which Order to fetch.
+     */
+    where: OrderWhereUniqueInput
+  }
+
+  /**
+   * Order findUniqueOrThrow
+   */
+  export type OrderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter, which Order to fetch.
+     */
+    where: OrderWhereUniqueInput
+  }
+
+  /**
+   * Order findFirst
+   */
+  export type OrderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter, which Order to fetch.
+     */
+    where?: OrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Orders to fetch.
+     */
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Orders.
+     */
+    cursor?: OrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Orders.
+     */
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Order findFirstOrThrow
+   */
+  export type OrderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter, which Order to fetch.
+     */
+    where?: OrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Orders to fetch.
+     */
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Orders.
+     */
+    cursor?: OrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Orders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Orders.
+     */
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Order findMany
+   */
+  export type OrderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter, which Orders to fetch.
+     */
+    where?: OrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Orders to fetch.
+     */
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Orders.
+     */
+    cursor?: OrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Orders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Orders.
+     */
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Order create
+   */
+  export type OrderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Order.
+     */
+    data: XOR<OrderCreateInput, OrderUncheckedCreateInput>
+  }
+
+  /**
+   * Order createMany
+   */
+  export type OrderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Orders.
+     */
+    data: OrderCreateManyInput | OrderCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Order createManyAndReturn
+   */
+  export type OrderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * The data used to create many Orders.
+     */
+    data: OrderCreateManyInput | OrderCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Order update
+   */
+  export type OrderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Order.
+     */
+    data: XOR<OrderUpdateInput, OrderUncheckedUpdateInput>
+    /**
+     * Choose, which Order to update.
+     */
+    where: OrderWhereUniqueInput
+  }
+
+  /**
+   * Order updateMany
+   */
+  export type OrderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Orders.
+     */
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyInput>
+    /**
+     * Filter which Orders to update
+     */
+    where?: OrderWhereInput
+    /**
+     * Limit how many Orders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Order updateManyAndReturn
+   */
+  export type OrderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * The data used to update Orders.
+     */
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyInput>
+    /**
+     * Filter which Orders to update
+     */
+    where?: OrderWhereInput
+    /**
+     * Limit how many Orders to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Order upsert
+   */
+  export type OrderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Order to update in case it exists.
+     */
+    where: OrderWhereUniqueInput
+    /**
+     * In case the Order found by the `where` argument doesn't exist, create a new Order with this data.
+     */
+    create: XOR<OrderCreateInput, OrderUncheckedCreateInput>
+    /**
+     * In case the Order was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrderUpdateInput, OrderUncheckedUpdateInput>
+  }
+
+  /**
+   * Order delete
+   */
+  export type OrderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    /**
+     * Filter which Order to delete.
+     */
+    where: OrderWhereUniqueInput
+  }
+
+  /**
+   * Order deleteMany
+   */
+  export type OrderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Orders to delete
+     */
+    where?: OrderWhereInput
+    /**
+     * Limit how many Orders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Order.driver
+   */
+  export type Order$driverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Driver
+     */
+    select?: DriverSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Driver
+     */
+    omit?: DriverOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverInclude<ExtArgs> | null
+    where?: DriverWhereInput
+  }
+
+  /**
+   * Order without action
+   */
+  export type OrderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
   }
 
 
@@ -19664,6 +21210,28 @@ export namespace Prisma {
   export type DriverScalarFieldEnum = (typeof DriverScalarFieldEnum)[keyof typeof DriverScalarFieldEnum]
 
 
+  export const OrderScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    nomorOrder: 'nomorOrder',
+    nomorSuratJalan: 'nomorSuratJalan',
+    shipperId: 'shipperId',
+    driverId: 'driverId',
+    origin: 'origin',
+    destination: 'destination',
+    plannedDeliveryDate: 'plannedDeliveryDate',
+    actualDeliveryDate: 'actualDeliveryDate',
+    jumlahKoli: 'jumlahKoli',
+    weightGram: 'weightGram',
+    nilaiTagihan: 'nilaiTagihan',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -19837,6 +21405,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'OrderStatus'
+   */
+  export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'OrderStatus[]'
+   */
+  export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -19873,6 +21455,7 @@ export namespace Prisma {
     shippers?: ShipperListRelationFilter
     requirementProfiles?: RequirementProfileListRelationFilter
     drivers?: DriverListRelationFilter
+    orders?: OrderListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -19892,6 +21475,7 @@ export namespace Prisma {
     shippers?: ShipperOrderByRelationAggregateInput
     requirementProfiles?: RequirementProfileOrderByRelationAggregateInput
     drivers?: DriverOrderByRelationAggregateInput
+    orders?: OrderOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -19914,6 +21498,7 @@ export namespace Prisma {
     shippers?: ShipperListRelationFilter
     requirementProfiles?: RequirementProfileListRelationFilter
     drivers?: DriverListRelationFilter
+    orders?: OrderListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -20745,6 +22330,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Shipper"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     requirementProfiles?: RequirementProfileListRelationFilter
+    orders?: OrderListRelationFilter
   }
 
   export type ShipperOrderByWithRelationInput = {
@@ -20760,6 +22346,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     requirementProfiles?: RequirementProfileOrderByRelationAggregateInput
+    orders?: OrderOrderByRelationAggregateInput
   }
 
   export type ShipperWhereUniqueInput = Prisma.AtLeast<{
@@ -20779,6 +22366,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Shipper"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     requirementProfiles?: RequirementProfileListRelationFilter
+    orders?: OrderListRelationFilter
   }, "id" | "organizationId_name">
 
   export type ShipperOrderByWithAggregationInput = {
@@ -20907,6 +22495,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Driver"> | Date | string
     updatedAt?: DateTimeFilter<"Driver"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    orders?: OrderListRelationFilter
   }
 
   export type DriverOrderByWithRelationInput = {
@@ -20919,6 +22508,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
+    orders?: OrderOrderByRelationAggregateInput
   }
 
   export type DriverWhereUniqueInput = Prisma.AtLeast<{
@@ -20935,6 +22525,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Driver"> | Date | string
     updatedAt?: DateTimeFilter<"Driver"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    orders?: OrderListRelationFilter
   }, "id" | "organizationId_phone">
 
   export type DriverOrderByWithAggregationInput = {
@@ -20965,6 +22556,125 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Driver"> | Date | string
   }
 
+  export type OrderWhereInput = {
+    AND?: OrderWhereInput | OrderWhereInput[]
+    OR?: OrderWhereInput[]
+    NOT?: OrderWhereInput | OrderWhereInput[]
+    id?: StringFilter<"Order"> | string
+    organizationId?: StringFilter<"Order"> | string
+    nomorOrder?: StringFilter<"Order"> | string
+    nomorSuratJalan?: StringFilter<"Order"> | string
+    shipperId?: StringFilter<"Order"> | string
+    driverId?: StringNullableFilter<"Order"> | string | null
+    origin?: StringFilter<"Order"> | string
+    destination?: StringFilter<"Order"> | string
+    plannedDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    actualDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    jumlahKoli?: IntNullableFilter<"Order"> | number | null
+    weightGram?: IntNullableFilter<"Order"> | number | null
+    nilaiTagihan?: BigIntNullableFilter<"Order"> | bigint | number | null
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
+    driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
+  }
+
+  export type OrderOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorOrder?: SortOrder
+    nomorSuratJalan?: SortOrder
+    shipperId?: SortOrder
+    driverId?: SortOrderInput | SortOrder
+    origin?: SortOrder
+    destination?: SortOrder
+    plannedDeliveryDate?: SortOrderInput | SortOrder
+    actualDeliveryDate?: SortOrderInput | SortOrder
+    jumlahKoli?: SortOrderInput | SortOrder
+    weightGram?: SortOrderInput | SortOrder
+    nilaiTagihan?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    shipper?: ShipperOrderByWithRelationInput
+    driver?: DriverOrderByWithRelationInput
+  }
+
+  export type OrderWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organizationId_nomorSuratJalan?: OrderOrganizationIdNomorSuratJalanCompoundUniqueInput
+    AND?: OrderWhereInput | OrderWhereInput[]
+    OR?: OrderWhereInput[]
+    NOT?: OrderWhereInput | OrderWhereInput[]
+    organizationId?: StringFilter<"Order"> | string
+    nomorOrder?: StringFilter<"Order"> | string
+    nomorSuratJalan?: StringFilter<"Order"> | string
+    shipperId?: StringFilter<"Order"> | string
+    driverId?: StringNullableFilter<"Order"> | string | null
+    origin?: StringFilter<"Order"> | string
+    destination?: StringFilter<"Order"> | string
+    plannedDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    actualDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    jumlahKoli?: IntNullableFilter<"Order"> | number | null
+    weightGram?: IntNullableFilter<"Order"> | number | null
+    nilaiTagihan?: BigIntNullableFilter<"Order"> | bigint | number | null
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    shipper?: XOR<ShipperScalarRelationFilter, ShipperWhereInput>
+    driver?: XOR<DriverNullableScalarRelationFilter, DriverWhereInput> | null
+  }, "id" | "organizationId_nomorSuratJalan">
+
+  export type OrderOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorOrder?: SortOrder
+    nomorSuratJalan?: SortOrder
+    shipperId?: SortOrder
+    driverId?: SortOrderInput | SortOrder
+    origin?: SortOrder
+    destination?: SortOrder
+    plannedDeliveryDate?: SortOrderInput | SortOrder
+    actualDeliveryDate?: SortOrderInput | SortOrder
+    jumlahKoli?: SortOrderInput | SortOrder
+    weightGram?: SortOrderInput | SortOrder
+    nilaiTagihan?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: OrderCountOrderByAggregateInput
+    _avg?: OrderAvgOrderByAggregateInput
+    _max?: OrderMaxOrderByAggregateInput
+    _min?: OrderMinOrderByAggregateInput
+    _sum?: OrderSumOrderByAggregateInput
+  }
+
+  export type OrderScalarWhereWithAggregatesInput = {
+    AND?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
+    OR?: OrderScalarWhereWithAggregatesInput[]
+    NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Order"> | string
+    organizationId?: StringWithAggregatesFilter<"Order"> | string
+    nomorOrder?: StringWithAggregatesFilter<"Order"> | string
+    nomorSuratJalan?: StringWithAggregatesFilter<"Order"> | string
+    shipperId?: StringWithAggregatesFilter<"Order"> | string
+    driverId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    origin?: StringWithAggregatesFilter<"Order"> | string
+    destination?: StringWithAggregatesFilter<"Order"> | string
+    plannedDeliveryDate?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    actualDeliveryDate?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    jumlahKoli?: IntNullableWithAggregatesFilter<"Order"> | number | null
+    weightGram?: IntNullableWithAggregatesFilter<"Order"> | number | null
+    nilaiTagihan?: BigIntNullableWithAggregatesFilter<"Order"> | bigint | number | null
+    status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -20982,6 +22692,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -21001,6 +22712,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -21020,6 +22732,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -21039,6 +22752,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -21919,6 +23633,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutShippersInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutShipperInput
+    orders?: OrderCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperUncheckedCreateInput = {
@@ -21933,6 +23648,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutShipperInput
+    orders?: OrderUncheckedCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperUpdateInput = {
@@ -21947,6 +23663,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutShippersNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutShipperNestedInput
+    orders?: OrderUpdateManyWithoutShipperNestedInput
   }
 
   export type ShipperUncheckedUpdateInput = {
@@ -21961,6 +23678,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutShipperNestedInput
   }
 
   export type ShipperCreateManyInput = {
@@ -22092,6 +23810,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutDriversInput
+    orders?: OrderCreateNestedManyWithoutDriverInput
   }
 
   export type DriverUncheckedCreateInput = {
@@ -22103,6 +23822,7 @@ export namespace Prisma {
     vendorId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type DriverUpdateInput = {
@@ -22114,6 +23834,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutDriversNestedInput
+    orders?: OrderUpdateManyWithoutDriverNestedInput
   }
 
   export type DriverUncheckedUpdateInput = {
@@ -22125,6 +23846,7 @@ export namespace Prisma {
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type DriverCreateManyInput = {
@@ -22155,6 +23877,136 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     vehiclePlate?: NullableStringFieldUpdateOperationsInput | string | null
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrdersInput
+    shipper: ShipperCreateNestedOneWithoutOrdersInput
+    driver?: DriverCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
+    shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+    driver?: DriverUpdateOneWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22257,6 +24109,12 @@ export namespace Prisma {
     none?: DriverWhereInput
   }
 
+  export type OrderListRelationFilter = {
+    every?: OrderWhereInput
+    some?: OrderWhereInput
+    none?: OrderWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -22295,6 +24153,10 @@ export namespace Prisma {
   }
 
   export type DriverOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrderOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -23259,6 +25121,129 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type BigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type EnumOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
+  }
+
+  export type DriverNullableScalarRelationFilter = {
+    is?: DriverWhereInput | null
+    isNot?: DriverWhereInput | null
+  }
+
+  export type OrderOrganizationIdNomorSuratJalanCompoundUniqueInput = {
+    organizationId: string
+    nomorSuratJalan: string
+  }
+
+  export type OrderCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorOrder?: SortOrder
+    nomorSuratJalan?: SortOrder
+    shipperId?: SortOrder
+    driverId?: SortOrder
+    origin?: SortOrder
+    destination?: SortOrder
+    plannedDeliveryDate?: SortOrder
+    actualDeliveryDate?: SortOrder
+    jumlahKoli?: SortOrder
+    weightGram?: SortOrder
+    nilaiTagihan?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrderAvgOrderByAggregateInput = {
+    jumlahKoli?: SortOrder
+    weightGram?: SortOrder
+    nilaiTagihan?: SortOrder
+  }
+
+  export type OrderMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorOrder?: SortOrder
+    nomorSuratJalan?: SortOrder
+    shipperId?: SortOrder
+    driverId?: SortOrder
+    origin?: SortOrder
+    destination?: SortOrder
+    plannedDeliveryDate?: SortOrder
+    actualDeliveryDate?: SortOrder
+    jumlahKoli?: SortOrder
+    weightGram?: SortOrder
+    nilaiTagihan?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrderMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    nomorOrder?: SortOrder
+    nomorSuratJalan?: SortOrder
+    shipperId?: SortOrder
+    driverId?: SortOrder
+    origin?: SortOrder
+    destination?: SortOrder
+    plannedDeliveryDate?: SortOrder
+    actualDeliveryDate?: SortOrder
+    jumlahKoli?: SortOrder
+    weightGram?: SortOrder
+    nilaiTagihan?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrderSumOrderByAggregateInput = {
+    jumlahKoli?: SortOrder
+    weightGram?: SortOrder
+    nilaiTagihan?: SortOrder
+  }
+
+  export type BigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
   export type MembershipCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -23322,6 +25307,13 @@ export namespace Prisma {
     connect?: DriverWhereUniqueInput | DriverWhereUniqueInput[]
   }
 
+  export type OrderCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput> | OrderCreateWithoutOrganizationInput[] | OrderUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutOrganizationInput | OrderCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrderCreateManyOrganizationInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
   export type MembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -23383,6 +25375,13 @@ export namespace Prisma {
     connectOrCreate?: DriverCreateOrConnectWithoutOrganizationInput | DriverCreateOrConnectWithoutOrganizationInput[]
     createMany?: DriverCreateManyOrganizationInputEnvelope
     connect?: DriverWhereUniqueInput | DriverWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput> | OrderCreateWithoutOrganizationInput[] | OrderUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutOrganizationInput | OrderCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrderCreateManyOrganizationInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -23531,6 +25530,20 @@ export namespace Prisma {
     deleteMany?: DriverScalarWhereInput | DriverScalarWhereInput[]
   }
 
+  export type OrderUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput> | OrderCreateWithoutOrganizationInput[] | OrderUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutOrganizationInput | OrderCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutOrganizationInput | OrderUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrderCreateManyOrganizationInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutOrganizationInput | OrderUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutOrganizationInput | OrderUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
   export type MembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<MembershipCreateWithoutOrganizationInput, MembershipUncheckedCreateWithoutOrganizationInput> | MembershipCreateWithoutOrganizationInput[] | MembershipUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: MembershipCreateOrConnectWithoutOrganizationInput | MembershipCreateOrConnectWithoutOrganizationInput[]
@@ -23655,6 +25668,20 @@ export namespace Prisma {
     update?: DriverUpdateWithWhereUniqueWithoutOrganizationInput | DriverUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: DriverUpdateManyWithWhereWithoutOrganizationInput | DriverUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: DriverScalarWhereInput | DriverScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput> | OrderCreateWithoutOrganizationInput[] | OrderUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutOrganizationInput | OrderCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutOrganizationInput | OrderUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrderCreateManyOrganizationInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutOrganizationInput | OrderUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutOrganizationInput | OrderUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPostsInput = {
@@ -24014,11 +26041,25 @@ export namespace Prisma {
     connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
   }
 
+  export type OrderCreateNestedManyWithoutShipperInput = {
+    create?: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput> | OrderCreateWithoutShipperInput[] | OrderUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutShipperInput | OrderCreateOrConnectWithoutShipperInput[]
+    createMany?: OrderCreateManyShipperInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
   export type RequirementProfileUncheckedCreateNestedManyWithoutShipperInput = {
     create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
     connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
     createMany?: RequirementProfileCreateManyShipperInputEnvelope
     connect?: RequirementProfileWhereUniqueInput | RequirementProfileWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutShipperInput = {
+    create?: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput> | OrderCreateWithoutShipperInput[] | OrderUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutShipperInput | OrderCreateOrConnectWithoutShipperInput[]
+    createMany?: OrderCreateManyShipperInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
   export type OrganizationUpdateOneRequiredWithoutShippersNestedInput = {
@@ -24043,6 +26084,20 @@ export namespace Prisma {
     deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
   }
 
+  export type OrderUpdateManyWithoutShipperNestedInput = {
+    create?: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput> | OrderCreateWithoutShipperInput[] | OrderUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutShipperInput | OrderCreateOrConnectWithoutShipperInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutShipperInput | OrderUpsertWithWhereUniqueWithoutShipperInput[]
+    createMany?: OrderCreateManyShipperInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutShipperInput | OrderUpdateWithWhereUniqueWithoutShipperInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutShipperInput | OrderUpdateManyWithWhereWithoutShipperInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
   export type RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput = {
     create?: XOR<RequirementProfileCreateWithoutShipperInput, RequirementProfileUncheckedCreateWithoutShipperInput> | RequirementProfileCreateWithoutShipperInput[] | RequirementProfileUncheckedCreateWithoutShipperInput[]
     connectOrCreate?: RequirementProfileCreateOrConnectWithoutShipperInput | RequirementProfileCreateOrConnectWithoutShipperInput[]
@@ -24055,6 +26110,20 @@ export namespace Prisma {
     update?: RequirementProfileUpdateWithWhereUniqueWithoutShipperInput | RequirementProfileUpdateWithWhereUniqueWithoutShipperInput[]
     updateMany?: RequirementProfileUpdateManyWithWhereWithoutShipperInput | RequirementProfileUpdateManyWithWhereWithoutShipperInput[]
     deleteMany?: RequirementProfileScalarWhereInput | RequirementProfileScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutShipperNestedInput = {
+    create?: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput> | OrderCreateWithoutShipperInput[] | OrderUncheckedCreateWithoutShipperInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutShipperInput | OrderCreateOrConnectWithoutShipperInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutShipperInput | OrderUpsertWithWhereUniqueWithoutShipperInput[]
+    createMany?: OrderCreateManyShipperInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutShipperInput | OrderUpdateWithWhereUniqueWithoutShipperInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutShipperInput | OrderUpdateManyWithWhereWithoutShipperInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutRequirementProfilesInput = {
@@ -24091,12 +26160,110 @@ export namespace Prisma {
     connect?: OrganizationWhereUniqueInput
   }
 
+  export type OrderCreateNestedManyWithoutDriverInput = {
+    create?: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput> | OrderCreateWithoutDriverInput[] | OrderUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutDriverInput | OrderCreateOrConnectWithoutDriverInput[]
+    createMany?: OrderCreateManyDriverInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutDriverInput = {
+    create?: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput> | OrderCreateWithoutDriverInput[] | OrderUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutDriverInput | OrderCreateOrConnectWithoutDriverInput[]
+    createMany?: OrderCreateManyDriverInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
   export type OrganizationUpdateOneRequiredWithoutDriversNestedInput = {
     create?: XOR<OrganizationCreateWithoutDriversInput, OrganizationUncheckedCreateWithoutDriversInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutDriversInput
     upsert?: OrganizationUpsertWithoutDriversInput
     connect?: OrganizationWhereUniqueInput
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDriversInput, OrganizationUpdateWithoutDriversInput>, OrganizationUncheckedUpdateWithoutDriversInput>
+  }
+
+  export type OrderUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput> | OrderCreateWithoutDriverInput[] | OrderUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutDriverInput | OrderCreateOrConnectWithoutDriverInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutDriverInput | OrderUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: OrderCreateManyDriverInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutDriverInput | OrderUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutDriverInput | OrderUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput> | OrderCreateWithoutDriverInput[] | OrderUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutDriverInput | OrderCreateOrConnectWithoutDriverInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutDriverInput | OrderUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: OrderCreateManyDriverInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutDriverInput | OrderUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutDriverInput | OrderUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<OrganizationCreateWithoutOrdersInput, OrganizationUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOrdersInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type ShipperCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<ShipperCreateWithoutOrdersInput, ShipperUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrdersInput
+    connect?: ShipperWhereUniqueInput
+  }
+
+  export type DriverCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<DriverCreateWithoutOrdersInput, DriverUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: DriverCreateOrConnectWithoutOrdersInput
+    connect?: DriverWhereUniqueInput
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type EnumOrderStatusFieldUpdateOperationsInput = {
+    set?: $Enums.OrderStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutOrdersNestedInput = {
+    create?: XOR<OrganizationCreateWithoutOrdersInput, OrganizationUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOrdersInput
+    upsert?: OrganizationUpsertWithoutOrdersInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutOrdersInput, OrganizationUpdateWithoutOrdersInput>, OrganizationUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type ShipperUpdateOneRequiredWithoutOrdersNestedInput = {
+    create?: XOR<ShipperCreateWithoutOrdersInput, ShipperUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: ShipperCreateOrConnectWithoutOrdersInput
+    upsert?: ShipperUpsertWithoutOrdersInput
+    connect?: ShipperWhereUniqueInput
+    update?: XOR<XOR<ShipperUpdateToOneWithWhereWithoutOrdersInput, ShipperUpdateWithoutOrdersInput>, ShipperUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type DriverUpdateOneWithoutOrdersNestedInput = {
+    create?: XOR<DriverCreateWithoutOrdersInput, DriverUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: DriverCreateOrConnectWithoutOrdersInput
+    upsert?: DriverUpsertWithoutOrdersInput
+    disconnect?: DriverWhereInput | boolean
+    delete?: DriverWhereInput | boolean
+    connect?: DriverWhereUniqueInput
+    update?: XOR<XOR<DriverUpdateToOneWithWhereWithoutOrdersInput, DriverUpdateWithoutOrdersInput>, DriverUncheckedUpdateWithoutOrdersInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -24424,6 +26591,50 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedBigIntNullableFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableFilter<$PrismaModel> | bigint | number | null
+  }
+
+  export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel> | null
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel> | null
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntNullableWithAggregatesFilter<$PrismaModel> | bigint | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedBigIntNullableFilter<$PrismaModel>
+    _min?: NestedBigIntNullableFilter<$PrismaModel>
+    _max?: NestedBigIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.OrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
   export type MembershipCreateWithoutOrganizationInput = {
     id?: string
     role: $Enums.MembershipRole
@@ -24631,6 +26842,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutShipperInput
+    orders?: OrderCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperUncheckedCreateWithoutOrganizationInput = {
@@ -24644,6 +26856,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutShipperInput
+    orders?: OrderUncheckedCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperCreateOrConnectWithoutOrganizationInput = {
@@ -24696,6 +26909,7 @@ export namespace Prisma {
     vendorId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutDriverInput
   }
 
   export type DriverUncheckedCreateWithoutOrganizationInput = {
@@ -24706,6 +26920,7 @@ export namespace Prisma {
     vendorId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type DriverCreateOrConnectWithoutOrganizationInput = {
@@ -24715,6 +26930,52 @@ export namespace Prisma {
 
   export type DriverCreateManyOrganizationInputEnvelope = {
     data: DriverCreateManyOrganizationInput | DriverCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderCreateWithoutOrganizationInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    shipper: ShipperCreateNestedOneWithoutOrdersInput
+    driver?: DriverCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutOrganizationInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrderCreateManyOrganizationInputEnvelope = {
+    data: OrderCreateManyOrganizationInput | OrderCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -24997,6 +27258,44 @@ export namespace Prisma {
     vendorId?: StringNullableFilter<"Driver"> | string | null
     createdAt?: DateTimeFilter<"Driver"> | Date | string
     updatedAt?: DateTimeFilter<"Driver"> | Date | string
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutOrganizationInput, OrderUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<OrderCreateWithoutOrganizationInput, OrderUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutOrganizationInput, OrderUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutOrganizationInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type OrderScalarWhereInput = {
+    AND?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    OR?: OrderScalarWhereInput[]
+    NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    id?: StringFilter<"Order"> | string
+    organizationId?: StringFilter<"Order"> | string
+    nomorOrder?: StringFilter<"Order"> | string
+    nomorSuratJalan?: StringFilter<"Order"> | string
+    shipperId?: StringFilter<"Order"> | string
+    driverId?: StringNullableFilter<"Order"> | string | null
+    origin?: StringFilter<"Order"> | string
+    destination?: StringFilter<"Order"> | string
+    plannedDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    actualDeliveryDate?: DateTimeNullableFilter<"Order"> | Date | string | null
+    jumlahKoli?: IntNullableFilter<"Order"> | number | null
+    weightGram?: IntNullableFilter<"Order"> | number | null
+    nilaiTagihan?: BigIntNullableFilter<"Order"> | bigint | number | null
+    status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
 
   export type UserCreateWithoutPostsInput = {
@@ -25435,6 +27734,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -25453,6 +27753,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -25520,6 +27821,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -25538,6 +27840,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutJobExecutionsInput = {
@@ -25556,6 +27859,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutJobExecutionsInput = {
@@ -25574,6 +27878,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutJobExecutionsInput = {
@@ -25608,6 +27913,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutJobExecutionsInput = {
@@ -25626,6 +27932,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutDeadLetterJobsInput = {
@@ -25644,6 +27951,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDeadLetterJobsInput = {
@@ -25662,6 +27970,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDeadLetterJobsInput = {
@@ -25696,6 +28005,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDeadLetterJobsInput = {
@@ -25714,6 +28024,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutHumanFallbackEventsInput = {
@@ -25732,6 +28043,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutHumanFallbackEventsInput = {
@@ -25750,6 +28062,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutHumanFallbackEventsInput = {
@@ -25784,6 +28097,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutHumanFallbackEventsInput = {
@@ -25802,6 +28116,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutLlmCallLogsInput = {
@@ -25820,6 +28135,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLlmCallLogsInput = {
@@ -25838,6 +28154,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLlmCallLogsInput = {
@@ -25872,6 +28189,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLlmCallLogsInput = {
@@ -25890,6 +28208,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutAuditLogsInput = {
@@ -25908,6 +28227,7 @@ export namespace Prisma {
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
@@ -25926,6 +28246,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAuditLogsInput = {
@@ -25960,6 +28281,7 @@ export namespace Prisma {
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
@@ -25978,6 +28300,7 @@ export namespace Prisma {
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutShippersInput = {
@@ -25996,6 +28319,7 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutShippersInput = {
@@ -26014,6 +28338,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutShippersInput = {
@@ -26053,6 +28378,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrderCreateWithoutShipperInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrdersInput
+    driver?: DriverCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutShipperInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutShipperInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput>
+  }
+
+  export type OrderCreateManyShipperInputEnvelope = {
+    data: OrderCreateManyShipperInput | OrderCreateManyShipperInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutShippersInput = {
     update: XOR<OrganizationUpdateWithoutShippersInput, OrganizationUncheckedUpdateWithoutShippersInput>
     create: XOR<OrganizationCreateWithoutShippersInput, OrganizationUncheckedCreateWithoutShippersInput>
@@ -26080,6 +28451,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutShippersInput = {
@@ -26098,6 +28470,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RequirementProfileUpsertWithWhereUniqueWithoutShipperInput = {
@@ -26116,6 +28489,22 @@ export namespace Prisma {
     data: XOR<RequirementProfileUpdateManyMutationInput, RequirementProfileUncheckedUpdateManyWithoutShipperInput>
   }
 
+  export type OrderUpsertWithWhereUniqueWithoutShipperInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutShipperInput, OrderUncheckedUpdateWithoutShipperInput>
+    create: XOR<OrderCreateWithoutShipperInput, OrderUncheckedCreateWithoutShipperInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutShipperInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutShipperInput, OrderUncheckedUpdateWithoutShipperInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutShipperInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutShipperInput>
+  }
+
   export type OrganizationCreateWithoutRequirementProfilesInput = {
     id?: string
     name: string
@@ -26132,6 +28521,7 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     drivers?: DriverCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRequirementProfilesInput = {
@@ -26150,6 +28540,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRequirementProfilesInput = {
@@ -26168,6 +28559,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutShippersInput
+    orders?: OrderCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperUncheckedCreateWithoutRequirementProfilesInput = {
@@ -26181,6 +28573,7 @@ export namespace Prisma {
     address?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutShipperInput
   }
 
   export type ShipperCreateOrConnectWithoutRequirementProfilesInput = {
@@ -26215,6 +28608,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -26233,6 +28627,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ShipperUpsertWithoutRequirementProfilesInput = {
@@ -26257,6 +28652,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutShippersNestedInput
+    orders?: OrderUpdateManyWithoutShipperNestedInput
   }
 
   export type ShipperUncheckedUpdateWithoutRequirementProfilesInput = {
@@ -26270,6 +28666,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutShipperNestedInput
   }
 
   export type OrganizationCreateWithoutDriversInput = {
@@ -26288,6 +28685,7 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
     shippers?: ShipperCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    orders?: OrderCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDriversInput = {
@@ -26306,11 +28704,58 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
     shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
     requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDriversInput = {
     where: OrganizationWhereUniqueInput
     create: XOR<OrganizationCreateWithoutDriversInput, OrganizationUncheckedCreateWithoutDriversInput>
+  }
+
+  export type OrderCreateWithoutDriverInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrdersInput
+    shipper: ShipperCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutDriverInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutDriverInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput>
+  }
+
+  export type OrderCreateManyDriverInputEnvelope = {
+    data: OrderCreateManyDriverInput | OrderCreateManyDriverInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrganizationUpsertWithoutDriversInput = {
@@ -26340,6 +28785,7 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
     shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDriversInput = {
@@ -26358,6 +28804,247 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
     shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutDriverInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutDriverInput, OrderUncheckedUpdateWithoutDriverInput>
+    create: XOR<OrderCreateWithoutDriverInput, OrderUncheckedCreateWithoutDriverInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutDriverInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutDriverInput, OrderUncheckedUpdateWithoutDriverInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutDriverInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutDriverInput>
+  }
+
+  export type OrganizationCreateWithoutOrdersInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    name: string
+    type: $Enums.OrganizationType
+    sessionMaxAgeSeconds?: number | null
+    sessionIdleTimeoutSeconds?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    memberships?: MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    jobExecutions?: JobExecutionUncheckedCreateNestedManyWithoutOrganizationInput
+    deadLetterJobs?: DeadLetterJobUncheckedCreateNestedManyWithoutOrganizationInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedCreateNestedManyWithoutOrganizationInput
+    llmCallLogs?: LlmCallLogUncheckedCreateNestedManyWithoutOrganizationInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutOrganizationInput
+    shippers?: ShipperUncheckedCreateNestedManyWithoutOrganizationInput
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutOrganizationInput
+    drivers?: DriverUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutOrdersInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutOrdersInput, OrganizationUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type ShipperCreateWithoutOrdersInput = {
+    id?: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutShippersInput
+    requirementProfiles?: RequirementProfileCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    organizationId: string
+    name: string
+    npwp?: string | null
+    financeContactName?: string | null
+    financeContactEmail?: string | null
+    financeContactPhone?: string | null
+    address?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    requirementProfiles?: RequirementProfileUncheckedCreateNestedManyWithoutShipperInput
+  }
+
+  export type ShipperCreateOrConnectWithoutOrdersInput = {
+    where: ShipperWhereUniqueInput
+    create: XOR<ShipperCreateWithoutOrdersInput, ShipperUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type DriverCreateWithoutOrdersInput = {
+    id?: string
+    name: string
+    phone: string
+    vehiclePlate?: string | null
+    vendorId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDriversInput
+  }
+
+  export type DriverUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    organizationId: string
+    name: string
+    phone: string
+    vehiclePlate?: string | null
+    vendorId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverCreateOrConnectWithoutOrdersInput = {
+    where: DriverWhereUniqueInput
+    create: XOR<DriverCreateWithoutOrdersInput, DriverUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type OrganizationUpsertWithoutOrdersInput = {
+    update: XOR<OrganizationUpdateWithoutOrdersInput, OrganizationUncheckedUpdateWithoutOrdersInput>
+    create: XOR<OrganizationCreateWithoutOrdersInput, OrganizationUncheckedCreateWithoutOrdersInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutOrdersInput, OrganizationUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type OrganizationUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumOrganizationTypeFieldUpdateOperationsInput | $Enums.OrganizationType
+    sessionMaxAgeSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionIdleTimeoutSeconds?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memberships?: MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    jobExecutions?: JobExecutionUncheckedUpdateManyWithoutOrganizationNestedInput
+    deadLetterJobs?: DeadLetterJobUncheckedUpdateManyWithoutOrganizationNestedInput
+    humanFallbackEvents?: HumanFallbackEventUncheckedUpdateManyWithoutOrganizationNestedInput
+    llmCallLogs?: LlmCallLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    shippers?: ShipperUncheckedUpdateManyWithoutOrganizationNestedInput
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutOrganizationNestedInput
+    drivers?: DriverUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type ShipperUpsertWithoutOrdersInput = {
+    update: XOR<ShipperUpdateWithoutOrdersInput, ShipperUncheckedUpdateWithoutOrdersInput>
+    create: XOR<ShipperCreateWithoutOrdersInput, ShipperUncheckedCreateWithoutOrdersInput>
+    where?: ShipperWhereInput
+  }
+
+  export type ShipperUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: ShipperWhereInput
+    data: XOR<ShipperUpdateWithoutOrdersInput, ShipperUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type ShipperUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutShippersNestedInput
+    requirementProfiles?: RequirementProfileUpdateManyWithoutShipperNestedInput
+  }
+
+  export type ShipperUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    npwp?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    financeContactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput
+  }
+
+  export type DriverUpsertWithoutOrdersInput = {
+    update: XOR<DriverUpdateWithoutOrdersInput, DriverUncheckedUpdateWithoutOrdersInput>
+    create: XOR<DriverCreateWithoutOrdersInput, DriverUncheckedCreateWithoutOrdersInput>
+    where?: DriverWhereInput
+  }
+
+  export type DriverUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: DriverWhereInput
+    data: XOR<DriverUpdateWithoutOrdersInput, DriverUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type DriverUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    vehiclePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    vendorId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDriversNestedInput
+  }
+
+  export type DriverUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    vehiclePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    vendorId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MembershipCreateManyOrganizationInput = {
@@ -26457,6 +29144,24 @@ export namespace Prisma {
     phone: string
     vehiclePlate?: string | null
     vendorId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateManyOrganizationInput = {
+    id?: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26676,6 +29381,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requirementProfiles?: RequirementProfileUpdateManyWithoutShipperNestedInput
+    orders?: OrderUpdateManyWithoutShipperNestedInput
   }
 
   export type ShipperUncheckedUpdateWithoutOrganizationInput = {
@@ -26689,6 +29395,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requirementProfiles?: RequirementProfileUncheckedUpdateManyWithoutShipperNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutShipperNestedInput
   }
 
   export type ShipperUncheckedUpdateManyWithoutOrganizationInput = {
@@ -26744,6 +29451,7 @@ export namespace Prisma {
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutDriverNestedInput
   }
 
   export type DriverUncheckedUpdateWithoutOrganizationInput = {
@@ -26754,6 +29462,7 @@ export namespace Prisma {
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type DriverUncheckedUpdateManyWithoutOrganizationInput = {
@@ -26762,6 +29471,60 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     vehiclePlate?: NullableStringFieldUpdateOperationsInput | string | null
     vendorId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+    driver?: DriverUpdateOneWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26916,6 +29679,24 @@ export namespace Prisma {
     supersededAt?: Date | string | null
   }
 
+  export type OrderCreateManyShipperInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    driverId?: string | null
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type RequirementProfileUpdateWithoutShipperInput = {
     id?: StringFieldUpdateOperationsInput | string
     version?: IntFieldUpdateOperationsInput | number
@@ -26947,6 +29728,132 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     supersededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrderUpdateWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
+    driver?: DriverUpdateOneWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyWithoutShipperInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyDriverInput = {
+    id?: string
+    organizationId: string
+    nomorOrder: string
+    nomorSuratJalan: string
+    shipperId: string
+    origin: string
+    destination: string
+    plannedDeliveryDate?: Date | string | null
+    actualDeliveryDate?: Date | string | null
+    jumlahKoli?: number | null
+    weightGram?: number | null
+    nilaiTagihan?: bigint | number | null
+    status?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrdersNestedInput
+    shipper?: ShipperUpdateOneRequiredWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    nomorOrder?: StringFieldUpdateOperationsInput | string
+    nomorSuratJalan?: StringFieldUpdateOperationsInput | string
+    shipperId?: StringFieldUpdateOperationsInput | string
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    plannedDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualDeliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    jumlahKoli?: NullableIntFieldUpdateOperationsInput | number | null
+    weightGram?: NullableIntFieldUpdateOperationsInput | number | null
+    nilaiTagihan?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

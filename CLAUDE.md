@@ -103,16 +103,18 @@ What exists today:
 ```
 prisma/
   migrations/            # committed, forward-only
-  schema.prisma          # identity, tenancy, jobs, audit, Shipper, RequirementProfile, Driver
+  schema.prisma          # identity, tenancy, jobs, audit, Shipper, RequirementProfile, Driver, Order
   seed.ts                # multi-org fixtures the tenancy tests rely on
 docs/
   INVARIANTS.md          # the eight product invariants — authoritative
+  api/openapi.yaml       # proposed public order API — a stub, nothing implements it
 eslint-rules/
   no-domain-infrastructure-imports.js   # enforces the domain boundary
 src/
   app/
     _components/         # login-form, org-switcher, sign-out-form, utility-bar
     shippers/            # shipper registry + requirement profile admin UI
+    orders/              # order list + manual create form
     api/
       auth/[...nextauth]/route.ts   # re-exports handlers from ~/server/auth
       trpc/[trpc]/route.ts          # tRPC fetch adapter
@@ -122,7 +124,7 @@ src/
     page.tsx             # home page
   server/
     api/
-      routers/           # one router per entity: organization.ts, post.ts, audit.ts, shipper.ts, driver.ts
+      routers/           # one router per entity: organization.ts, post.ts, audit.ts, shipper.ts, driver.ts, order.ts
       root.ts            # appRouter + createCaller
       trpc.ts            # context, publicProcedure, protectedProcedure, orgProcedure, roleProcedure
       tenant-extension.ts # Prisma extension that pre-filters by organizationId
@@ -148,7 +150,7 @@ src/
 tests/
   invariants/            # one file per INV-1..INV-8, wired into `pnpm check`
   guardrails/            # architectural assertions (domain boundaries)
-  auth/ storage/ tenancy/ audit/ jobs/ shipper/ driver/  # mirror the source path
+  auth/ storage/ tenancy/ audit/ jobs/ shipper/ driver/ order/  # mirror the source path
   e2e/                   # Playwright specs
 components.json          # shadcn config — style, aliases, baseColor
 trayek-settle-mvp-backlog.md  # the backlog and the build order
@@ -210,7 +212,11 @@ Route-specific components live in `src/app/<route>/_components/`, mirroring `src
 - Schema changes go through `pnpm db:generate` (which runs `prisma migrate dev`). Migrations are committed in `prisma/migrations/` and are forward-only.
 - `prisma/seed.ts` (`pnpm db:seed`) builds the multi-org fixtures the tenancy and isolation tests depend on. Extend it when you add a tenant-scoped model.
 - Every tenant-scoped table carries a non-nullable, indexed `organizationId`.
-- Money is `BigInt` minor units. Never `Float`, never a bare `Decimal` across the wire.
+- Money is `BigInt`. Never `Float`, never a bare `Decimal` across the wire.
+  `Order.nilaiTagihan` stores **whole rupiah, not sen**: the IDR minor unit is unused in
+  freight invoicing, and storing it would inflate every value 100x and force a divide on
+  the display path — the exact arithmetic `tests/invariants/inv-3-no-pricing` forbids.
+  `Intl.NumberFormat` formats a `BigInt` directly, so rendering needs no arithmetic at all.
 - Timestamps are stored UTC and rendered `Asia/Jakarta`. DSO arithmetic uses calendar days in `Asia/Jakarta`.
 - Enum members use the Indonesian domain term — see the glossary above.
 - `pnpm db:migrate` (`prisma migrate deploy`) is for deploying. `pnpm db:push` is for local prototyping only — never against shared, staging, or production databases. `pnpm db:studio` opens the browser client.
