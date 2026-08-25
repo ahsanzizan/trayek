@@ -22,6 +22,7 @@ Trayek Settle: a receivables product for Indonesian freight forwarders. It captu
 | Styling         | Tailwind CSS v4                          | CSS-first config — **no `tailwind.config.ts` exists, do not create one** |
 | UI primitives   | shadcn/ui on Base UI + `lucide-react`    | Config in `components.json`; generated into `src/components/ui/`         |
 | Validation      | Zod 3                                    | Shared between tRPC inputs and client forms                              |
+| CSV             | `papaparse`                              | Parsed in the browser; only approved rows reach the server               |
 | Env             | `@t3-oss/env-nextjs`                     | Schema in `src/env.js`                                                   |
 | Storage         | UploadThing behind `StoragePort`         | Port in `src/server/domain/ports/storage.ts` — see Storage below         |
 | Testing         | Vitest (unit + invariants), Playwright   | `vitest.config.ts`, `playwright.config.ts`, specs in `tests/`            |
@@ -114,7 +115,7 @@ src/
   app/
     _components/         # login-form, org-switcher, sign-out-form, utility-bar
     shippers/            # shipper registry + requirement profile admin UI
-    orders/              # order list + manual create form
+    orders/              # order list, manual create form, CSV import panel
     api/
       auth/[...nextauth]/route.ts   # re-exports handlers from ~/server/auth
       trpc/[trpc]/route.ts          # tRPC fetch adapter
@@ -136,6 +137,7 @@ src/
       audit/entry.ts     # actor union + pure row flattening
       jobs/              # retry policy, registry, runner — all IO-free
       driver/            # Indonesian phone normalisation to E.164
+      order/             # CSV row parsing, column mapping, per-row validation
       shipper/           # requirement rule schema + version diff
       ports/storage.ts   # StoragePort — the domain owns the interface
     storage/             # UploadThing implementation of StoragePort

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import { CreateOrderForm } from "./_components/create-order-form";
+import { ImportPanel } from "./_components/import-panel";
 import { OrderList } from "./_components/order-list";
 
 export const metadata = {
@@ -38,6 +39,10 @@ export default async function OrdersPage() {
           dengan shipper — Trayek tidak pernah menghitung atau menyarankan
           tarif.
         </p>
+
+        <div className="mt-10">
+          <ImportPanel />
+        </div>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_340px]">
           <HydrateClient>

@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -7,6 +9,12 @@ import {
   roleProcedure,
 } from "~/server/api/trpc";
 import { withAudit } from "~/server/audit/with-audit";
+import {
+  IMPORT_FIELDS,
+  parseImportRows,
+  type ParsedOrderRow,
+  type RowNote,
+} from "~/server/domain/order/import";
 
 /**
  * Orders — the thing a POD is matched against (TRK-011).
@@ -93,6 +101,43 @@ const orderSelect = {
 } as const;
 
 type OrderRow = z.infer<typeof orderOutput>;
+
+const importOutcome = z.enum(["CREATED", "SKIPPED", "REJECTED"]);
+
+const importResult = z.object({
+  /** Null for a dry run: nothing was written, so there is no batch to name. */
+  batchId: z.string().nullable(),
+  total: z.number().int(),
+  created: z.number().int(),
+  skipped: z.number().int(),
+  rejected: z.number().int(),
+  /**
+   * Only rows that need a human to look at them. Returning all 5,000 would
+   * make the response enormous to say "fine" five thousand times.
+   */
+  rows: z.array(
+    z.object({
+      /** Zero-based position in the uploaded file. */
+      index: z.number().int(),
+      nomorSuratJalan: z.string().nullable(),
+      outcome: importOutcome,
+      notes: z.array(z.object({ field: z.string(), message: z.string() })),
+    }),
+  ),
+});
+
+/** Postgres caps parameters per statement, so a huge insert is chunked. */
+const INSERT_CHUNK = 1000;
+
+function chunked<T>(items: readonly T[], size: number): T[][] {
+  const chunks: T[][] = [];
+
+  for (let start = 0; start < items.length; start += size) {
+    chunks.push(items.slice(start, start + size));
+  }
+
+  return chunks;
+}
 
 export const orderRouter = createTRPCRouter({
   list: orgProcedure
@@ -220,5 +265,209 @@ export const orderRouter = createTRPCRouter({
             select: orderSelect,
           }),
       );
+    }),
+  /**
+   * Bulk import from a spreadsheet.
+   *
+   * A mutation even in dry-run form, because tRPC sends query input in the URL
+   * and five thousand rows do not fit in one. `dryRun` runs exactly the same
+   * resolution and validation and then writes nothing, so the preview an
+   * operator approves is the same computation that later runs for real.
+   */
+  import: roleProcedure("ADMIN")
+    .input(
+      z.object({
+        rows: z
+          .array(z.record(z.string(), z.unknown()))
+          .max(5000, "Maksimal 5.000 baris per impor."),
+        mapping: z.record(z.enum(IMPORT_FIELDS), z.string()),
+        dryRun: z.boolean(),
+      }),
+    )
+    .output(importResult)
+    .mutation(async ({ ctx, input }) => {
+      const parsed = parseImportRows(input.rows, input.mapping);
+      const usable = parsed.filter((row) => row.ok);
+
+      // Three lookups for the whole file rather than three per row. At 5,000
+      // rows the per-row version is 15,000 round trips and minutes of wall
+      // clock; this is three.
+      const [shippers, drivers, existing] = await Promise.all([
+        ctx.db.shipper.findMany({ select: { id: true, name: true } }),
+        ctx.db.driver.findMany({ select: { id: true, phone: true } }),
+        ctx.db.order.findMany({
+          where: {
+            nomorSuratJalan: {
+              in: usable.map((row) => row.value.nomorSuratJalan),
+            },
+          },
+          select: { nomorSuratJalan: true },
+        }),
+      ]);
+
+      const shipperByName = new Map(
+        shippers.map((shipper) => [
+          shipper.name.trim().toLowerCase(),
+          shipper.id,
+        ]),
+      );
+      const driverByPhone = new Map(
+        drivers.map((driver) => [driver.phone, driver.id]),
+      );
+      const alreadyPresent = new Set(
+        existing.map((order) => order.nomorSuratJalan),
+      );
+
+      const report: z.infer<typeof importResult>["rows"] = [];
+      const toCreate: (ParsedOrderRow & {
+        shipperId: string;
+        driverId: string | null;
+      })[] = [];
+
+      let created = 0;
+      let skipped = 0;
+      let rejected = 0;
+
+      for (const row of parsed) {
+        if (!row.ok) {
+          rejected += 1;
+          report.push({
+            index: row.index,
+            nomorSuratJalan: null,
+            outcome: "REJECTED",
+            notes: row.errors,
+          });
+          continue;
+        }
+
+        const shipperId = shipperByName.get(
+          row.value.shipper.trim().toLowerCase(),
+        );
+
+        // Resolved by name against this organization only, so a shipper
+        // belonging to another tenant simply is not found.
+        if (shipperId === undefined) {
+          rejected += 1;
+          report.push({
+            index: row.index,
+            nomorSuratJalan: row.value.nomorSuratJalan,
+            outcome: "REJECTED",
+            notes: [
+              {
+                field: "shipper",
+                message: `Shipper "${row.value.shipper}" belum terdaftar. Tambahkan dulu di halaman Shipper.`,
+              },
+            ],
+          });
+          continue;
+        }
+
+        // Idempotency, keyed on nomor surat jalan: re-importing the same file
+        // skips what is already there rather than creating a second row or
+        // overwriting a status that has since moved on.
+        if (alreadyPresent.has(row.value.nomorSuratJalan)) {
+          skipped += 1;
+          report.push({
+            index: row.index,
+            nomorSuratJalan: row.value.nomorSuratJalan,
+            outcome: "SKIPPED",
+            notes: [
+              {
+                field: "nomorSuratJalan",
+                message: "Sudah ada di sistem; baris ini dilewati.",
+              },
+            ],
+          });
+          continue;
+        }
+
+        const notes: RowNote[] = [...row.warnings];
+        const driverId =
+          row.value.driverPhone === null
+            ? null
+            : (driverByPhone.get(row.value.driverPhone) ?? null);
+
+        if (row.value.driverPhone !== null && driverId === null) {
+          notes.push({
+            field: "driverPhone",
+            message: `Driver ${row.value.driverPhone} belum terdaftar; order diimpor tanpa driver.`,
+          });
+        }
+
+        created += 1;
+        toCreate.push({ ...row.value, shipperId, driverId });
+        alreadyPresent.add(row.value.nomorSuratJalan);
+
+        if (notes.length > 0) {
+          report.push({
+            index: row.index,
+            nomorSuratJalan: row.value.nomorSuratJalan,
+            outcome: "CREATED",
+            notes,
+          });
+        }
+      }
+
+      const summary = {
+        total: parsed.length,
+        created,
+        skipped,
+        rejected,
+        rows: report,
+      };
+
+      if (input.dryRun || toCreate.length === 0) {
+        return { ...summary, batchId: null };
+      }
+
+      const batchId = randomUUID();
+
+      await withAudit(
+        ctx.db,
+        {
+          organizationId: ctx.organizationId,
+          actor: { type: "USER", id: ctx.session.user.id },
+          action: "ORDER_IMPORTED",
+          entityType: "OrderImport",
+          // The batch, not the orders: one row per import keeps the log
+          // readable. Each order carries this id in the entry below.
+          entityId: batchId,
+          after: {
+            total: summary.total,
+            created,
+            skipped,
+            rejected,
+            nomorSuratJalan: toCreate.map((row) => row.nomorSuratJalan),
+          },
+        },
+        async (tx) => {
+          for (const chunk of chunked(toCreate, INSERT_CHUNK)) {
+            await tx.order.createMany({
+              data: chunk.map((row) => ({
+                organizationId: ctx.organizationId,
+                nomorOrder: row.nomorOrder,
+                nomorSuratJalan: row.nomorSuratJalan,
+                shipperId: row.shipperId,
+                driverId: row.driverId,
+                origin: row.origin,
+                destination: row.destination,
+                plannedDeliveryDate: row.plannedDeliveryDate,
+                actualDeliveryDate: row.actualDeliveryDate,
+                jumlahKoli: row.jumlahKoli,
+                weightGram: row.weightGram,
+                nilaiTagihan: row.nilaiTagihan,
+                status: row.status,
+              })),
+            });
+          }
+
+          return toCreate.length;
+        },
+        // Measured at roughly 2s for 5,000 rows locally; a loaded runner has
+        // no reason to match that.
+        { timeout: 60_000, maxWait: 10_000 },
+      );
+
+      return { ...summary, batchId };
     }),
 });
